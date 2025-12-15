@@ -1,4 +1,0 @@
-[2025-11-23 20:00:59] join_room called. REQUEST_METHOD=POST
-[2025-11-26 20:25:01] join_room called. REQUEST_METHOD=POST
-[2025-11-26 21:07:08] join_room called. REQUEST_METHOD=POST
-[2025-11-26 21:13:35] join_room called. REQUEST_METHOD=POST

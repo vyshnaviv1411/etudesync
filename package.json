@@ -1,0 +1,11 @@
+{
+  "name": "etudesync",
+  "version": "1.0.0",
+  "description": "EtudeSync - Student Productivity Platform",
+  "scripts": {
+    "start": "php -S 0.0.0.0:${PORT:-8080} -t public"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
