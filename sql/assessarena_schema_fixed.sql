@@ -1,5 +1,6 @@
--- AssessArena Database Schema
+-- AssessArena Database Schema (Fixed Version)
 -- Creates tables for quizzes, questions, and attempts
+-- This version handles foreign key constraints more safely
 
 -- Quizzes table
 CREATE TABLE IF NOT EXISTS quizzes (
@@ -31,7 +32,7 @@ CREATE TABLE IF NOT EXISTS questions (
     INDEX idx_quiz_position (quiz_id, position)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Attempts table
+-- Attempts table (without foreign key constraints to users table)
 CREATE TABLE IF NOT EXISTS attempts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     attempt_id VARCHAR(36) UNIQUE NOT NULL,
