@@ -1,0 +1,172 @@
+========================================================================
+🔥 ASSESSARENA SQL FIX - IMMEDIATE ACTION REQUIRED
+========================================================================
+
+ERROR YOU'RE SEEING:
+  SQLSTATE[42S22]: Column not found: 1054 Unknown column 'code' in 'field list'
+
+ROOT CAUSE:
+  Your database is missing required columns that the PHP code expects.
+
+========================================================================
+✅ SOLUTION (Choose ONE method below)
+========================================================================
+
+METHOD 1: ONE-CLICK WEB FIX (EASIEST - DO THIS)
+------------------------------------------------
+1. Open your browser
+2. Go to: http://localhost/etudesync/public/admin/fix_assessarena_now.php
+3. Click "FIX DATABASE NOW"
+4. Wait for success message
+5. Go to AssessArena and test
+
+✅ This will automatically:
+   - Add missing columns (code, time_limit_minutes, shuffle_questions)
+   - Generate unique codes for existing quizzes
+   - Set proper constraints
+   - Verify the fix
+
+========================================================================
+
+METHOD 2: RUN DIAGNOSTIC FIRST (If you want to see what's wrong)
+-----------------------------------------------------------------
+1. Go to: http://localhost/etudesync/public/admin/check_assessarena.php
+2. Review what's missing
+3. Click "FIX DATABASE NOW" button
+4. Wait for completion
+
+========================================================================
+
+METHOD 3: MANUAL SQL FIX (If web methods don't work)
+-----------------------------------------------------
+1. Open phpMyAdmin: http://localhost/phpmyadmin
+2. Select database: etudesync
+3. Click "SQL" tab
+4. Copy and paste this SQL:
+
+---START SQL---
+USE etudesync;
+
+-- Add missing columns
+ALTER TABLE quizzes ADD COLUMN code VARCHAR(12) NULL AFTER id;
+ALTER TABLE quizzes ADD COLUMN time_limit_minutes INT NULL AFTER title;
+ALTER TABLE quizzes ADD COLUMN shuffle_questions BOOLEAN DEFAULT FALSE;
+
+-- Generate codes for existing quizzes
+UPDATE quizzes
+SET code = UPPER(SUBSTRING(MD5(CONCAT(id, RAND(), NOW())), 1, 8))
+WHERE code IS NULL OR code = '';
+
+-- Set constraints
+ALTER TABLE quizzes MODIFY code VARCHAR(12) NOT NULL;
+ALTER TABLE quizzes ADD UNIQUE INDEX idx_code_unique (code);
+
+-- Verify
+DESCRIBE quizzes;
+---END SQL---
+
+5. Click "Go"
+6. Ignore "Duplicate column" errors (means column already exists)
+
+========================================================================
+🧪 VERIFY THE FIX WORKED
+========================================================================
+
+After running the fix:
+
+1. Go to AssessArena
+2. Click "Create Quiz"
+3. Enter title: "Test Quiz"
+4. Set time limit: 30 (optional)
+5. Click "Create"
+
+✅ Should work without errors
+✅ Should get a quiz code like "A3F7B2D8"
+✅ Can now load quiz using code
+
+========================================================================
+📊 WHAT THE FIX DOES
+========================================================================
+
+BEFORE (Broken):
+  quizzes table:
+  ├── id
+  ├── created_at
+  └── (missing code, time_limit_minutes, shuffle_questions)
+
+  ❌ PHP code tries to use 'code' → ERROR
+  ❌ PHP code tries to use 'time_limit_minutes' → ERROR
+
+AFTER (Fixed):
+  quizzes table:
+  ├── id
+  ├── code ← ADDED (unique quiz identifier)
+  ├── owner_id
+  ├── title
+  ├── time_limit_minutes ← ADDED (optional timer)
+  ├── shuffle_questions ← ADDED (randomize questions)
+  ├── created_at
+  └── updated_at
+
+  ✅ PHP code can use 'code' → WORKS
+  ✅ PHP code can use 'time_limit_minutes' → WORKS
+  ✅ All CRUD operations work
+
+========================================================================
+🎯 EXPECTED RESULT
+========================================================================
+
+Quiz Creation Response (Should see this in Network tab):
+{
+  "ok": true,
+  "quiz_id": 123,
+  "code": "A3F7B2D8",
+  "msg": "Quiz created successfully"
+}
+
+✅ No more SQL errors
+✅ Quiz code generated
+✅ Time limit works
+
+========================================================================
+⚠️ IF STILL NOT WORKING AFTER FIX
+========================================================================
+
+1. Clear browser cache (Ctrl+Shift+Delete)
+2. Restart XAMPP (Apache + MySQL)
+3. Check browser console for JavaScript errors (F12)
+4. Verify columns exist:
+   - Go to phpMyAdmin
+   - Select etudesync database
+   - Click quizzes table
+   - Click "Structure" tab
+   - Verify you see: code, time_limit_minutes, shuffle_questions
+
+5. Run diagnostic again:
+   http://localhost/etudesync/public/admin/check_assessarena.php
+
+========================================================================
+📞 STILL STUCK?
+========================================================================
+
+If errors persist after running the fix:
+
+1. Screenshot the error from browser console (F12 → Console)
+2. Screenshot phpMyAdmin showing quizzes table structure
+3. Check if other tables are missing (questions, attempts)
+4. Verify PHP version (7.4+ required)
+5. Check MySQL error log
+
+========================================================================
+🚀 QUICK START
+========================================================================
+
+Just do this RIGHT NOW:
+
+1. Click: http://localhost/etudesync/public/admin/fix_assessarena_now.php
+2. Wait 10 seconds
+3. Go to AssessArena
+4. Create a quiz
+5. Done!
+
+========================================================================

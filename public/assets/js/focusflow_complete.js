@@ -866,10 +866,10 @@ function renderCalendarFromMatrix(weeks, eventsData) {
                     <div class="${classes.join(' ')}"
                          data-date="${cell.dateStr}"
                          data-is-past="${cell.isPast}"
-                         onclick="handleDateClick('${cell.dateStr}', ${cell.isPast})">
+                         onclick="handleDateClick('${cell.dateStr}', ${cell.isPast}, event)">
                         <div class="calendar-date-number">${cell.day}</div>
                         <div class="calendar-events" onclick="event.stopPropagation()">
-                            ${renderDayEvents(events)}
+                            ${renderDayEvents(events, cell.dateStr)}
                         </div>
                     </div>
                 `;
@@ -995,7 +995,7 @@ function mergeEventsWithTodos(todosData, calendarEventsData) {
     return merged;
 }
 
-function renderDayEvents(events) {
+function renderDayEvents(events, dateStr) {
     try {
         if (!events || !Array.isArray(events) || events.length === 0) {
             return '';
@@ -1009,28 +1009,44 @@ function renderDayEvents(events) {
         visibleEvents.forEach(event => {
             if (!event || !event.title) return;
 
-            const eventTitle = String(event.title).replace(/"/g, '&quot;');
+            const eventTitle = String(event.title).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
             let eventClass = 'calendar-event';
             let clickHandler = '';
+            let deleteButton = '';
 
             if (event.sourceType === 'todo') {
-                // Todo event styling
+                // Todo event styling (no delete button for todos)
                 const priorityClass = event.priority ? `priority-${event.priority}` : '';
                 const statusClass = event.status === 'completed' ? 'status-completed' : '';
                 eventClass += ` ${priorityClass} ${statusClass}`;
                 clickHandler = `showEventDetails(${event.id})`;
             } else {
-                // Calendar event styling
+                // Calendar event styling with delete button
                 const typeClass = event.type ? `event-type-${event.type}` : '';
                 eventClass += ` ${typeClass}`;
-                clickHandler = `editCalendarEvent('${event.dateStr || ''}', ${event.id})`;
+
+                // Get reference to the event pill for positioning the popover
+                clickHandler = `
+                    var targetElement = event.currentTarget;
+                    editCalendarEvent('${dateStr}', ${event.id}, targetElement);
+                `;
+
+                // Add delete button (shows on hover)
+                deleteButton = `
+                    <button class="calendar-event-delete"
+                            onclick="event.stopPropagation(); deleteCalendarEvent('${dateStr}', ${event.id}, event);"
+                            title="Delete event">
+                        ×
+                    </button>
+                `;
             }
 
             html += `
                 <div class="${eventClass}"
                      title="${eventTitle}"
                      onclick="event.stopPropagation(); ${clickHandler}">
-                    ${eventTitle}
+                    <span class="calendar-event-title">${eventTitle}</span>
+                    ${deleteButton}
                 </div>
             `;
         });
@@ -1080,7 +1096,7 @@ function changeMonth(offset) {
 /**
  * Handle click on a date cell
  */
-function handleDateClick(dateStr, isPast) {
+function handleDateClick(dateStr, isPast, event) {
     console.log('📅 Date clicked:', dateStr, 'isPast:', isPast);
 
     if (isPast) {
@@ -1088,47 +1104,119 @@ function handleDateClick(dateStr, isPast) {
         return;
     }
 
-    // Open event modal for this date
-    openEventModal(dateStr);
+    // Get the clicked cell position for popover positioning
+    const clickedCell = event ? event.currentTarget : null;
+    openEventPopover(dateStr, null, clickedCell);
 }
 
 /**
- * Open event modal for adding new event
+ * Open event popover for adding/editing event
+ * Positioned relative to the clicked date cell
  */
-function openEventModal(dateStr, event = null) {
-    const modal = document.getElementById('calendar-event-modal');
-    const modalTitle = document.getElementById('event-modal-title');
-    const deleteBtn = document.getElementById('delete-event-btn');
+function openEventPopover(dateStr, eventData = null, targetElement = null) {
+    const popover = document.getElementById('calendar-event-popover');
+    const form = document.getElementById('calendar-event-form');
 
-    if (event) {
-        // Edit existing event
-        modalTitle.textContent = 'Edit Event';
-        document.getElementById('event-id').value = event.id;
-        document.getElementById('event-date').value = dateStr;
-        document.getElementById('event-title').value = event.title;
-        document.getElementById('event-type').value = event.type || 'other';
-        deleteBtn.style.display = 'inline-block';
+    // Reset form
+    form.reset();
+
+    // Set form data
+    document.getElementById('event-id').value = eventData ? eventData.id : '';
+    document.getElementById('event-date').value = dateStr;
+    document.getElementById('event-title').value = eventData ? eventData.title : '';
+    document.getElementById('event-type').value = eventData ? (eventData.type || 'other') : 'assignment';
+
+    // Position popover near the target element (date cell or event pill)
+    if (targetElement) {
+        const rect = targetElement.getBoundingClientRect();
+        const popoverWidth = 320;
+        const popoverHeight = 220; // Approximate height
+
+        let left = rect.left + (rect.width / 2) - (popoverWidth / 2);
+        let top = rect.bottom + 8; // 8px below the cell
+
+        // Keep popover within viewport bounds
+        if (left + popoverWidth > window.innerWidth) {
+            left = window.innerWidth - popoverWidth - 16;
+        }
+        if (left < 16) {
+            left = 16;
+        }
+
+        // If popover would go below viewport, show it above the cell
+        if (top + popoverHeight > window.innerHeight) {
+            top = rect.top - popoverHeight - 8;
+        }
+
+        popover.style.left = left + 'px';
+        popover.style.top = top + 'px';
     } else {
-        // Add new event
-        modalTitle.textContent = 'Add Event';
-        document.getElementById('event-id').value = '';
-        document.getElementById('event-date').value = dateStr;
-        document.getElementById('event-title').value = '';
-        document.getElementById('event-type').value = 'assignment';
-        deleteBtn.style.display = 'none';
+        // Center on screen if no target element
+        popover.style.left = '50%';
+        popover.style.top = '50%';
+        popover.style.transform = 'translate(-50%, -50%)';
     }
 
-    modal.style.display = 'flex';
+    // Show popover
+    popover.style.display = 'block';
+
+    // Auto-focus the title input
+    setTimeout(() => {
+        document.getElementById('event-title').focus();
+    }, 100);
+
+    // Setup outside click handler
+    setupPopoverClickOutside();
 }
 
 /**
- * Close event modal
+ * Close event popover
  */
-function closeEventModal() {
-    const modal = document.getElementById('calendar-event-modal');
-    modal.style.display = 'none';
+function closeEventPopover() {
+    const popover = document.getElementById('calendar-event-popover');
+    popover.style.display = 'none';
     document.getElementById('calendar-event-form').reset();
+
+    // Remove click outside listener
+    document.removeEventListener('click', handlePopoverOutsideClick);
 }
+
+/**
+ * Setup click outside to close popover
+ */
+function setupPopoverClickOutside() {
+    // Remove existing listener first
+    document.removeEventListener('click', handlePopoverOutsideClick);
+
+    // Add listener after a small delay to prevent immediate closure
+    setTimeout(() => {
+        document.addEventListener('click', handlePopoverOutsideClick);
+    }, 100);
+}
+
+/**
+ * Handle click outside popover
+ */
+function handlePopoverOutsideClick(e) {
+    const popover = document.getElementById('calendar-event-popover');
+    if (popover && popover.style.display === 'block') {
+        if (!popover.contains(e.target)) {
+            closeEventPopover();
+        }
+    }
+}
+
+/**
+ * Handle Escape key to close popover
+ */
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const popover = document.getElementById('calendar-event-popover');
+        if (popover && popover.style.display === 'block') {
+            closeEventPopover();
+        }
+    }
+});
 
 /**
  * Save calendar event (create or update)
@@ -1142,7 +1230,7 @@ function saveCalendarEvent(e) {
     const type = document.getElementById('event-type').value;
 
     if (!title) {
-        alert('Event title is required');
+        showDateError('Event title is required');
         return;
     }
 
@@ -1175,46 +1263,45 @@ function saveCalendarEvent(e) {
     // Save to localStorage
     saveEventsToStorage();
 
-    // Close modal and re-render calendar
-    closeEventModal();
+    // Close popover and re-render calendar
+    closeEventPopover();
     renderCalendar();
 }
 
 /**
- * Delete calendar event
+ * Delete calendar event (no confirmation modal - instant delete)
  */
-function deleteCalendarEvent() {
-    if (!confirm('Delete this event?')) return;
-
-    const eventId = document.getElementById('event-id').value;
-    const dateStr = document.getElementById('event-date').value;
+function deleteCalendarEvent(dateStr, eventId, e) {
+    // Stop event propagation to prevent opening edit popover
+    if (e) {
+        e.stopPropagation();
+    }
 
     if (calendarEvents[dateStr]) {
-        calendarEvents[dateStr] = calendarEvents[dateStr].filter(e => e.id != eventId);
+        calendarEvents[dateStr] = calendarEvents[dateStr].filter(ev => ev.id != eventId);
 
         // Remove date key if no events left
         if (calendarEvents[dateStr].length === 0) {
             delete calendarEvents[dateStr];
         }
 
-        console.log('✅ Event deleted');
+        console.log('✅ Event deleted instantly');
     }
 
     // Save to localStorage
     saveEventsToStorage();
 
-    // Close modal and re-render calendar
-    closeEventModal();
+    // Re-render calendar
     renderCalendar();
 }
 
 /**
  * Edit an existing event
  */
-function editCalendarEvent(dateStr, eventId) {
+function editCalendarEvent(dateStr, eventId, targetElement) {
     const event = calendarEvents[dateStr]?.find(e => e.id === eventId);
     if (event) {
-        openEventModal(dateStr, event);
+        openEventPopover(dateStr, event, targetElement);
     }
 }
 

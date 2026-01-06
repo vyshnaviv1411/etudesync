@@ -1,4 +1,14 @@
--- AssessArena Database Schema
+-- ✅ AssessArena Database Schema - CANONICAL SOURCE OF TRUTH
+-- This is the OFFICIAL and ONLY schema for AssessArena tables
+--
+-- IMPORTANT COLUMN NAMES (PHP code expects these EXACT names):
+--   quizzes.code (NOT quiz_code)
+--   quizzes.owner_id (NOT creator_id)
+--   quizzes.time_limit_minutes (NOT time_limit)
+--   quizzes.shuffle_questions (NOT randomize_questions)
+--
+-- DO NOT create or use any other AssessArena schema files!
+--
 -- Creates tables for quizzes, questions, and attempts
 
 -- Quizzes table

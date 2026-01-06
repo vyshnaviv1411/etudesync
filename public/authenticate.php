@@ -2,6 +2,7 @@
 // authenticate.php
 session_start();
 require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/premium_check.php';
 
 // Simple helper to set flash and redirect
 function flash_redirect($key, $msg, $loc = 'login.php') {
@@ -25,9 +26,9 @@ if ($email === '' || $password === '') {
 
 // find user by email
 $stmt = $pdo->prepare(
-  'SELECT id, username, email, password_hash, is_premium 
-   FROM users 
-   WHERE email = ? 
+  'SELECT id, username, email, password_hash
+   FROM users
+   WHERE email = ?
    LIMIT 1'
 );
 $stmt->execute([$email]);
@@ -45,9 +46,12 @@ if (!password_verify($password, $user['password_hash'])) {
 // Successful login — set session and redirect to dashboard
 // Use minimal info in session
 $_SESSION['user_id'] = $user['id'];
-$_SESSION['username'] = $user['username'];
+$_SESSION['user_name'] = $user['username'];
+$_SESSION['user_email'] = $user['email'];
 $_SESSION['user_avatar'] = $user['avatar'] ?? 'assets/images/avatar-default.jpg';
-$_SESSION['is_premium'] = (int)$user['is_premium'];
+
+// CRITICAL: Premium access based on email whitelist
+$_SESSION['is_premium'] = isEmailPremium($user['email']) ? 1 : 0;
 
 
 

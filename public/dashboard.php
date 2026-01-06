@@ -157,15 +157,8 @@ document.addEventListener('DOMContentLoaded', function(){
   document.querySelectorAll('.module-card.locked').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      const t = document.createElement('div');
-      t.className = 'upgrade-toast';
-      t.textContent = 'This feature is premium.';
-      document.body.appendChild(t);
-      setTimeout(()=> t.classList.add('visible'), 20);
-      setTimeout(()=> { 
-        t.classList.remove('visible'); 
-        setTimeout(()=> t.remove(),350); 
-      }, 2200);
+      // Redirect to premium access page
+      window.location.href = 'premium_access.php';
     });
   });
 

@@ -3,10 +3,15 @@
 session_start();
 header('Content-Type: application/json');
 
+require_once __DIR__ . '/../../../includes/premium_check.php';
+
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['ok' => false, 'msg' => 'Not logged in']);
     exit;
 }
+
+// CRITICAL: Require premium access
+requirePremiumAPI();
 
 require_once __DIR__ . '/../db.php';
 

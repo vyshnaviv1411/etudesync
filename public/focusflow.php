@@ -420,11 +420,66 @@ $page_title = 'FocusFlow - Productivity Zone';
             cursor: pointer;
             transition: all 0.15s ease;
             flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+            position: relative;
+            padding-right: 22px;
         }
 
         .calendar-event:hover {
-            transform: translateX(2px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            padding-right: 24px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .calendar-event-title {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .calendar-event-delete {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            opacity: 0;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            border: none;
+            color: white;
+            padding: 0;
+        }
+
+        .calendar-event:hover .calendar-event-delete {
+            opacity: 1;
+        }
+
+        .calendar-event-delete:hover {
+            background: rgba(220, 53, 69, 0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Popover input focus states */
+        #event-title:focus {
+            outline: none;
+            border-bottom-color: var(--primary-blue);
+        }
+
+        #event-type:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
         }
 
         /* Event priority colors */
@@ -1101,25 +1156,34 @@ $page_title = 'FocusFlow - Productivity Zone';
         </div>
     </div>
 
-    <!-- Calendar Event Modal -->
-    <div id="calendar-event-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-container" style="max-width: 450px;">
-            <div class="modal-header">
-                <h3 id="event-modal-title">Add Event</h3>
-                <button class="modal-close" onclick="closeEventModal()">&times;</button>
-            </div>
+    <!-- Calendar Event Inline Popover -->
+    <div id="calendar-event-popover" style="display: none; position: fixed; z-index: 9999;">
+        <div style="
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            min-width: 280px;
+            max-width: 320px;
+        ">
             <form id="calendar-event-form" onsubmit="saveCalendarEvent(event)">
                 <input type="hidden" id="event-id" value="">
                 <input type="hidden" id="event-date" value="">
 
-                <div class="modern-input-group">
-                    <label class="modern-label">Event Title*</label>
-                    <input type="text" id="event-title" class="modern-input" placeholder="e.g., Team Meeting" required>
+                <div style="margin-bottom: 12px;">
+                    <input type="text"
+                           id="event-title"
+                           class="modern-input"
+                           placeholder="Add event title"
+                           required
+                           style="border: none; border-bottom: 2px solid #e0e0e0; border-radius: 0; padding: 8px 4px; font-size: 0.95rem; transition: border-color 0.2s;">
                 </div>
 
-                <div class="modern-input-group">
-                    <label class="modern-label">Type</label>
-                    <select id="event-type" class="modern-input">
+                <div style="margin-bottom: 12px;">
+                    <select id="event-type"
+                            class="modern-input"
+                            style="border: 1px solid #e0e0e0; padding: 8px; font-size: 0.875rem; border-radius: 6px;">
                         <option value="assignment">📝 Assignment</option>
                         <option value="study">📚 Study Session</option>
                         <option value="reminder">⏰ Reminder</option>
@@ -1128,10 +1192,18 @@ $page_title = 'FocusFlow - Productivity Zone';
                     </select>
                 </div>
 
-                <div class="flex-gap-4" style="justify-content: flex-end; margin-top: 20px;">
-                    <button type="button" class="modern-btn modern-btn-secondary" onclick="closeEventModal()">Cancel</button>
-                    <button type="button" id="delete-event-btn" class="modern-btn" style="background: #dc3545; color: white; display: none;" onclick="deleteCalendarEvent()">Delete</button>
-                    <button type="submit" class="modern-btn modern-btn-primary">Save Event</button>
+                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
+                    <button type="button"
+                            class="modern-btn modern-btn-secondary"
+                            onclick="closeEventPopover()"
+                            style="padding: 6px 14px; font-size: 0.875rem; border-radius: 6px;">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="modern-btn modern-btn-primary"
+                            style="padding: 6px 14px; font-size: 0.875rem; border-radius: 6px;">
+                        Save
+                    </button>
                 </div>
             </form>
         </div>
