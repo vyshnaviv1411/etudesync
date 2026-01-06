@@ -2,7 +2,7 @@
 /**
  * Premium Access Middleware
  * includes/premium_check.php
- * 
+ *
  * Provides functions to check and manage premium access.
  * Include in any page/API that requires premium features.
  */
@@ -10,22 +10,39 @@
 require_once __DIR__ . '/db.php';
 
 /**
- * Check if a user has active premium subscription
+ * PREMIUM WHITELIST - Only these emails have premium access
+ * Centralized premium user management
+ */
+define('PREMIUM_WHITELIST', [
+    'siddhitripathi11.16@gmail.com'
+]);
+
+/**
+ * Check if an email has premium access
+ * @param string $email
+ * @return bool
+ */
+function isEmailPremium($email) {
+    return in_array(strtolower(trim($email)), array_map('strtolower', PREMIUM_WHITELIST));
+}
+
+/**
+ * Check if a user has active premium access (by user ID)
  * @param int $user_id
  * @return bool
  */
 function isPremiumUser($user_id) {
     global $pdo;
-    
-    $stmt = $pdo->prepare('
-        SELECT COUNT(*) as count FROM user_subscriptions 
-        WHERE user_id = ? AND status = "active" AND end_date > NOW()
-        LIMIT 1
-    ');
+
+    $stmt = $pdo->prepare('SELECT email FROM users WHERE id = ? LIMIT 1');
     $stmt->execute([$user_id]);
-    $result = $stmt->fetch();
-    
-    return (int) $result['count'] > 0;
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        return false;
+    }
+
+    return isEmailPremium($user['email']);
 }
 
 /**
@@ -67,17 +84,35 @@ function getAvailablePlans() {
 
 /**
  * Require premium access (protect page)
- * Redirects to dashboard if not premium
+ * Redirects to premium access page if not premium
  */
 function requirePremium() {
     if (!isset($_SESSION['user_id'])) {
         header('Location: login.php');
         exit;
     }
-    
+
     if (!isPremiumUser($_SESSION['user_id'])) {
-        $_SESSION['error'] = 'This feature requires premium access. Please upgrade.';
-        header('Location: dashboard.php');
+        $_SESSION['premium_message'] = 'This is a premium feature. Please upgrade to access.';
+        header('Location: premium_access.php');
+        exit;
+    }
+}
+
+/**
+ * Require premium access for API endpoints
+ * Returns JSON error if not premium
+ */
+function requirePremiumAPI() {
+    if (!isset($_SESSION['user_id'])) {
+        header('Content-Type: application/json');
+        echo json_encode(['ok' => false, 'msg' => 'Not logged in', 'premium_required' => true]);
+        exit;
+    }
+
+    if (!isPremiumUser($_SESSION['user_id'])) {
+        header('Content-Type: application/json');
+        echo json_encode(['ok' => false, 'msg' => 'This feature requires premium access', 'premium_required' => true]);
         exit;
     }
 }

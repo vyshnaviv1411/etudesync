@@ -4,6 +4,18 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/premium_check.php';
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
+
+// CRITICAL: Require premium access
+requirePremium();
+
 require_once __DIR__ . '/../includes/header_dashboard.php';
 ?>
 

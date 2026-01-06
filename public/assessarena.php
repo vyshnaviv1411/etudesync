@@ -1,12 +1,16 @@
 <?php
 session_start();
 require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/premium_check.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
+
+// CRITICAL: Require premium access
+requirePremium();
 
 $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['user_name'] ?? 'Student';

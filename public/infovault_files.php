@@ -2,12 +2,18 @@
 // public/infovault_files.php
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/premium_check.php';
+
 // require login
 if (empty($_SESSION['user_id'])) {
     $_SESSION['after_login_redirect'] = 'public/infovault_files.php';
     header('Location: login.php');
     exit;
 }
+
+// CRITICAL: Require premium access
+requirePremium();
 
 require_once __DIR__ . '/../includes/header_dashboard.php';
 ?>
