@@ -13,5 +13,7 @@
   <!-- Scripts: site core + animation helper (deferred) -->
   <script src="assets/js/script.js" defer></script>
   <script src="assets/js/animations.js" defer></script>
+  <!-- Premium Payment Modal -->
+  <script src="assets/js/premium.js" defer></script>
 </body>
 </html>

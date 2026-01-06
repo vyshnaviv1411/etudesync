@@ -638,12 +638,24 @@ async function deleteTodo(id) {
 // CALENDAR
 // ================================================
 
-function renderCalendar() {
+async function renderCalendar() {
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
 
     document.getElementById('calendar-month-year').textContent =
         `${monthNames[currentMonth]} ${currentYear}`;
+
+    // Fetch events for the current month
+    let eventsData = {};
+    try {
+        const response = await fetch(`api/focusflow/calendar_events.php?month=${currentMonth + 1}&year=${currentYear}`);
+        const data = await response.json();
+        if (data.success) {
+            eventsData = data.events;
+        }
+    } catch (error) {
+        console.error('Error fetching calendar events:', error);
+    }
 
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -653,7 +665,7 @@ function renderCalendar() {
 
     // Empty cells before first day
     for (let i = 0; i < firstDay; i++) {
-        daysHTML += '<div class="calendar-day" style="opacity:0.3;"></div>';
+        daysHTML += '<div class="calendar-day empty"></div>';
     }
 
     // Days of month
@@ -662,21 +674,69 @@ function renderCalendar() {
                        currentMonth === today.getMonth() &&
                        currentYear === today.getFullYear();
 
+        // Format date as YYYY-MM-DD
+        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayEvents = eventsData[dateStr] || [];
+
+        // Render day cell with events
         daysHTML += `
-            <div class="calendar-day ${isToday ? 'today' : ''}" onclick="showDayDetails(${day})">
-                <div style="font-weight:600;">${day}</div>
+            <div class="calendar-day ${isToday ? 'today' : ''}" data-date="${dateStr}">
+                <div class="calendar-date-number">${day}</div>
+                <div class="calendar-events">
+                    ${renderDayEvents(dayEvents)}
+                </div>
             </div>
         `;
     }
 
-    const calendarDays = document.getElementById('calendar-days');
-    if (calendarDays) {
-        calendarDays.innerHTML = daysHTML;
-    } else {
-        // Create the container if it doesn't exist
-        const container = document.querySelector('.calendar-grid');
-        container.innerHTML += `<div id="calendar-days">${daysHTML}</div>`;
+    // Render days directly into the grid (after the 7 day headers)
+    const calendarGrid = document.getElementById('calendar-grid');
+    if (calendarGrid) {
+        // Remove existing day cells (keep the 7 headers)
+        const existingDays = calendarGrid.querySelectorAll('.calendar-day');
+        existingDays.forEach(day => day.remove());
+
+        // Append new days
+        calendarGrid.insertAdjacentHTML('beforeend', daysHTML);
     }
+}
+
+function renderDayEvents(events) {
+    if (!events || events.length === 0) {
+        return '';
+    }
+
+    const MAX_VISIBLE_EVENTS = 3;
+    let html = '';
+
+    // Show first N events
+    const visibleEvents = events.slice(0, MAX_VISIBLE_EVENTS);
+    visibleEvents.forEach(event => {
+        const priorityClass = `priority-${event.priority}`;
+        const statusClass = event.status === 'completed' ? 'status-completed' : '';
+        html += `
+            <div class="calendar-event ${priorityClass} ${statusClass}"
+                 title="${event.title}"
+                 onclick="event.stopPropagation(); showEventDetails(${event.id})">
+                ${event.title}
+            </div>
+        `;
+    });
+
+    // Show "+X more" if there are additional events
+    const remainingCount = events.length - MAX_VISIBLE_EVENTS;
+    if (remainingCount > 0) {
+        html += `<div class="calendar-more-events">+${remainingCount} more</div>`;
+    }
+
+    return html;
+}
+
+function showEventDetails(eventId) {
+    // Navigate to todo module and highlight the specific todo
+    openModule('todo');
+    // You can add logic here to highlight/scroll to the specific todo
+    console.log('Show event details for ID:', eventId);
 }
 
 function changeMonth(offset) {
@@ -695,10 +755,6 @@ function changeMonth(offset) {
         }
     }
     renderCalendar();
-}
-
-function showDayDetails(day) {
-    alert(`Day ${day} - Add todo integration here`);
 }
 
 // ================================================

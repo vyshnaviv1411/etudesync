@@ -2,6 +2,7 @@
 // public/dashboard.php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/premium_check.php';
 
 // protect page
 if (empty($_SESSION['user_id'])) {
@@ -14,6 +15,7 @@ if (empty($_SESSION['user_id'])) {
 require_once __DIR__ . '/../includes/header_dashboard.php';
 
 $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Guest');
+$userIsPremium = isPremiumUser($_SESSION['user_id']);
 ?>
 
 <!-- mark body so header/global slider can be hidden by CSS -->
@@ -57,17 +59,33 @@ document.addEventListener('DOMContentLoaded', function(){
 
     <!-- ROW 2: PREMIUM MODULES (centered flex row) -->
     <div class="dash-premium-row">
-      <a href="quizforge.php" class="module-card locked">
-        <img src="assets/images/icon-quizforge.png" alt="QuizForge" class="module-icon" />
-        <div class="module-name">QuizForge</div>
-        <span class="lock-badge">🔒 Premium</span>
-      </a>
+      <?php if ($userIsPremium): ?>
+        <!-- User is premium - show unlocked cards -->
+        <a href="quizforge.php" class="module-card">
+          <img src="assets/images/icon-quizforge.png" alt="QuizForge" class="module-icon" />
+          <div class="module-name">QuizForge</div>
+          <span class="unlock-badge">✨ Premium</span>
+        </a>
 
-      <a href="infovault.php" class="module-card locked">
-        <img src="assets/images/icon-infovault.png" alt="InfoVault" class="module-icon" />
-        <div class="module-name">InfoVault</div>
-        <span class="lock-badge">🔒 Premium</span>
-      </a>
+        <a href="infovault.php" class="module-card">
+          <img src="assets/images/icon-infovault.png" alt="InfoVault" class="module-icon" />
+          <div class="module-name">InfoVault</div>
+          <span class="unlock-badge">✨ Premium</span>
+        </a>
+      <?php else: ?>
+        <!-- User is not premium - show locked cards -->
+        <a href="upgrade.php" class="module-card locked">
+          <img src="assets/images/icon-quizforge.png" alt="QuizForge" class="module-icon" />
+          <div class="module-name">QuizForge</div>
+          <span class="lock-badge">🔒 Premium</span>
+        </a>
+
+        <a href="upgrade.php" class="module-card locked">
+          <img src="assets/images/icon-infovault.png" alt="InfoVault" class="module-icon" />
+          <div class="module-name">InfoVault</div>
+          <span class="lock-badge">🔒 Premium</span>
+        </a>
+      <?php endif; ?>
     </div>
 
   </div>
@@ -96,22 +114,6 @@ document.addEventListener('DOMContentLoaded', function(){
       }, 300);
     }, 6000);
   }
-
-  // locked modules→ show upgrade toast
-  document.querySelectorAll('.module-card.locked').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const t = document.createElement('div');
-      t.className = 'upgrade-toast';
-      t.textContent = 'This feature is premium. Upgrade to access.';
-      document.body.appendChild(t);
-      setTimeout(()=> t.classList.add('visible'), 20);
-      setTimeout(()=> { 
-        t.classList.remove('visible'); 
-        setTimeout(()=> t.remove(),350); 
-      }, 2200);
-    });
-  });
 
 })();
 </script>
