@@ -29,10 +29,14 @@ require_once __DIR__ . '/../includes/header_public.php';
           <input id="email" type="email" name="email" required placeholder="you@example.com" />
         </div>
 
-        <div class="input-group">
-          <label for="password">Password</label>
-          <input id="password" type="password" name="password" required placeholder="Password" />
-        </div>
+      <div class="input-group">
+  <label>Password</label>
+  <div class="password-box">
+    <input type="password" id="password" name="password" required>
+    <span class="toggle-eye" onclick="togglePassword('password')">👁️</span>
+  </div>
+</div>
+
 
         <div class="auth-actions">
           <a href="forgot.php" class="forgot-link">Forgot password?</a>
@@ -50,3 +54,5 @@ require_once __DIR__ . '/../includes/header_public.php';
 </div>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
+
+

@@ -1,66 +1,72 @@
-// polls.js
-document.addEventListener("DOMContentLoaded", () => {
-  const pollBox = document.getElementById("pollArea");
-  if (!pollBox) return;
+document.addEventListener('DOMContentLoaded', () => {
+  const pollArea = document.getElementById('pollArea');
+  const createBtn = document.getElementById('createPollBtn');
 
-  const roomId = pollBox.dataset.room;
+  if (!pollArea) return;
 
-  // Fetch polls
-  function loadPolls() {
-    fetch(`api/fetch_polls.php?room_id=${roomId}`)
-      .then(r => r.json())
-      .then(d => {
-        if (!d.success) return;
-        renderPolls(d.polls);
-      });
-  }
+  async function loadPolls() {
+    const res = await fetch(`api/fetch_polls.php?room_id=${ROOM_ID}`);
+    const data = await res.json();
+    if (!data.success) return;
 
-  function renderPolls(polls) {
-    pollBox.innerHTML = "";
-    polls.forEach(p => {
-      const card = document.createElement("div");
-      card.className = "poll-card glass";
+    pollArea.innerHTML = '';
 
-      const q = document.createElement("h3");
-      q.textContent = p.question;
+    data.polls.forEach(p => {
+      const total = p.votes_a + p.votes_b || 1;
 
-      const list = document.createElement("div");
-      p.results.forEach((o, i) => {
-        const row = document.createElement("div");
-        row.className = "poll-option";
-
-        row.innerHTML = `
-            <button data-poll="${p.poll_id}" data-index="${i}" class="vote-btn">
-                ${o.text}
-            </button>
-            <span class="vote-count">${o.votes} votes</span>
-        `;
-        list.appendChild(row);
-      });
-
-      card.appendChild(q);
-      card.appendChild(list);
-      pollBox.appendChild(card);
+      const div = document.createElement('div');
+      div.className = 'glass-card';
+      div.style.marginBottom = '12px';
+      div.innerHTML = `
+        <strong>${p.question}</strong>
+        <div style="margin-top:8px">
+          <button class="btn small outline" data-id="${p.poll_id}" data-opt="A">
+            ${p.option_a} (${p.votes_a})
+          </button>
+          <button class="btn small outline" data-id="${p.poll_id}" data-opt="B">
+            ${p.option_b} (${p.votes_b})
+          </button>
+        </div>
+      `;
+      pollArea.appendChild(div);
     });
   }
 
-  // Handle vote clicks
-  document.body.addEventListener("click", (e) => {
-    if (e.target.classList.contains("vote-btn")) {
-      let pollId = e.target.dataset.poll;
-      let idx = e.target.dataset.index;
+  createBtn?.addEventListener('click', async () => {
+    const q = document.getElementById('pollQ').value.trim();
+    const o1 = document.getElementById('pollOpt1').value.trim();
+    const o2 = document.getElementById('pollOpt2').value.trim();
+    if (!q || !o1 || !o2) return alert('Fill all fields');
 
-      fetch("api/vote_poll.php", {
-        method: "POST",
-        body: new FormData(Object.assign(new FormData(), {
-          poll_id: pollId,
-          option_index: idx
-        }))
-      }).then(() => loadPolls());
-    }
+    await fetch('api/create_poll.php', {
+      method:'POST',
+      body:new URLSearchParams({
+        room_id: ROOM_ID,
+        question:q,
+        opt1:o1,
+        opt2:o2
+      })
+    });
+
+    document.getElementById('pollQ').value='';
+    document.getElementById('pollOpt1').value='';
+    document.getElementById('pollOpt2').value='';
+
+    loadPolls();
   });
 
-  // Poll every 5 seconds
-  setInterval(loadPolls, 5000);
+  pollArea.addEventListener('click', async e => {
+    if (!e.target.dataset.id) return;
+    await fetch('api/vote_poll.php', {
+      method:'POST',
+      body:new URLSearchParams({
+        poll_id: e.target.dataset.id,
+        option: e.target.dataset.opt
+      })
+    });
+    loadPolls();
+  });
+
   loadPolls();
+  setInterval(loadPolls, 5000);
 });

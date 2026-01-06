@@ -1,48 +1,37 @@
 <?php
-// public/api/save_whiteboard.php
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/../../includes/db.php';
 
 if (empty($_SESSION['user_id'])) {
-    echo json_encode(['success'=>false,'error'=>'Authentication required']);
+    echo json_encode(['success'=>false,'error'=>'Login required']);
     exit;
 }
 
-$raw = file_get_contents('php://input');
-if (!$raw) {
-    echo json_encode(['success'=>false,'error'=>'No payload']);
+$room_id = (int)($_POST['room_id'] ?? 0);
+$data    = $_POST['data'] ?? '';
+
+if ($room_id <= 0 || $data === '') {
+    echo json_encode(['success'=>false,'error'=>'Invalid data']);
     exit;
 }
-
-$data = json_decode($raw, true);
-if (!is_array($data) || !isset($data['room_id'])) {
-    echo json_encode(['success'=>false,'error'=>'Invalid payload']);
-    exit;
-}
-
-$room_id = (int)$data['room_id'];
-$user_id = (int)$_SESSION['user_id'];
-$strokes = $data['strokes'] ?? [];
-$meta = $data['meta'] ?? ['saved_at' => date('c')];
-
-// normalize meta.saved_at
-if (!isset($meta['saved_at'])) $meta['saved_at'] = date('c');
 
 try {
-    $json = json_encode(['strokes'=>$strokes,'meta'=>$meta], JSON_UNESCAPED_SLASHES);
-    $stmt = $pdo->prepare("INSERT INTO whiteboard_data (room_id, user_id, data, created_at) VALUES (:room, :user, :data, NOW())");
-    $stmt->execute([':room'=>$room_id, ':user'=>$user_id, ':data'=>$json]);
+    // Upsert whiteboard data
+    $stmt = $pdo->prepare("
+        INSERT INTO whiteboard_data (room_id, data)
+        VALUES (:room, :data)
+        ON DUPLICATE KEY UPDATE
+        data = VALUES(data),
+        updated_at = CURRENT_TIMESTAMP
+    ");
+    $stmt->execute([
+        ':room' => $room_id,
+        ':data' => $data
+    ]);
 
-    // compute saved_at_ms using meta.saved_at (fallback to NOW)
-    $savedAt = strtotime($meta['saved_at']);
-    if (!$savedAt) $savedAt = time();
-    $savedAtMs = $savedAt * 1000;
-
-    echo json_encode(['success'=>true,'wb_id'=>$pdo->lastInsertId(), 'meta'=>$meta, 'saved_at_ms'=>$savedAtMs]);
-    exit;
-} catch (PDOException $e) {
-    echo json_encode(['success'=>false,'error'=>'DB error: '.$e->getMessage()]);
-    exit;
+    echo json_encode(['success'=>true]);
+} catch (Exception $e) {
+    echo json_encode(['success'=>false,'error'=>$e->getMessage()]);
 }

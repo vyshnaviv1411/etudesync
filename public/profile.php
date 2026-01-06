@@ -12,15 +12,24 @@ $userId = (int) ($_SESSION['user_id'] ?? 0);
 // compute web base (so links work when app lives in a subfolder)
 $webBase = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/'); // e.g. "/etudesync/public"
 
-// fetch user
-$stmt = $pdo->prepare("SELECT id, username, email, profile_photo, avatar, bio, phone, age FROM users WHERE id = :id LIMIT 1");
+// ✅ FIX 1: removed profile_photo from SELECT
+$stmt = $pdo->prepare("
+  SELECT id, username, email, avatar, bio, phone, dob
+  FROM users
+  WHERE id = :id
+  LIMIT 1
+");
 $stmt->execute([':id' => $userId]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
 if (!$user) {
     $_SESSION['error'] = 'User not found.';
     header('Location: dashboard.php');
     exit;
 }
+
+// ✅ FIX 2: keep session avatar in sync with DB
+$_SESSION['user_avatar'] = $user['avatar'] ?? 'assets/images/avatar-default.png';
 
 // helpers
 function normalize_path_rel($p) {
@@ -30,18 +39,26 @@ function normalize_path_rel($p) {
     return ltrim($p, '/');
 }
 
-$displayRel = normalize_path_rel($user['avatar'] ?? $user['profile_photo'] ?? null);
+$displayRel = normalize_path_rel($user['avatar'] ?? null);
+
 $uploadDirFs  = __DIR__ . '/assets/uploads/profile/';
 $uploadDirRel = 'assets/uploads/profile/';
+
 $uploadError = $uploadSuccess = null;
 $updateError = $updateSuccess = null;
 
 // handle profile picture upload
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_photo']) && empty($_POST['action'])) {
+if (
+  $_SERVER['REQUEST_METHOD'] === 'POST'
+  && isset($_FILES['profile_photo'])
+  && $_FILES['profile_photo']['error'] !== UPLOAD_ERR_NO_FILE
+) {
     $f = $_FILES['profile_photo'];
+
     if ($f['error'] === UPLOAD_ERR_OK) {
         $ext = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION));
         $allowed = ['jpg','jpeg','png','webp'];
+
         if (!in_array($ext, $allowed, true)) {
             $uploadError = 'Allowed types: jpg, png, webp.';
         } else {
@@ -50,11 +67,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_photo']) && 
             } else {
                 $filename = 'user_' . $userId . '_' . time() . '.' . $ext;
                 $target   = $uploadDirFs . $filename;
+
                 if (move_uploaded_file($f['tmp_name'], $target)) {
                     $relative = $uploadDirRel . $filename;
+
                     $upd = $pdo->prepare("UPDATE users SET avatar = :a WHERE id = :id");
                     $upd->execute([':a' => $relative, ':id' => $userId]);
+
                     $_SESSION['user_avatar'] = $relative;
+
                     header('Location: profile.php');
                     exit;
                 } else {
@@ -69,39 +90,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_photo']) && 
 
 // handle meta update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_meta') {
-    $bio   = trim((string)($_POST['bio'] ?? ''));
-    $phone = trim((string)($_POST['phone'] ?? ''));
-    $age   = isset($_POST['age']) && $_POST['age'] !== '' ? (int)$_POST['age'] : null;
 
-    if (strlen($bio) > 512) {
+    // ✅ ADD THIS
+    $username = trim((string)($_POST['username'] ?? ''));
+    $bio      = trim((string)($_POST['bio'] ?? ''));
+    $phone    = trim((string)($_POST['phone'] ?? ''));
+    $dob      = $_POST['dob'] ?? null;
+
+    // ✅ BASIC VALIDATION
+    if ($username === '' || strlen($username) < 3 || strlen($username) > 100) {
+        $updateError = 'Username must be between 3 and 100 characters.';
+    } elseif (strlen($bio) > 512) {
         $updateError = 'Bio too long (max 512 chars).';
     } else {
-        $upd = $pdo->prepare("UPDATE users SET bio = :bio, phone = :phone, age = :age WHERE id = :id");
-        $upd->execute([':bio' => $bio, ':phone' => $phone, ':age' => $age, ':id' => $userId]);
-        $updateSuccess = 'Profile updated.';
+
+        // ✅ UPDATE USERNAME ALSO
+        $upd = $pdo->prepare("
+          UPDATE users
+          SET username = :username,
+              bio = :bio,
+              phone = :phone,
+              dob = :dob
+          WHERE id = :id
+        ");
+
+        $upd->execute([
+          ':username' => $username,
+          ':bio' => $bio,
+          ':phone' => $phone,
+          ':dob' => $dob ?: null,
+          ':id' => $userId
+        ]);
+
+        // ✅ IMPORTANT: keep dashboard greeting in sync
+        $_SESSION['user_name'] = $username;
+
         header('Location: profile.php');
         exit;
     }
 }
 
+
 // compute image url
 $finalImgPath = null;
 if ($displayRel) {
-    $fsCheck = __DIR__ . '/' . ltrim($displayRel, '/');
-    if (file_exists($fsCheck)) {
-        $finalImgPath = $webBase . '/' . ltrim($displayRel, '/');
-    } else {
-        $finalImgPath = $webBase . '/' . ltrim($displayRel, '/');
-    }
+    $finalImgPath = $webBase . '/' . ltrim($displayRel, '/');
 }
 $imgSrc = $finalImgPath ?: ($webBase . '/assets/images/avatar-default.png');
 
 $page_title = 'Profile';
 $body_class = 'page-wrapper dashboard-page';
+$calculatedAge = null;
+if (!empty($user['dob'])) {
+    $dobDate = new DateTime($user['dob']);
+    $today = new DateTime();
+    $calculatedAge = $today->diff($dobDate)->y;
+}
+
 require_once __DIR__ . '/../includes/header_dashboard.php';
 ?>
 
-<!-- content goes inside header_dashboard main/container -->
+
 <div class="profile-page">
   <section class="profile-card glass-card">
     <h1 style="margin-top:6px;margin-bottom:16px;">Your Profile</h1>
@@ -115,7 +164,10 @@ require_once __DIR__ . '/../includes/header_dashboard.php';
         <p><strong>Username:</strong> <?= htmlspecialchars($user['username']) ?></p>
         <p><strong>Email:</strong> <?= htmlspecialchars($user['email']) ?></p>
         <p><strong>Phone:</strong> <?= htmlspecialchars($user['phone'] ?? '') ?></p>
-        <p><strong>Age:</strong> <?= htmlspecialchars($user['age'] ?? '') ?></p>
+<?php if ($calculatedAge !== null): ?>
+  <p><strong>Age:</strong> <?= $calculatedAge ?></p>
+<?php endif; ?>
+
         <p style="margin-top:10px;">
           <strong>Bio:</strong><br>
           <?= nl2br(htmlspecialchars($user['bio'] ?? '')) ?>
@@ -126,19 +178,13 @@ require_once __DIR__ . '/../includes/header_dashboard.php';
     <?php if ($uploadError): ?>
       <div class="form-error"><?= htmlspecialchars($uploadError) ?></div>
     <?php endif; ?>
-    <?php if ($uploadSuccess): ?>
-      <div class="form-ok"><?= htmlspecialchars($uploadSuccess) ?></div>
-    <?php endif; ?>
+
     <?php if ($updateError): ?>
       <div class="form-error"><?= htmlspecialchars($updateError) ?></div>
-    <?php endif; ?>
-    <?php if ($updateSuccess): ?>
-      <div class="form-ok"><?= htmlspecialchars($updateSuccess) ?></div>
     <?php endif; ?>
 
     <hr style="margin:18px 0;border-color:rgba(255,255,255,0.08);">
 
-    <!-- Upload form -->
     <form method="post" enctype="multipart/form-data" class="profile-form">
       <div class="profile-field">
         <label for="profile_photo">Choose profile photo</label>
@@ -149,9 +195,15 @@ require_once __DIR__ . '/../includes/header_dashboard.php';
       </div>
     </form>
 
-    <!-- Meta form -->
     <form method="post" class="profile-form" style="margin-top:12px;">
       <input type="hidden" name="action" value="update_meta">
+
+      <div class="profile-field">
+  <label for="username">Username</label>
+  <input type="text" name="username" id="username"
+         value="<?= htmlspecialchars($user['username']) ?>" required>
+</div>
+
 
       <div class="profile-field">
         <label for="phone">Phone</label>
@@ -159,11 +211,12 @@ require_once __DIR__ . '/../includes/header_dashboard.php';
                value="<?= htmlspecialchars($user['phone'] ?? '') ?>">
       </div>
 
-      <div class="profile-field">
-        <label for="age">Age</label>
-        <input type="number" name="age" id="age"
-               value="<?= htmlspecialchars($user['age'] ?? '') ?>">
-      </div>
+    <div class="profile-field">
+  <label for="dob">Date of Birth</label>
+  <input type="date" name="dob" id="dob"
+         value="<?= htmlspecialchars($user['dob'] ?? '') ?>">
+</div>
+
 
       <div class="profile-field">
         <label for="bio">Bio</label>
@@ -182,49 +235,3 @@ require_once __DIR__ . '/../includes/header_dashboard.php';
 </div>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
-
-<script>
-// local preview in the card
-document.getElementById('profile_photo')?.addEventListener('change', function(e){
-  const f = this.files && this.files[0];
-  if (!f) return;
-  const reader = new FileReader();
-  reader.onload = function(ev){
-    const img = document.getElementById('currentAvatar');
-    if (img) img.src = ev.target.result;
-  };
-  reader.readAsDataURL(f);
-});
-</script>
-
-<script>
-// sync chosen avatar to header icon as well
-document.addEventListener('DOMContentLoaded', function () {
-  const fileInput = document.querySelector('input[type="file"]');
-  if (!fileInput) return;
-
-  const headerAvatar  = document.querySelector('header.site-topbar .header-profile .profile-avatar');
-  const profilePreview = document.querySelector('.profile-photo img');
-
-  let currentObjectUrl = null;
-  function setPreviewSrc(imgEl, src) {
-    if (!imgEl) return;
-    if (currentObjectUrl) {
-      try { URL.revokeObjectURL(currentObjectUrl); } catch(e) {}
-      currentObjectUrl = null;
-    }
-    imgEl.src = src;
-  }
-
-  fileInput.addEventListener('change', function () {
-    const f = fileInput.files && fileInput.files[0];
-    if (!f || !f.type.startsWith('image/')) return;
-
-    const blobUrl = URL.createObjectURL(f);
-    currentObjectUrl = blobUrl;
-
-    if (headerAvatar)  setPreviewSrc(headerAvatar, blobUrl);
-    if (profilePreview) setPreviewSrc(profilePreview, blobUrl);
-  }, false);
-});
-</script>

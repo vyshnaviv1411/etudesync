@@ -24,7 +24,12 @@ if ($email === '' || $password === '') {
 }
 
 // find user by email
-$stmt = $pdo->prepare('SELECT id, username, email, password_hash FROM users WHERE email = ? LIMIT 1');
+$stmt = $pdo->prepare(
+  'SELECT id, username, email, password_hash, is_premium 
+   FROM users 
+   WHERE email = ? 
+   LIMIT 1'
+);
 $stmt->execute([$email]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -39,8 +44,12 @@ if (!password_verify($password, $user['password_hash'])) {
 
 // Successful login — set session and redirect to dashboard
 // Use minimal info in session
-$_SESSION['user_id'] = (int)$user['id'];
-$_SESSION['user_name'] = $user['username'] ?? $user['email'];
+$_SESSION['user_id'] = $user['id'];
+$_SESSION['username'] = $user['username'];
+$_SESSION['user_avatar'] = $user['avatar'] ?? 'assets/images/avatar-default.jpg';
+$_SESSION['is_premium'] = (int)$user['is_premium'];
+
+
 
 // regenerate session id for security
 session_regenerate_id(true);

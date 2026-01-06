@@ -4,27 +4,24 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../includes/db.php';
 
-if (empty($_SESSION['user_id'])) {
-    echo json_encode(['success'=>false,'error'=>'Not logged in']); exit;
+$user_id = (int)($_SESSION['user_id'] ?? 0);
+$poll_id = (int)($_POST['poll_id'] ?? 0);
+$option = $_POST['option'] ?? '';
+
+if (!$user_id || !$poll_id || !in_array($option, ['A','B'])) {
+  echo json_encode(['success'=>false]);
+  exit;
 }
 
-$user_id = $_SESSION['user_id'];
-$poll_id = intval($_POST['poll_id'] ?? 0);
-$option_index = intval($_POST['option_index'] ?? -1);
+$stmt = $pdo->prepare("
+  INSERT INTO poll_votes (poll_id, user_id, selected_option)
+  VALUES (:poll, :user, :opt)
+  ON DUPLICATE KEY UPDATE selected_option = VALUES(selected_option)
+");
+$stmt->execute([
+  ':poll'=>$poll_id,
+  ':user'=>$user_id,
+  ':opt'=>$option
+]);
 
-try {
-    $stmt = $pdo->prepare("
-        INSERT INTO poll_votes (poll_id, user_id, option_index)
-        VALUES (:poll_id, :user_id, :option_index)
-        ON DUPLICATE KEY UPDATE option_index = :option_index
-    ");
-    $stmt->execute([
-        ':poll_id'=>$poll_id,
-        ':user_id'=>$user_id,
-        ':option_index'=>$option_index
-    ]);
-
-    echo json_encode(['success'=>true]);
-} catch (Exception $e) {
-    echo json_encode(['success'=>false,'error'=>$e->getMessage()]);
-}
+echo json_encode(['success'=>true]);

@@ -15,5 +15,9 @@
   <script src="assets/js/animations.js" defer></script>
   <!-- Premium Payment Modal -->
   <script src="assets/js/premium.js" defer></script>
+  <script src="assets/js/password_toggle.js"></script>
+  <script src="<?= htmlspecialchars($webBase) ?>/assets/js/music-player.js"></script>
+ <script src="<?= htmlspecialchars($imgUrl) ?>/assets/js/profile-dropdown.js"></script>
+
 </body>
 </html>

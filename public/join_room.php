@@ -14,16 +14,14 @@ require_once __DIR__ . '/../includes/header_dashboard.php';
 <!-- apply dashboard background/video styling -->
 <script>document.body.classList.add('dashboard-page');</script>
 
-<!-- Dashboard-style background (video + fallback image).
-     Make sure the files exist in public/assets/... so they are web-accessible.
-     - Poster/fallback image: assets/images/collab-bg.png
-     - Video file: assets/videos/desk1.mp4
-     - Logo image: assets/images/collab-logo.png -->
-<div class="dashboard-bg" aria-hidden="true">
-  <video id="dashVideo" autoplay muted loop playsinline poster="assets/images/collab-bg.png">
-    <source src="assets/videos/desk1.mp4" type="video/mp4">
-    <!-- If the browser can't play the video, CSS background will show -->
-  </video>
+<div class="dashboard-bg"
+     aria-hidden="true"
+     style="
+       background-image: url('assets/images/collabsbg.jpg');
+       background-size: cover;
+       background-position: center;
+       background-repeat: no-repeat;
+     ">
   <div class="dashboard-bg-overlay"></div>
 </div>
 
@@ -34,7 +32,7 @@ require_once __DIR__ . '/../includes/header_dashboard.php';
     <div class="collab-card" style="max-width:720px; margin:0 auto;">
       <div class="collab-card-head" style="align-items:center;">
         <!-- production-friendly logo path -->
-        <img src="assets/images/collab-logo.png" alt="Join Room" class="collab-logo" style="width:72px;height:72px;" />
+        <img src="assets/images/join-logo.png" alt="Join Room" class="collab-logo" style="width:72px;height:72px;" />
         <h1>Join a Room</h1>
         <p class="lead">Have a room code? Enter it below to join your study room instantly.</p>
       </div>
@@ -46,10 +44,6 @@ require_once __DIR__ . '/../includes/header_dashboard.php';
             <input id="room_code" name="room_code" required maxlength="12" placeholder="Enter room code (e.g. AB12CD)" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);color:#fff" />
           </div>
 
-          <div style="flex:1;min-width:220px">
-            <label for="display_name" style="display:block;font-weight:700;margin-bottom:6px">Display Name</label>
-            <input id="display_name" name="display_name" maxlength="60" placeholder="How you'll appear in the room (optional)" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);color:#fff" />
-          </div>
 
           <div style="flex:0 0 150px;display:flex;flex-direction:column;justify-content:flex-end;">
             <button id="submitJoin" type="submit" class="btn primary" style="padding:12px;border-radius:10px;margin-top:6px;">Join Room</button>
@@ -58,11 +52,23 @@ require_once __DIR__ . '/../includes/header_dashboard.php';
 
         <div id="jrMsg" style="margin-top:14px;color:rgba(255,255,255,0.9);display:none;"></div>
       </form>
-
-      <div style="margin-top:16px;color:rgba(255,255,255,0.72);font-size:0.95rem;">
+     
+      <div style="margin-top:18px;margin-bottom:20px;color:rgba(255,255,255,0.72);font-size:0.90rem;">
         Tip: If you don't have a code, ask the host to share it or create a new room from CollabSphere.
       </div>
-    </div>
+           <div style="margin-bottom:22px;">
+  <a href="collabsphere.php"
+     class="btn primary"
+     style="
+       display:inline-block;
+       padding:10px 18px;
+       border-radius:10px;
+       font-size:0.95rem;
+       text-decoration:none;
+     ">
+    ← Back to Modules
+  </a>
+</div>
   </div>
 </div>
 

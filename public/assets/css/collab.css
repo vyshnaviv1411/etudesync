@@ -277,3 +277,710 @@ body {
   z-index: 1;
 }
 
+/* =====================================================
+   COLLABSPHERE — FINAL TUNING (LESS BLUR, KEEP GLOW)
+   APPEND ONLY — SAFE OVERRIDE
+===================================================== */
+
+/* Background stays image, not video */
+.dashboard-bg video{
+  opacity:0 !important;
+}
+
+/* Slightly darker overlay for contrast */
+.dashboard-bg-overlay{
+  background:
+    radial-gradient(circle at 20% 20%, rgba(124,77,255,0.22), transparent 60%),
+    radial-gradient(circle at 80% 80%, rgba(71,215,211,0.20), transparent 60%),
+    rgba(0,0,0,0.40) !important;
+}
+
+/* MAIN GLASS CARD — REDUCED BLUR */
+.collab-card{
+  backdrop-filter: blur(8px) saturate(145%) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(145%) !important;
+  background: rgba(15,20,30,0.42) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  box-shadow:
+    0 24px 65px rgba(0,0,0,0.6),
+    0 0 26px rgba(124,77,255,0.22) !important;
+}
+
+/* Keep animated glow but softer */
+.collab-card::before{
+  opacity:0.18 !important;
+}
+
+/* ACTION CARDS — CLEARER */
+.action-card{
+  backdrop-filter: blur(7px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(7px) saturate(140%) !important;
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+}
+
+/* INPUTS — LESS FOG */
+.collab-card input,
+.collab-card select,
+.collab-card textarea{
+  backdrop-filter: blur(4px) !important;
+  background: rgba(255,255,255,0.09) !important;
+}
+
+/* Preserve hover lift & glow */
+.collab-card:hover{
+  transform: translateY(-6px) !important;
+  box-shadow:
+    0 38px 110px rgba(0,0,0,0.7),
+    0 0 34px rgba(124,77,255,0.35) !important;
+}
+
+.action-card:hover{
+  transform: translateY(-8px) scale(1.02) !important;
+  box-shadow:
+    0 40px 120px rgba(0,0,0,0.75),
+    0 0 30px rgba(71,215,211,0.35) !important;
+}
+
+/* =====================================================
+   COLLABSPHERE — FINAL BLUR REDUCTION (MICRO TUNE)
+===================================================== */
+
+/* Main glass card — CLEARER */
+.collab-card{
+  backdrop-filter: blur(5px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(5px) saturate(140%) !important;
+  background: rgba(15,20,30,0.46) !important;
+}
+
+/* Action cards — clearer, less fog */
+.action-card{
+  backdrop-filter: blur(4px) saturate(135%) !important;
+  -webkit-backdrop-filter: blur(4px) saturate(135%) !important;
+  background: rgba(255,255,255,0.07) !important;
+}
+
+/* Inputs — almost solid */
+.collab-card input,
+.collab-card select,
+.collab-card textarea{
+  backdrop-filter: blur(3px) !important;
+  background: rgba(255,255,255,0.10) !important;
+}
+
+/* Keep glow & hover (unchanged feel) */
+.collab-card::before{
+  opacity:0.15 !important;
+}
+
+/* =====================================================
+   COLLABSPHERE — ULTRA LOW BLUR (BACKGROUND VISIBLE)
+   FINAL OVERRIDE
+===================================================== */
+
+/* MAIN CARD — almost transparent glass */
+.collab-card{
+  backdrop-filter: blur(2px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(2px) saturate(120%) !important;
+  background: rgba(15,20,30,0.52) !important;
+}
+
+/* ACTION CARDS — barely glass */
+.action-card{
+  backdrop-filter: blur(2px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(2px) saturate(120%) !important;
+  background: rgba(255,255,255,0.08) !important;
+}
+
+/* INPUTS — almost solid */
+.collab-card input,
+.collab-card select,
+.collab-card textarea{
+  backdrop-filter: blur(1px) !important;
+  background: rgba(255,255,255,0.12) !important;
+}
+
+/* Keep glow but very subtle */
+.collab-card::before{
+  opacity:0.12 !important;
+}
+
+/* Slightly reduce overlay darkness so image shows */
+.dashboard-bg-overlay{
+  background:
+    radial-gradient(circle at 20% 20%, rgba(124,77,255,0.18), transparent 65%),
+    radial-gradient(circle at 80% 80%, rgba(71,215,211,0.16), transparent 65%),
+    rgba(0,0,0,0.28) !important;
+}
+
+/* =====================================================
+   COLLABSPHERE — BACKGROUND VISIBILITY FIX (FINAL)
+   Image visible, glass subtle, glow preserved
+===================================================== */
+
+/* 1️⃣ Lighten the global dark overlay (THIS IS KEY) */
+.dashboard-bg-overlay{
+  background:
+    radial-gradient(circle at 20% 20%, rgba(124,77,255,0.16), transparent 65%),
+    radial-gradient(circle at 80% 80%, rgba(71,215,211,0.14), transparent 65%),
+    rgba(0,0,0,0.18) !important; /* was too dark before */
+}
+
+/* 2️⃣ Almost remove blur from main glass */
+.collab-card{
+  backdrop-filter: blur(1.5px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(1.5px) saturate(120%) !important;
+
+  /* lighter glass tint */
+  background: rgba(20,25,35,0.42) !important;
+}
+
+/* 3️⃣ Action cards — clear, card-on-image feel */
+.action-card{
+  backdrop-filter: blur(1.5px) !important;
+  -webkit-backdrop-filter: blur(1.5px) !important;
+  background: rgba(255,255,255,0.09) !important;
+}
+
+/* 4️⃣ Inputs — no fog */
+.collab-card input,
+.collab-card select,
+.collab-card textarea{
+  backdrop-filter: none !important;
+  background: rgba(255,255,255,0.14) !important;
+}
+
+/* 5️⃣ Keep glow but reduce haze */
+.collab-card::before{
+  opacity:0.10 !important;
+}
+
+/* ===============================
+   CollabSphere FINAL tweaks
+   (append only)
+================================ */
+
+/* Reduce glass blur so background is visible */
+.collab-card {
+  backdrop-filter: blur(6px) saturate(135%) !important;
+  -webkit-backdrop-filter: blur(6px) saturate(135%) !important;
+  background: rgba(15,20,30,0.38) !important;
+}
+
+/* Make all action cards same size */
+.action-card {
+  min-height: 220px;
+  justify-content: center;
+}
+
+/* Dashboard-style hover glow */
+.action-card:hover {
+  box-shadow:
+    0 36px 100px rgba(0,0,0,0.75),
+    0 0 28px rgba(124,77,255,0.35);
+}
+
+/* Remove any footer spacing if leftover */
+.collab-footer {
+  display: none !important;
+}
+
+/* =================================================
+   CollabSphere – Compact Card Layout (FINAL)
+   Append only – safe
+================================================= */
+
+/* Remove unused header spacing (since title is gone) */
+.collab-card {
+  padding: 26px 28px !important;
+}
+
+/* Force all cards into one row */
+.collab-actions-grid {
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 18px !important;
+}
+
+/* Make cards smaller & consistent */
+.action-card {
+  min-height: 180px !important;
+  padding: 16px !important;
+}
+
+/* Reduce icon box size */
+.action-icon {
+  width: 56px !important;
+  height: 56px !important;
+}
+
+.action-icon img {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+/* Reduce text sizes slightly */
+.action-title {
+  font-size: 0.95rem !important;
+}
+
+.action-sub {
+  font-size: 0.8rem !important;
+}
+
+/* Responsive safety (tablet & below) */
+@media (max-width: 1100px) {
+  .collab-actions-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .collab-actions-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* =================================================
+   CollabSphere – Glass Card Height + Less Blur
+   Append only
+================================================= */
+
+/* Increase overall glass card height & spacing */
+.collab-card {
+  min-height: 460px !important;   /* increases outer height */
+  padding: 34px 36px !important;  /* more breathing space */
+}
+
+/* Reduce blur so background shows clearly */
+.collab-card {
+  backdrop-filter: blur(4px) saturate(125%) !important;
+  -webkit-backdrop-filter: blur(4px) saturate(125%) !important;
+  background: rgba(15, 20, 30, 0.32) !important;
+}
+
+/* Slightly soften border so glass feels lighter */
+.collab-card {
+  border: 1px solid rgba(255,255,255,0.12) !important;
+}
+
+/* =================================================
+   CollabSphere – Proper Centering (FINAL)
+================================================= */
+
+/* Center the glass card in the viewport */
+.collab-viewport {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Ensure hero doesn’t stretch oddly */
+.collab-hero {
+  width: 100%;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+/* Center contents inside the glass card */
+.collab-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* vertical centering inside */
+}
+
+/* Center the action cards grid */
+.collab-actions-grid {
+  justify-items: center;
+  align-items: center;
+}
+
+/* =================================================
+   CollabSphere – ULTRA LOW BLUR (FINAL FIX)
+================================================= */
+
+/* Almost no blur — let image show */
+.collab-card {
+  backdrop-filter: blur(2px) saturate(110%) !important;
+  -webkit-backdrop-filter: blur(2px) saturate(110%) !important;
+  background: rgba(15, 20, 30, 0.22) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+}
+
+/* Lighten background overlay so image is visible */
+.dashboard-bg-overlay {
+  background: rgba(0,0,0,0.18) !important;
+}
+
+.participant-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+}
+
+.participant-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.participant-info .pname {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.participant-info .small-muted {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+/* ===== Participants List Fix ===== */
+
+#participantsListBox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.participant-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.02);
+}
+
+/* FORCE avatar size — prevents zoom */
+.participant-avatar {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px;
+  min-height: 36px;
+  max-width: 36px;
+  max-height: 36px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* Prevent parent from stretching image */
+.participant-row img {
+  display: block;
+}
+
+.participant-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.2;
+}
+
+.participant-info .pname {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.participant-info .small-muted {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+/* ================================
+   PARTICIPANTS – FINAL FIX
+================================ */
+
+#participantsListBox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.participant-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.02);
+}
+
+#participantsListBox img.participant-avatar {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  max-width: 36px !important;
+  max-height: 36px !important;
+  object-fit: cover !important;
+  border-radius: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+.participant-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.participant-info .pname {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.participant-info .small-muted {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.chat-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.chat-body {
+  text-align: left;
+}
+
+.chat-text {
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+.chat-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.room-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 18px;
+  align-items: start;
+}
+
+.room-main {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.room-sidebar {
+  position: sticky;
+  top: 90px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 980px) {
+  .room-layout {
+    grid-template-columns: 1fr;
+  }
+  .room-sidebar {
+    position: static;
+  }
+}
+
+/* ===== LOCKED ROOM LAYOUT ===== */
+
+.room-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 18px;
+  align-items: start;
+}
+
+.room-main {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.room-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Prevent resizing / jumping */
+.room-panel,
+.glass-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Chat height fixed */
+#chatPanel {
+  min-height: 420px;
+}
+
+/* Whiteboard height fixed */
+#wbCanvas {
+  height: 420px !important;
+}
+
+/* Poll inputs consistent */
+#pollPanel input {
+  width: 100%;
+}
+
+/* Mobile fallback */
+@media (max-width: 980px) {
+  .room-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ================================
+   ROOM FULL-WIDTH LAYOUT
+================================ */
+
+.room-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.room-header-center {
+  text-align: center;
+}
+
+.room-header-center h1 {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 800;
+}
+
+.room-header-center .meta {
+  margin-top: 4px;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.room-header-right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* BODY GRID */
+.room-layout {
+  display: grid;
+  grid-template-columns: 2.3fr 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+/* LEFT SIDE */
+.room-left {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* RIGHT SIDE */
+.room-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .room-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .room-header {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .room-header-right {
+    justify-content: center;
+  }
+}
+
+.room-layout {
+  display:grid;
+  grid-template-columns: minmax(0, 1.6fr) 500px;
+  gap:22px;
+  align-items:start;
+}
+
+/* ===== ROOM HEADER GRID ===== */
+.room-header{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.room-header-center{
+  text-align:center;
+}
+
+.room-code{
+  font-size:1.6rem;
+  font-weight:900;
+  letter-spacing:2px;
+}
+
+/* ===== MAIN CARD WIDTH ===== */
+.collab-card{
+  width:95% !important;
+  max-width:1500px !important;
+  margin:0 auto;
+}
+
+/* =====================================
+   FORCE SIDE-BY-SIDE ROOM LAYOUT
+===================================== */
+
+/* Ensure grid really has two columns */
+.room-layout {
+  display: grid;
+  grid-template-columns: 68% 32%;
+  align-items: start;
+}
+
+/* IMPORTANT: allow left column to shrink */
+.room-main {
+  min-width: 0;
+}
+
+/* Force sidebar into second column */
+.room-sidebar {
+  grid-column: 2;
+  min-width: 0;
+}
+
+/* =====================================
+   ROOM – MAIN CARD WIDTH CONTROL
+===================================== */
+
+body.dashboard-page .collab-viewport {
+  width: 100%;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+body.dashboard-page .collab-hero {
+  width: 100%;
+  max-width: none;
+  display: flex;
+  justify-content: center;
+}
+
+body.dashboard-page .collab-card {
+  width: 100%;              /* 🔥 main control (try 90–95) */
+  max-width: 2500px;       /* 🔥 cap width */
+  margin: 0 auto;
+}

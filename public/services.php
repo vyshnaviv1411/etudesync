@@ -77,7 +77,7 @@ require_once __DIR__ . '/../includes/header_public.php';
 <li class="service-card glass-card premium-card">
   <div class="card-inner">
     <div class="card-left">
-      <h3 class="service-title">QuizForge (Quizzes & Live Rooms) <span class="premium-tag" aria-hidden="true">Premium</span></h3>
+      <h3 class="service-title">AssessArena (Quizzes & Live Rooms) <span class="premium-tag" aria-hidden="true">Premium</span></h3>
       <ul class="service-points">
         <li>Anyone can create a quiz and publish a Quiz Room code</li>
         <li>Participants join the quiz room, play in real-time (synchronized questions)</li>

@@ -17,15 +17,15 @@ $uid = (int) $_SESSION['user_id'];
 
 <link rel="stylesheet" href="assets/css/collab.css?v=1" />
 <script>document.body.classList.add('dashboard-page');</script>
-<!-- Dashboard-style background (video + fallback image).
-     Fallback image currently points to the uploaded dev file path.
-     If you prefer a project-local copy, copy the file to public/assets/images/collab-bg.png
-     and update the CSS to use that relative path instead. -->
-<div class="dashboard-bg" aria-hidden="true" style="background-image: url('/mnt/data/affbdf41-2655-47ad-8304-5e3c61138048.png');">
-  <video id="dashVideo" autoplay muted loop playsinline>
-    <source src="assets/videos/desk1.mp4" type="video/mp4">
-    <!-- If video is missing the CSS background-image above will show -->
-  </video>
+<!-- Background image ONLY -->
+<div class="dashboard-bg"
+     aria-hidden="true"
+     style="
+       background-image: url('assets/images/collabsbg.jpg');
+       background-size: cover;
+       background-position: center;
+       background-repeat: no-repeat;
+     ">
   <div class="dashboard-bg-overlay"></div>
 </div>
 
@@ -33,7 +33,7 @@ $uid = (int) $_SESSION['user_id'];
   <div class="collab-hero">
     <div class="collab-card" style="max-width:1100px;margin:0 auto;">
       <div class="collab-card-head" style="align-items:flex-start;flex-direction:row;gap:18px;">
-        <img src="/mnt/data/1f5368f1-3156-47a6-8117-295468d61947.png" alt="History" class="collab-logo" style="width:64px;height:64px;border-radius:12px;"/>
+        <img src="assets/images/room-history.jpg" alt="History" class="collab-logo" style="width:64px;height:64px;border-radius:12px;"/>
         <div>
           <h1 style="margin:0">Room History</h1>
           <p class="lead" style="margin:6px 0 0">Rooms you've created and recently joined. Click "Open" to enter a room.</p>
@@ -79,7 +79,6 @@ $uid = (int) $_SESSION['user_id'];
                       <div style="font-size:0.85rem;color:var(--muted)"><?= date('d M Y, H:i', strtotime($r['created_at'])) ?></div>
                       <div style="margin-top:8px">
                         <a class="btn small" href="room.php?room_id=<?= (int)$r['room_id'] ?>&code=<?= urlencode($r['room_code']) ?>">Open</a>
-                        <a class="btn small outline" href="collabsphere.php" style="margin-left:8px">Share</a>
                       </div>
                     </div>
                   </div>
@@ -121,6 +120,19 @@ $uid = (int) $_SESSION['user_id'];
           </div>
         <?php endif; ?>
       </section>
+    <div style="margin-bottom:14px;">
+  <a href="collabsphere.php"
+     class="btn primary"
+     style="
+       display:inline-block;
+       padding:10px 18px;
+       border-radius:10px;
+       font-size:0.95rem;
+       text-decoration:none;
+     ">
+    ← Back to Modules
+  </a>
+</div>
 
     </div>
   </div>

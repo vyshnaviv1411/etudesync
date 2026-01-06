@@ -1,10 +1,13 @@
 <?php
 // public/dashboard.php
+
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/premium_check.php';
 
-// protect page
+/* -----------------------
+   PROTECT PAGE
+------------------------ */
 if (empty($_SESSION['user_id'])) {
     $_SESSION['after_login_redirect'] = $_SERVER['REQUEST_URI'] ?? 'dashboard.php';
     $_SESSION['error'] = 'Please sign in to access the dashboard.';
@@ -12,10 +15,27 @@ if (empty($_SESSION['user_id'])) {
     exit;
 }
 
-require_once __DIR__ . '/../includes/header_dashboard.php';
+/* -----------------------
+   ENSURE USERNAME IN SESSION
+------------------------ */
+if (empty($_SESSION['user_name'])) {
+    $stmt = $pdo->prepare("SELECT username, is_premium FROM users WHERE id = :id LIMIT 1");
+    $stmt->execute([':id' => $_SESSION['user_id']]);
+    $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$userName = htmlspecialchars($_SESSION['user_name'] ?? 'Guest');
-$userIsPremium = isPremiumUser($_SESSION['user_id']);
+    if ($userRow) {
+        $_SESSION['user_name']  = $userRow['username'];
+        $_SESSION['is_premium'] = $userRow['is_premium'];
+    }
+}
+
+/* -----------------------
+   USER DATA
+------------------------ */
+$isPremium = !empty($_SESSION['is_premium']) && $_SESSION['is_premium'] == 1;
+$userName  = htmlspecialchars($_SESSION['user_name']);
+
+require_once __DIR__ . '/../includes/header_dashboard.php';
 ?>
 
 <!-- mark body so header/global slider can be hidden by CSS -->
@@ -34,12 +54,22 @@ document.addEventListener('DOMContentLoaded', function(){
 </div>
 
 <div class="dashboard-content container">
-  <div class="dashboard-glass">
+  <div class="hero-inner ff-glass">
 
-    <h2 class="dash-title">Good to see you, <span class="dash-user"><?= $userName ?></span></h2>
-    <p id="dash-quote" class="dash-tagline">A neat study desk in your browser — focus without distractions.</p>
+    <h2 class="dash-title">
+      Good to see you, <span class="dash-user"><?= $userName ?></span>
+      <?php if ($isPremium): ?>
+        <span style="font-size:0.9rem;color:#47d7d3;">(Premium)</span>
+      <?php endif; ?>
+    </h2>
 
-    <!-- ROW 1: FREE MODULES (grid) -->
+    <p id="dash-quote" class="dash-tagline">
+      A neat study desk in your browser — focus without distractions.
+    </p>
+
+    <!-- =========================
+         FREE MODULES
+    ========================== -->
     <div class="dash-modules-grid">
       <a href="collabsphere.php" class="module-card">
         <img src="assets/images/icon-collabsphere.png" alt="CollabSphere" class="module-icon" />
@@ -57,35 +87,33 @@ document.addEventListener('DOMContentLoaded', function(){
       </a>
     </div>
 
-    <!-- ROW 2: PREMIUM MODULES (centered flex row) -->
+    <!-- =========================
+         PREMIUM MODULES
+    ========================== -->
     <div class="dash-premium-row">
-      <?php if ($userIsPremium): ?>
-        <!-- User is premium - show unlocked cards -->
-        <a href="quizforge.php" class="module-card">
-          <img src="assets/images/icon-quizforge.png" alt="QuizForge" class="module-icon" />
-          <div class="module-name">QuizForge</div>
-          <span class="unlock-badge">✨ Premium</span>
-        </a>
 
-        <a href="infovault.php" class="module-card">
-          <img src="assets/images/icon-infovault.png" alt="InfoVault" class="module-icon" />
-          <div class="module-name">InfoVault</div>
-          <span class="unlock-badge">✨ Premium</span>
-        </a>
-      <?php else: ?>
-        <!-- User is not premium - show locked cards -->
-        <a href="upgrade.php" class="module-card locked">
-          <img src="assets/images/icon-quizforge.png" alt="QuizForge" class="module-icon" />
-          <div class="module-name">QuizForge</div>
-          <span class="lock-badge">🔒 Premium</span>
-        </a>
 
-        <a href="upgrade.php" class="module-card locked">
-          <img src="assets/images/icon-infovault.png" alt="InfoVault" class="module-icon" />
-          <div class="module-name">InfoVault</div>
+      <!-- AssessArena -->
+      <a href="<?= $isPremium ? 'assessarena.php' : '#' ?>"
+         class="module-card <?= $isPremium ? '' : 'locked' ?>">
+        <img src="assets/images/icon-quizforge.png" alt="AssessArena" class="module-icon" />
+        <div class="module-name">AssessArena</div>
+        <?php if (!$isPremium): ?>
           <span class="lock-badge">🔒 Premium</span>
-        </a>
-      <?php endif; ?>
+        <?php endif; ?>
+      </a>
+
+      <!-- InfoVault -->
+      <a href="<?= $isPremium ? 'infovault.php' : '#' ?>"
+         class="module-card <?= $isPremium ? '' : 'locked' ?>">
+        <img src="assets/images/icon-infovault.png" alt="InfoVault" class="module-icon" />
+        <div class="module-name">InfoVault</div>
+        <?php if (!$isPremium): ?>
+          <span class="lock-badge">🔒 Premium</span>
+        <?php endif; ?>
+      </a>
+
+
     </div>
 
   </div>
@@ -94,16 +122,27 @@ document.addEventListener('DOMContentLoaded', function(){
 <script>
 (function(){
 
-  // rotate quotes every 6 seconds
-  const quotes = [
-    "A neat study desk in your browser — focus without distractions.",
-    "Create study rooms and stay focused with friends.",
-    "Upload notes, create flashcards and revise smarter.",
-    "Pomodoro + planner = better study flow.",
-    "Quizzes, leaderboards and progress — see your improvement."
-  ];
+ const quotes = [
+  "Take a breath 🌿 You’re exactly where you need to be.",
+  "A quiet space 🕯️ a clear mind, one task at a time.",
+  "Small focus sessions ⏳ build powerful progress.",
+  "Ideas grow faster when you learn together 🤝",
+  "Save knowledge today 📚 thank yourself tomorrow.",
+  "Even a short study session today is a win 🌱",
+  "Consistency beats intensity, always 🔁",
+  "This space is for effort, not perfection 💙",
+  "Turn distractions into clarity ✨ one step at a time.",
+  "You showed up — that already counts 🌸",
+  "Learning feels lighter when it’s organized 🗂️",
+  "Your future self is quietly cheering you on 🌟",
+  "One concept, one moment, one win 🎯",
+  "Focus now, relax later 🌙 balance matters.",
+  "Progress doesn’t rush — it flows 🌊"
+];
+
   let qIdx = 0;
   const qEl = document.getElementById('dash-quote');
+
   if (qEl) {
     setInterval(() => {
       qIdx = (qIdx + 1) % quotes.length;
@@ -114,6 +153,21 @@ document.addEventListener('DOMContentLoaded', function(){
       }, 300);
     }, 6000);
   }
+
+  document.querySelectorAll('.module-card.locked').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const t = document.createElement('div');
+      t.className = 'upgrade-toast';
+      t.textContent = 'This feature is premium.';
+      document.body.appendChild(t);
+      setTimeout(()=> t.classList.add('visible'), 20);
+      setTimeout(()=> { 
+        t.classList.remove('visible'); 
+        setTimeout(()=> t.remove(),350); 
+      }, 2200);
+    });
+  });
 
 })();
 </script>

@@ -75,15 +75,23 @@ require_once __DIR__ . '/../includes/header_public.php';
           <input type="email" name="email" value="<?= htmlspecialchars($old['email']) ?>" required />
         </div>
 
-        <div class="input-group">
-          <label>Password</label>
-          <input type="password" name="password" required />
-        </div>
+       <div class="input-group">
+  <label>Password</label>
+  <div class="password-box">
+    <input type="password" id="password" name="password" required>
+    <span class="toggle-eye" onclick="togglePassword('password')">👁️</span>
+  </div>
+</div>
+
 
         <div class="input-group">
           <label>Confirm</label>
-          <input type="password" name="password_confirm" required />
-        </div>
+  <div class="password-box">
+      <input type="password" name="password_confirm" required />
+    <span class="toggle-eye" onclick="togglePassword('password')">👁️</span>
+  </div>
+</div>
+
 
         <button type="submit" class="btn-login">Create account</button>
 
@@ -96,3 +104,4 @@ require_once __DIR__ . '/../includes/header_public.php';
 </div>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
+

@@ -1,0 +1,195 @@
+/* =====================================
+   InfoVault – FINAL Glassmorphic Styling
+   Clear Background • Readable Text • Glow Hover
+===================================== */
+
+/* ---------- GLOBAL ---------- */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #000; /* fallback */
+    color: #ffffff;
+}
+
+/* ---------- FULLSCREEN BACKGROUND ---------- */
+.dashboard-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* ---------- MAIN VIEWPORT ---------- */
+.collab-viewport {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 28px;
+}
+
+/* ---------- BIG GLASS CARD ---------- */
+.collab-card {
+    width: 98%;
+    max-width: 1650px;
+    min-height: 480px;
+    padding: 48px;
+    border-radius: 26px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(2px);               /* VERY LOW BLUR */
+    -webkit-backdrop-filter: blur(2px);
+
+    border: 1px solid rgba(255,255,255,0.18);
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,0.45),
+        inset 0 1px 0 rgba(255,255,255,0.18);
+}
+
+/* ---------- GRID ---------- */
+.collab-actions-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    align-items: center;
+}
+
+/* ---------- INNER GLASS CARDS ---------- */
+.action-card {
+    position: relative;
+    text-decoration: none;
+    color: #ffffff;
+
+    /* Dark tint for contrast */
+    background: rgba(0, 0, 0, 0.28);
+
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+
+    padding: 30px;
+    min-height: 210px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+
+    box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+    transition:
+        transform 0.28s ease,
+        box-shadow 0.28s ease;
+}
+
+/* ---------- HOVER: LIFT + GLOW ---------- */
+.action-card:hover {
+    transform: translateY(-12px) scale(1.05);
+
+    box-shadow:
+        0 40px 100px rgba(0,0,0,0.75),
+        0 0 22px rgba(124,77,255,0.45),
+        0 0 28px rgba(71,215,211,0.35);
+}
+
+/* ---------- INNER DARK GRADIENT ---------- */
+.action-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.15),
+        rgba(0,0,0,0.35)
+    );
+    pointer-events: none;
+}
+
+/* Keep content above overlay */
+.action-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* ---------- ICON ---------- */
+.action-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 16px;
+
+    background: linear-gradient(135deg, #7c4dff, #47d7d3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: inset 0 -6px 18px rgba(0,0,0,0.35);
+}
+
+.action-icon img {
+    width: 36px;
+    height: 36px;
+}
+
+/* ---------- TEXT ---------- */
+.action-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+.action-sub {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.9);
+    text-align: center;
+    line-height: 1.4;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 1100px) {
+    .collab-actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 560px) {
+    .collab-actions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .collab-card {
+        padding: 28px;
+        min-height: auto;
+    }
+}
+
+/* =====================================
+   FIX: FULL SCREEN BACKGROUND IMAGE
+===================================== */
+
+.dashboard-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+
+    background-size: cover;          /* 🔥 KEY */
+    background-position: center;     /* 🔥 KEY */
+    background-repeat: no-repeat;    /* 🔥 KEY */
+
+    width: 100%;
+    height: 100%;
+}
+
+

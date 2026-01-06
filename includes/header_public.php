@@ -15,10 +15,10 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;800&display=swap" rel="stylesheet">
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="assets/css/style.css?v=3" />
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 
-<body class="page-wrapper public-page">
+<body class="index-page page-wrapper">
 
   <!-- Background slider (public pages only) -->
   <div id="bg-slider" class="bg-slider" aria-hidden="true"></div>

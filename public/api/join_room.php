@@ -41,7 +41,6 @@ if (empty($_SESSION['user_id'])) {
 
 $user_id = (int) $_SESSION['user_id'];
 $room_code = trim($_POST['room_code'] ?? '');
-$display_name = trim($_POST['display_name'] ?? '');
 
 if ($room_code === '') {
     echo json_encode(['success' => false, 'error' => 'Room code is required.']);
@@ -77,11 +76,7 @@ try {
         $stmtIns->execute([':room' => $room_id, ':user' => $user_id]);
     }
 
-    // optionally store display name / alias for this session (not persisted)
-    if ($display_name !== '') {
-        $_SESSION['collab_display_name'] = substr($display_name, 0, 60);
-    }
-
+   
     // success
     echo json_encode([
         'success' => true,
