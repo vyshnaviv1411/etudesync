@@ -3,6 +3,7 @@
 
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/premium_check.php';
 
 /* -----------------------
    PROTECT PAGE
@@ -91,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function(){
     ========================== -->
     <div class="dash-premium-row">
 
+
       <!-- AssessArena -->
       <a href="<?= $isPremium ? 'assessarena.php' : '#' ?>"
          class="module-card <?= $isPremium ? '' : 'locked' ?>">
@@ -110,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function(){
           <span class="lock-badge">🔒 Premium</span>
         <?php endif; ?>
       </a>
+
 
     </div>
 

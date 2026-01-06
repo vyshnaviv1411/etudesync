@@ -1,0 +1,541 @@
+/* ================================================
+   PREMIUM PAYMENT MODAL STYLES
+   public/assets/css/premium.css
+   
+   Uses existing design system from modern.css
+   No new colors, fonts, or external libraries
+   ================================================ */
+
+/* Premium Upgrade Modal Overlay */
+.premium-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease-in-out, visibility 200ms ease-in-out;
+}
+
+.premium-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Premium Modal Card */
+.premium-modal {
+  background: linear-gradient(
+    180deg,
+    rgba(248, 250, 252, 0.98),
+    rgba(241, 245, 249, 0.95)
+  );
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  max-width: 480px;
+  width: 100%;
+  border: 1px solid rgba(45, 91, 255, 0.1);
+  overflow: hidden;
+  animation: modalSlideIn 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Modal Header */
+.premium-modal-header {
+  padding: 32px 32px 24px;
+  background: linear-gradient(135deg, #2d5bff 0%, #7c4dff 100%);
+  text-align: center;
+  position: relative;
+  color: white;
+}
+
+.premium-modal-header h2 {
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  letter-spacing: -0.5px;
+}
+
+.premium-modal-header p {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.95;
+  font-weight: 400;
+}
+
+.premium-crown-icon {
+  display: inline-block;
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+/* Modal Close Button */
+.premium-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms ease-in-out;
+  font-weight: 300;
+}
+
+.premium-modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+/* Modal Content */
+.premium-modal-content {
+  padding: 32px;
+}
+
+/* Plan Details */
+.premium-plan-details {
+  margin-bottom: 28px;
+}
+
+.premium-plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.premium-plan-price .amount {
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.premium-plan-price .currency {
+  font-size: 24px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.premium-plan-price .period {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  color: #64748b;
+  margin-left: 4px;
+}
+
+.premium-plan-title {
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.premium-plan-subtitle {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* Features List */
+.premium-features {
+  background: linear-gradient(
+    135deg,
+    rgba(45, 91, 255, 0.05),
+    rgba(124, 77, 255, 0.05)
+  );
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 28px;
+  border: 1px solid rgba(45, 91, 255, 0.1);
+}
+
+.premium-features h4 {
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px;
+}
+
+.premium-features-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.premium-features-list li {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  color: #334155;
+  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.premium-features-list li:before {
+  content: "✓";
+  color: #10b981;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Form Container */
+.premium-payment-form {
+  margin-bottom: 20px;
+}
+
+.premium-form-group {
+  margin-bottom: 16px;
+}
+
+.premium-form-group label {
+  display: block;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.premium-form-group input {
+  width: 100%;
+  padding: 10px 14px;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  color: #0f172a;
+  transition: all 150ms ease-in-out;
+  box-sizing: border-box;
+}
+
+.premium-form-group input:focus {
+  outline: none;
+  border-color: #2d5bff;
+  box-shadow: 0 0 0 3px rgba(45, 91, 255, 0.1);
+}
+
+.premium-form-group input::placeholder {
+  color: #94a3b8;
+}
+
+/* Action Buttons */
+.premium-modal-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.premium-btn-pay {
+  flex: 1;
+  padding: 12px 20px;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #2d5bff 0%, #7c4dff 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 150ms ease-in-out;
+  box-shadow: 0 4px 12px rgba(45, 91, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.premium-btn-pay:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(45, 91, 255, 0.4);
+}
+
+.premium-btn-pay:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.premium-btn-pay:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.premium-btn-cancel {
+  flex: 1;
+  padding: 12px 20px;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 150ms ease-in-out;
+}
+
+.premium-btn-cancel:hover {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+/* Loading Spinner */
+.premium-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: premiumSpin 0.8s linear infinite;
+}
+
+@keyframes premiumSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Payment Processing State */
+.premium-payment-processing {
+  text-align: center;
+  padding: 40px 32px;
+}
+
+.premium-processing-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(45, 91, 255, 0.1);
+  border-top: 3px solid #2d5bff;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  animation: premiumSpin 1s linear infinite;
+}
+
+.premium-processing-text {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  color: #475569;
+  font-weight: 500;
+}
+
+/* Success State */
+.premium-success-state {
+  text-align: center;
+  padding: 40px 32px;
+}
+
+.premium-success-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  animation: premiumBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes premiumBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.premium-success-title {
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.premium-success-message {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.premium-success-order-id {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 24px;
+}
+
+.premium-success-order-id .label {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.premium-success-order-id .value {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  color: #0f172a;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.premium-btn-done {
+  width: 100%;
+  padding: 12px 20px;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 150ms ease-in-out;
+}
+
+.premium-btn-done:hover {
+  transform: translateY(-2px);
+}
+
+/* Error State */
+.premium-error-state {
+  text-align: center;
+  padding: 40px 32px;
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.05),
+    rgba(239, 68, 68, 0.03)
+  );
+  border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.premium-error-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.premium-error-title {
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #ef4444;
+  margin-bottom: 8px;
+}
+
+.premium-error-message {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  color: #dc2626;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+/* Toast Notification (for quick alerts) */
+.premium-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  background: #0f172a;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 10px;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.3);
+  z-index: 10000;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 90%;
+}
+
+.premium-toast.visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+.premium-toast.success {
+  background: #10b981;
+}
+
+.premium-toast.error {
+  background: #ef4444;
+}
+
+.premium-toast.info {
+  background: #2d5bff;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .premium-modal {
+    max-width: 90vw;
+    margin: 0 20px;
+  }
+
+  .premium-modal-header {
+    padding: 24px 20px 20px;
+  }
+
+  .premium-modal-header h2 {
+    font-size: 24px;
+  }
+
+  .premium-crown-icon {
+    font-size: 40px;
+  }
+
+  .premium-modal-content {
+    padding: 24px;
+  }
+
+  .premium-plan-price .amount {
+    font-size: 32px;
+  }
+
+  .premium-modal-actions {
+    flex-direction: column;
+  }
+
+  .premium-btn-pay,
+  .premium-btn-cancel {
+    width: 100%;
+  }
+}

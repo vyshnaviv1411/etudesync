@@ -2,6 +2,121 @@
 // FocusFlow Complete - All Features
 // ================================================
 
+// ================================================
+// DATE VALIDATION UTILITIES (CENTRALIZED)
+// ================================================
+
+/**
+ * Get today's date at start of day (00:00:00) for accurate comparison
+ * @returns {Date} Today's date with time set to 00:00:00
+ */
+function getToday() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today;
+}
+
+/**
+ * Get today's date in YYYY-MM-DD format
+ * @returns {string} Today's date as YYYY-MM-DD
+ */
+function getTodayString() {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+}
+
+/**
+ * Check if a date is in the past (before today)
+ * @param {string|Date} dateInput - Date to check (YYYY-MM-DD string or Date object)
+ * @returns {boolean} True if date is in the past, false otherwise
+ */
+function isPastDate(dateInput) {
+    if (!dateInput) return false;
+
+    const today = getToday();
+    const inputDate = new Date(dateInput);
+    inputDate.setHours(0, 0, 0, 0);
+
+    return inputDate < today;
+}
+
+/**
+ * Validate date and return error message if invalid
+ * @param {string|Date} dateInput - Date to validate
+ * @param {string} fieldName - Name of field for error message
+ * @returns {string|null} Error message if invalid, null if valid
+ */
+function validateDate(dateInput, fieldName = 'date') {
+    if (!dateInput) return null; // Optional dates are allowed
+
+    if (isPastDate(dateInput)) {
+        return `You can't select a past ${fieldName}. Please choose today or a future date.`;
+    }
+
+    return null;
+}
+
+/**
+ * Show error notification to user
+ * @param {string} message - Error message to display
+ */
+function showDateError(message) {
+    // Create or get error container
+    let errorDiv = document.getElementById('date-validation-error');
+
+    if (!errorDiv) {
+        errorDiv = document.createElement('div');
+        errorDiv.id = 'date-validation-error';
+        errorDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(238, 90, 82, 0.4);
+            z-index: 10000;
+            font-weight: 600;
+            max-width: 400px;
+            animation: slideInRight 0.3s ease;
+        `;
+        document.body.appendChild(errorDiv);
+    }
+
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+
+    // Auto-hide after 4 seconds
+    setTimeout(() => {
+        errorDiv.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 300);
+    }, 4000);
+}
+
+/**
+ * Initialize date input with restrictions
+ * @param {string} inputId - ID of date input element
+ */
+function initializeDateInput(inputId) {
+    const input = document.getElementById(inputId);
+    if (input && input.type === 'date') {
+        // Set minimum date to today
+        input.min = getTodayString();
+
+        // Add change listener for additional validation
+        input.addEventListener('change', function() {
+            const error = validateDate(this.value, 'date');
+            if (error) {
+                showDateError(error);
+                this.value = ''; // Clear invalid date
+            }
+        });
+    }
+}
+
 // Global State
 let timerInterval = null;
 let timeRemaining = 25 * 60; // seconds
@@ -9,6 +124,10 @@ let timerRunning = false;
 let currentFilter = 'all';
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
+
+// Calendar Events State
+let calendarEvents = {}; // { "2026-01-06": [{ id, title, type }] }
+let nextEventId = 1;
 
 // ================================================
 // NOTIFICATION PERMISSION CHECK
@@ -90,6 +209,7 @@ function openModule(moduleName) {
     } else if (moduleName === 'todo') {
         loadTodos();
     } else if (moduleName === 'calendar') {
+        loadEventsFromStorage(); // Load events first
         renderCalendar();
     } else if (moduleName === 'planner') {
         loadPlanner();
@@ -554,6 +674,9 @@ function filterTodos(filter) {
 function showAddTodoModal() {
     document.getElementById('todo-modal').style.display = 'flex';
     document.getElementById('todo-form').reset();
+
+    // Initialize date input with restrictions (prevent past dates)
+    initializeDateInput('todo-due-date');
 }
 
 function closeTodoModal() {
@@ -563,11 +686,25 @@ function closeTodoModal() {
 async function addTodo(event) {
     event.preventDefault();
 
+    const title = document.getElementById('todo-title').value;
+    const description = document.getElementById('todo-description').value;
+    const dueDate = document.getElementById('todo-due-date').value || null;
+    const priority = document.getElementById('todo-priority').value;
+
+    // CRITICAL: Validate due date before submission
+    if (dueDate) {
+        const dateError = validateDate(dueDate, 'due date');
+        if (dateError) {
+            showDateError(dateError);
+            return; // Block submission
+        }
+    }
+
     const formData = {
-        title: document.getElementById('todo-title').value,
-        description: document.getElementById('todo-description').value,
-        due_date: document.getElementById('todo-due-date').value || null,
-        priority: document.getElementById('todo-priority').value
+        title: title,
+        description: description,
+        due_date: dueDate,
+        priority: priority
     };
 
     try {
@@ -635,48 +772,287 @@ async function deleteTodo(id) {
 }
 
 // ================================================
-// CALENDAR
+// CALENDAR - COMPLETE IMPLEMENTATION
 // ================================================
 
-function renderCalendar() {
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'];
+/**
+ * Generate calendar matrix (2D array of weeks)
+ * This is the core data structure for the calendar
+ */
+function generateCalendarMatrix(year, month) {
+    console.log('🗓️ Generating calendar matrix for:', month + 1, '/', year);
 
-    document.getElementById('calendar-month-year').textContent =
-        `${monthNames[currentMonth]} ${currentYear}`;
-
-    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay(); // 0=Sunday, 6=Saturday
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
     const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize for comparison
 
-    let daysHTML = '';
+    console.log('📊 Calendar data:', {
+        firstDay: firstDay,
+        daysInMonth: daysInMonth,
+        startDay: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][firstDay]
+    });
 
-    // Empty cells before first day
+    const weeks = [];
+    let currentWeek = [];
+
+    // Fill empty cells before month starts (for alignment)
     for (let i = 0; i < firstDay; i++) {
-        daysHTML += '<div class="calendar-day" style="opacity:0.3;"></div>';
+        currentWeek.push(null);
     }
 
-    // Days of month
+    // Fill in the actual days of the month
     for (let day = 1; day <= daysInMonth; day++) {
-        const isToday = day === today.getDate() &&
-                       currentMonth === today.getMonth() &&
-                       currentYear === today.getFullYear();
+        const date = new Date(year, month, day);
+        date.setHours(0, 0, 0, 0);
 
-        daysHTML += `
-            <div class="calendar-day ${isToday ? 'today' : ''}" onclick="showDayDetails(${day})">
-                <div style="font-weight:600;">${day}</div>
-            </div>
-        `;
+        const isToday = date.getTime() === today.getTime();
+        const isPast = date < today;
+
+        currentWeek.push({
+            day: day,
+            date: date,
+            dateStr: `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`,
+            isToday: isToday,
+            isPast: isPast,
+            isCurrentMonth: true
+        });
+
+        // If week is complete (7 days), add to weeks array and start new week
+        if (currentWeek.length === 7) {
+            weeks.push(currentWeek);
+            currentWeek = [];
+        }
     }
 
-    const calendarDays = document.getElementById('calendar-days');
-    if (calendarDays) {
-        calendarDays.innerHTML = daysHTML;
-    } else {
-        // Create the container if it doesn't exist
-        const container = document.querySelector('.calendar-grid');
-        container.innerHTML += `<div id="calendar-days">${daysHTML}</div>`;
+    // Fill remaining cells to complete the last week
+    if (currentWeek.length > 0) {
+        while (currentWeek.length < 7) {
+            currentWeek.push(null);
+        }
+        weeks.push(currentWeek);
     }
+
+    console.log('✅ Matrix generated:', weeks.length, 'weeks,', firstDay + daysInMonth, 'total cells');
+    return weeks;
+}
+
+/**
+ * Render calendar from matrix
+ * Builds HTML for the entire calendar grid
+ */
+function renderCalendarFromMatrix(weeks, eventsData) {
+    console.log('🎨 Rendering calendar HTML from matrix...');
+
+    let html = '';
+    let cellCount = 0;
+
+    weeks.forEach((week, weekIndex) => {
+        week.forEach((cell, dayIndex) => {
+            cellCount++;
+
+            if (!cell) {
+                // Empty cell (before month starts or after month ends)
+                html += '<div class="calendar-day empty"></div>';
+            } else {
+                // Actual day cell
+                const classes = ['calendar-day'];
+                if (cell.isToday) classes.push('today');
+                if (cell.isPast) classes.push('past');
+
+                const events = eventsData[cell.dateStr] || [];
+
+                html += `
+                    <div class="${classes.join(' ')}"
+                         data-date="${cell.dateStr}"
+                         data-is-past="${cell.isPast}"
+                         onclick="handleDateClick('${cell.dateStr}', ${cell.isPast})">
+                        <div class="calendar-date-number">${cell.day}</div>
+                        <div class="calendar-events" onclick="event.stopPropagation()">
+                            ${renderDayEvents(events)}
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    });
+
+    console.log('✅ HTML generated for', cellCount, 'cells');
+    return html;
+}
+
+/**
+ * Main calendar rendering function
+ * This is called when opening the calendar or changing months
+ */
+async function renderCalendar() {
+    console.log('🚀 ========== RENDER CALENDAR START ==========');
+    console.log('📅 Current state: Month', currentMonth, 'Year', currentYear);
+
+    try {
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'];
+
+        // STEP 1: Update month header
+        const headerElement = document.getElementById('calendar-month-year');
+        if (headerElement) {
+            headerElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            console.log('✅ Header updated:', headerElement.textContent);
+        } else {
+            console.error('❌ Header element not found!');
+        }
+
+        // STEP 2: Generate calendar matrix (THIS IS THE CORE LOGIC)
+        const weeks = generateCalendarMatrix(currentYear, currentMonth);
+
+        if (!weeks || weeks.length === 0) {
+            console.error('❌ CRITICAL: Calendar matrix is empty!');
+            return;
+        }
+
+        // STEP 3: Fetch todos with due dates
+        let todosData = {};
+        try {
+            const response = await fetch(`api/focusflow/calendar_events.php?month=${currentMonth + 1}&year=${currentYear}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.events) {
+                    todosData = data.events;
+                    console.log('📌 Todos loaded for', Object.keys(todosData).length, 'dates');
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ Todos not loaded (calendar will still render):', error.message);
+        }
+
+        // STEP 4: Merge calendar events with todos
+        const mergedEvents = mergeEventsWithTodos(todosData, calendarEvents);
+        console.log('🔀 Merged events for', Object.keys(mergedEvents).length, 'dates');
+
+        // STEP 5: Render HTML from matrix
+        const calendarHTML = renderCalendarFromMatrix(weeks, mergedEvents);
+
+        if (!calendarHTML) {
+            console.error('❌ CRITICAL: Calendar HTML is empty!');
+            return;
+        }
+
+        // STEP 5: Insert into DOM
+        const calendarGrid = document.getElementById('calendar-grid');
+        if (!calendarGrid) {
+            console.error('❌ CRITICAL: calendar-grid element not found in DOM!');
+            return;
+        }
+
+        console.log('🔄 Clearing existing calendar cells...');
+        const existingDays = calendarGrid.querySelectorAll('.calendar-day');
+        existingDays.forEach(day => day.remove());
+        console.log('✅ Removed', existingDays.length, 'existing cells');
+
+        console.log('📝 Inserting calendar HTML into DOM...');
+        calendarGrid.insertAdjacentHTML('beforeend', calendarHTML);
+
+        const newDays = calendarGrid.querySelectorAll('.calendar-day');
+        console.log('✅ Calendar inserted:', newDays.length, 'cells now in DOM');
+
+        console.log('🎉 ========== RENDER CALENDAR COMPLETE ==========');
+
+    } catch (error) {
+        console.error('💥 CRITICAL ERROR in renderCalendar():', error);
+        console.error('📍 Stack trace:', error.stack);
+        alert('Calendar rendering failed. Check console for details.');
+    }
+}
+
+/**
+ * Merge calendar events with todos
+ */
+function mergeEventsWithTodos(todosData, calendarEventsData) {
+    const merged = {};
+
+    // Add todos
+    Object.keys(todosData).forEach(dateStr => {
+        merged[dateStr] = todosData[dateStr].map(todo => ({
+            ...todo,
+            sourceType: 'todo'
+        }));
+    });
+
+    // Add calendar events
+    Object.keys(calendarEventsData).forEach(dateStr => {
+        if (!merged[dateStr]) {
+            merged[dateStr] = [];
+        }
+        calendarEventsData[dateStr].forEach(event => {
+            merged[dateStr].push({
+                ...event,
+                dateStr: dateStr, // Include dateStr for editing
+                sourceType: 'calendar'
+            });
+        });
+    });
+
+    return merged;
+}
+
+function renderDayEvents(events) {
+    try {
+        if (!events || !Array.isArray(events) || events.length === 0) {
+            return '';
+        }
+
+        const MAX_VISIBLE_EVENTS = 2; // Show max 2 events per cell
+        let html = '';
+
+        // Show first N events
+        const visibleEvents = events.slice(0, MAX_VISIBLE_EVENTS);
+        visibleEvents.forEach(event => {
+            if (!event || !event.title) return;
+
+            const eventTitle = String(event.title).replace(/"/g, '&quot;');
+            let eventClass = 'calendar-event';
+            let clickHandler = '';
+
+            if (event.sourceType === 'todo') {
+                // Todo event styling
+                const priorityClass = event.priority ? `priority-${event.priority}` : '';
+                const statusClass = event.status === 'completed' ? 'status-completed' : '';
+                eventClass += ` ${priorityClass} ${statusClass}`;
+                clickHandler = `showEventDetails(${event.id})`;
+            } else {
+                // Calendar event styling
+                const typeClass = event.type ? `event-type-${event.type}` : '';
+                eventClass += ` ${typeClass}`;
+                clickHandler = `editCalendarEvent('${event.dateStr || ''}', ${event.id})`;
+            }
+
+            html += `
+                <div class="${eventClass}"
+                     title="${eventTitle}"
+                     onclick="event.stopPropagation(); ${clickHandler}">
+                    ${eventTitle}
+                </div>
+            `;
+        });
+
+        // Show "+X more" if there are additional events
+        const remainingCount = events.length - MAX_VISIBLE_EVENTS;
+        if (remainingCount > 0) {
+            html += `<div class="calendar-more-events">+${remainingCount} more</div>`;
+        }
+
+        return html;
+    } catch (error) {
+        console.error('Error rendering day events:', error);
+        return '';
+    }
+}
+
+function showEventDetails(eventId) {
+    // Navigate to todo module and highlight the specific todo
+    openModule('todo');
+    // You can add logic here to highlight/scroll to the specific todo
+    console.log('Show event details for ID:', eventId);
 }
 
 function changeMonth(offset) {
@@ -697,8 +1073,185 @@ function changeMonth(offset) {
     renderCalendar();
 }
 
-function showDayDetails(day) {
-    alert(`Day ${day} - Add todo integration here`);
+// ================================================
+// CALENDAR EVENT MANAGEMENT
+// ================================================
+
+/**
+ * Handle click on a date cell
+ */
+function handleDateClick(dateStr, isPast) {
+    console.log('📅 Date clicked:', dateStr, 'isPast:', isPast);
+
+    if (isPast) {
+        showDateError('Cannot add events to past dates');
+        return;
+    }
+
+    // Open event modal for this date
+    openEventModal(dateStr);
+}
+
+/**
+ * Open event modal for adding new event
+ */
+function openEventModal(dateStr, event = null) {
+    const modal = document.getElementById('calendar-event-modal');
+    const modalTitle = document.getElementById('event-modal-title');
+    const deleteBtn = document.getElementById('delete-event-btn');
+
+    if (event) {
+        // Edit existing event
+        modalTitle.textContent = 'Edit Event';
+        document.getElementById('event-id').value = event.id;
+        document.getElementById('event-date').value = dateStr;
+        document.getElementById('event-title').value = event.title;
+        document.getElementById('event-type').value = event.type || 'other';
+        deleteBtn.style.display = 'inline-block';
+    } else {
+        // Add new event
+        modalTitle.textContent = 'Add Event';
+        document.getElementById('event-id').value = '';
+        document.getElementById('event-date').value = dateStr;
+        document.getElementById('event-title').value = '';
+        document.getElementById('event-type').value = 'assignment';
+        deleteBtn.style.display = 'none';
+    }
+
+    modal.style.display = 'flex';
+}
+
+/**
+ * Close event modal
+ */
+function closeEventModal() {
+    const modal = document.getElementById('calendar-event-modal');
+    modal.style.display = 'none';
+    document.getElementById('calendar-event-form').reset();
+}
+
+/**
+ * Save calendar event (create or update)
+ */
+function saveCalendarEvent(e) {
+    e.preventDefault();
+
+    const eventId = document.getElementById('event-id').value;
+    const dateStr = document.getElementById('event-date').value;
+    const title = document.getElementById('event-title').value.trim();
+    const type = document.getElementById('event-type').value;
+
+    if (!title) {
+        alert('Event title is required');
+        return;
+    }
+
+    if (!calendarEvents[dateStr]) {
+        calendarEvents[dateStr] = [];
+    }
+
+    if (eventId) {
+        // Update existing event
+        const eventIndex = calendarEvents[dateStr].findIndex(e => e.id == eventId);
+        if (eventIndex !== -1) {
+            calendarEvents[dateStr][eventIndex] = {
+                id: parseInt(eventId),
+                title: title,
+                type: type
+            };
+            console.log('✅ Event updated:', title);
+        }
+    } else {
+        // Create new event
+        const newEvent = {
+            id: nextEventId++,
+            title: title,
+            type: type
+        };
+        calendarEvents[dateStr].push(newEvent);
+        console.log('✅ Event created:', title);
+    }
+
+    // Save to localStorage
+    saveEventsToStorage();
+
+    // Close modal and re-render calendar
+    closeEventModal();
+    renderCalendar();
+}
+
+/**
+ * Delete calendar event
+ */
+function deleteCalendarEvent() {
+    if (!confirm('Delete this event?')) return;
+
+    const eventId = document.getElementById('event-id').value;
+    const dateStr = document.getElementById('event-date').value;
+
+    if (calendarEvents[dateStr]) {
+        calendarEvents[dateStr] = calendarEvents[dateStr].filter(e => e.id != eventId);
+
+        // Remove date key if no events left
+        if (calendarEvents[dateStr].length === 0) {
+            delete calendarEvents[dateStr];
+        }
+
+        console.log('✅ Event deleted');
+    }
+
+    // Save to localStorage
+    saveEventsToStorage();
+
+    // Close modal and re-render calendar
+    closeEventModal();
+    renderCalendar();
+}
+
+/**
+ * Edit an existing event
+ */
+function editCalendarEvent(dateStr, eventId) {
+    const event = calendarEvents[dateStr]?.find(e => e.id === eventId);
+    if (event) {
+        openEventModal(dateStr, event);
+    }
+}
+
+/**
+ * Save events to localStorage
+ */
+function saveEventsToStorage() {
+    try {
+        localStorage.setItem('focusflow_calendar_events', JSON.stringify(calendarEvents));
+        localStorage.setItem('focusflow_next_event_id', nextEventId.toString());
+        console.log('💾 Events saved to localStorage');
+    } catch (error) {
+        console.error('Failed to save events:', error);
+    }
+}
+
+/**
+ * Load events from localStorage
+ */
+function loadEventsFromStorage() {
+    try {
+        const savedEvents = localStorage.getItem('focusflow_calendar_events');
+        const savedNextId = localStorage.getItem('focusflow_next_event_id');
+
+        if (savedEvents) {
+            calendarEvents = JSON.parse(savedEvents);
+            console.log('📂 Loaded', Object.keys(calendarEvents).length, 'dates with events');
+        }
+
+        if (savedNextId) {
+            nextEventId = parseInt(savedNextId);
+        }
+    } catch (error) {
+        console.error('Failed to load events:', error);
+        calendarEvents = {};
+        nextEventId = 1;
+    }
 }
 
 // ================================================

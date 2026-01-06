@@ -1,0 +1,400 @@
+/**
+ * Premium Payment Modal
+ * public/assets/js/premium.js
+ *
+ * Handles dummy payment flow:
+ * 1. Open modal when premium feature is clicked
+ * 2. Show payment form
+ * 3. Simulate payment processing
+ * 4. Show success/error states
+ * 5. Refresh page to unlock premium features
+ */
+
+class PremiumPaymentModal {
+  constructor() {
+    this.isOpen = false;
+    this.isProcessing = false;
+    this.init();
+  }
+
+  init() {
+    // Create modal container if it doesn't exist
+    if (!document.getElementById("premium-modal-container")) {
+      this.createModal();
+    }
+
+    // Attach event listeners
+    this.attachEventListeners();
+  }
+
+  createModal() {
+    const container = document.createElement("div");
+    container.id = "premium-modal-container";
+    container.innerHTML = `
+      <div class="premium-modal-overlay" id="premiumOverlay">
+        <div class="premium-modal" id="premiumModal">
+          <div class="premium-modal-header">
+            <button class="premium-modal-close" id="premiumClose">&times;</button>
+            <div class="premium-crown-icon">👑</div>
+            <h2>Upgrade to Premium</h2>
+            <p>Unlock unlimited access to all features</p>
+          </div>
+
+          <div class="premium-modal-content" id="premiumModalContent">
+            <!-- Plan details -->
+            <div class="premium-plan-details" id="planDetails"></div>
+
+            <!-- Features list -->
+            <div class="premium-features">
+              <h4>What you'll get</h4>
+              <ul class="premium-features-list" id="featuresList"></ul>
+            </div>
+
+            <!-- Payment form -->
+            <form class="premium-payment-form" id="paymentForm">
+              <div class="premium-form-group">
+                <label>Full Name (Dummy)</label>
+                <input type="text" placeholder="John Doe" value="Demo User" required />
+              </div>
+
+              <div class="premium-form-group">
+                <label>Card Number (Dummy - Use any 16 digits)</label>
+                <input type="text" placeholder="4111 1111 1111 1111" maxlength="19" required />
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="premium-form-group">
+                  <label>Expiry (MM/YY)</label>
+                  <input type="text" placeholder="12/25" maxlength="5" required />
+                </div>
+                <div class="premium-form-group">
+                  <label>CVV (Any 3 digits)</label>
+                  <input type="text" placeholder="123" maxlength="3" required />
+                </div>
+              </div>
+
+              <p style="font-size: 12px; color: #64748B; margin-top: 16px; padding: 12px; background: #F8FAFC; border-radius: 8px; margin-bottom: 0;">
+                💡 <strong>Demo Mode:</strong> This is a dummy payment gateway. No real charges will be made. 
+                Enter any values above and click "Pay Now" to simulate a successful payment.
+              </p>
+            </form>
+
+            <!-- Action buttons -->
+            <div class="premium-modal-actions" style="margin-top: 24px;">
+              <button class="premium-btn-pay" id="payNowBtn">Pay Now</button>
+              <button type="button" class="premium-btn-cancel" id="cancelBtn">Cancel</button>
+            </div>
+          </div>
+
+          <!-- Processing state -->
+          <div class="premium-payment-processing" id="processingState" style="display: none;">
+            <div class="premium-processing-spinner"></div>
+            <p class="premium-processing-text">Processing payment...</p>
+            <p style="font-size: 12px; color: #94A3B8; margin-top: 12px;">
+              This is a simulated payment. Please wait...
+            </p>
+          </div>
+
+          <!-- Success state -->
+          <div class="premium-success-state" id="successState" style="display: none;">
+            <div class="premium-success-icon">✓</div>
+            <h3 class="premium-success-title">Payment Successful!</h3>
+            <p class="premium-success-message">
+              Your premium subscription is now active. 
+              All premium features are unlocked.
+            </p>
+            <div class="premium-success-order-id">
+              <span class="label">Order ID</span>
+              <span class="value" id="successOrderId"></span>
+            </div>
+            <button type="button" class="premium-btn-done" id="doneBtn">
+              Continue to Dashboard
+            </button>
+          </div>
+
+          <!-- Error state -->
+          <div class="premium-error-state" id="errorState" style="display: none;">
+            <div class="premium-error-icon">⚠️</div>
+            <h3 class="premium-error-title">Payment Failed</h3>
+            <p class="premium-error-message" id="errorMessage"></p>
+            <button type="button" class="premium-btn-cancel" id="retryBtn" 
+              style="width: 100%; margin-top: 12px;">
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(container);
+  }
+
+  attachEventListeners() {
+    // Close button
+    document
+      .getElementById("premiumClose")
+      .addEventListener("click", () => this.close());
+
+    // Cancel button
+    document
+      .getElementById("cancelBtn")
+      .addEventListener("click", () => this.close());
+
+    // Overlay click to close
+    document.getElementById("premiumOverlay").addEventListener("click", (e) => {
+      if (e.target.id === "premiumOverlay") this.close();
+    });
+
+    // Pay Now button
+    document.getElementById("payNowBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      this.processPayment();
+    });
+
+    // Done button (success state)
+    document.getElementById("doneBtn").addEventListener("click", () => {
+      this.onPaymentSuccess();
+    });
+
+    // Retry button (error state)
+    document.getElementById("retryBtn").addEventListener("click", () => {
+      this.resetForm();
+    });
+
+    // Attach modal triggers to locked cards
+    this.attachCardListeners();
+  }
+
+  attachCardListeners() {
+    // Listen for clicks on premium locked cards
+    document.querySelectorAll(".module-card.locked").forEach((card) => {
+      card.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.open();
+      });
+    });
+  }
+
+  async open() {
+    if (this.isOpen) return;
+
+    this.isOpen = true;
+    const overlay = document.getElementById("premiumOverlay");
+    overlay.classList.add("active");
+
+    // Load plan details
+    await this.loadPlanDetails();
+  }
+
+  close() {
+    if (!this.isOpen) return;
+
+    this.isOpen = false;
+    const overlay = document.getElementById("premiumOverlay");
+    overlay.classList.remove("active");
+
+    // Reset form
+    this.resetForm();
+  }
+
+  async loadPlanDetails() {
+    try {
+      // Get available plans from API
+      const response = await fetch("api/premium/get_plans.php");
+      const data = await response.json();
+
+      if (data.success && data.plans.length > 0) {
+        const plan = data.plans[0]; // Use first plan
+        this.displayPlanDetails(plan);
+      } else {
+        // Fallback plan
+        this.displayPlanDetails({
+          name: "Pro Plan",
+          description: "Unlock all premium features for enhanced productivity",
+          price: 4.99,
+          billing_cycle: "monthly",
+          features: JSON.parse(
+            '["QuizForge - Create and attempt unlimited quizzes", "InfoVault - Premium note storage", "Advanced analytics and progress tracking", "Priority support", "Ad-free experience"]'
+          ),
+        });
+      }
+    } catch (error) {
+      console.error("Error loading plans:", error);
+      // Show fallback
+      this.displayPlanDetails({
+        name: "Pro Plan",
+        description: "Unlock all premium features for enhanced productivity",
+        price: 4.99,
+        billing_cycle: "monthly",
+        features: [
+          "QuizForge - Create and attempt unlimited quizzes",
+          "InfoVault - Premium note storage",
+          "Advanced analytics and progress tracking",
+          "Priority support",
+          "Ad-free experience",
+        ],
+      });
+    }
+  }
+
+  displayPlanDetails(plan) {
+    const planDetails = document.getElementById("planDetails");
+    planDetails.innerHTML = `
+      <div class="premium-plan-price">
+        <span class="currency">$</span>
+        <span class="amount">${parseFloat(plan.price).toFixed(2)}</span>
+        <span class="period">/${this.getBillingCycleName(
+          plan.billing_cycle
+        )}</span>
+      </div>
+      <h3 class="premium-plan-title">${plan.name}</h3>
+      <p class="premium-plan-subtitle">${plan.description}</p>
+    `;
+
+    // Display features
+    const featuresList = document.getElementById("featuresList");
+    const features = Array.isArray(plan.features)
+      ? plan.features
+      : JSON.parse(plan.features || "[]");
+    featuresList.innerHTML = features.map((f) => `<li>${f}</li>`).join("");
+
+    // Store plan info for later use
+    this.currentPlan = plan;
+  }
+
+  getBillingCycleName(cycle) {
+    const names = {
+      monthly: "month",
+      yearly: "year",
+    };
+    return names[cycle] || cycle;
+  }
+
+  async processPayment() {
+    if (this.isProcessing) return;
+
+    const form = document.getElementById("paymentForm");
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    this.isProcessing = true;
+
+    // Show processing state
+    document.getElementById("premiumModalContent").style.display = "none";
+    document.getElementById("processingState").style.display = "block";
+
+    try {
+      // Step 1: Initiate payment
+      const initiateResponse = await fetch("api/premium/initiate_payment.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          plan: this.currentPlan.name,
+        }),
+      });
+
+      const initiateData = await initiateResponse.json();
+
+      if (!initiateData.success) {
+        throw new Error(initiateData.error || "Failed to initiate payment");
+      }
+
+      const payment = initiateData.payment;
+
+      // Simulate payment delay (2-3 seconds)
+      await this.simulatePaymentProcessing();
+
+      // Step 2: Confirm payment
+      const confirmResponse = await fetch("api/premium/confirm_payment.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          order_id: payment.order_id,
+          payment_id: payment.payment_id,
+        }),
+      });
+
+      const confirmData = await confirmResponse.json();
+
+      if (!confirmData.success) {
+        throw new Error(confirmData.error || "Payment confirmation failed");
+      }
+
+      // Show success state
+      this.showSuccessState(payment.order_id);
+    } catch (error) {
+      console.error("Payment error:", error);
+      this.showErrorState(error.message);
+    } finally {
+      this.isProcessing = false;
+    }
+  }
+
+  simulatePaymentProcessing() {
+    return new Promise((resolve) => {
+      // Simulate 2-3 seconds of processing
+      setTimeout(() => resolve(), 2000 + Math.random() * 1000);
+    });
+  }
+
+  showSuccessState(orderId) {
+    document.getElementById("processingState").style.display = "none";
+    document.getElementById("successState").style.display = "block";
+    document.getElementById("successOrderId").textContent = orderId;
+  }
+
+  showErrorState(errorMessage) {
+    document.getElementById("processingState").style.display = "none";
+    document.getElementById("errorState").style.display = "block";
+    document.getElementById("errorMessage").textContent =
+      errorMessage || "Something went wrong. Please try again.";
+  }
+
+  resetForm() {
+    document.getElementById("premiumModalContent").style.display = "block";
+    document.getElementById("processingState").style.display = "none";
+    document.getElementById("successState").style.display = "none";
+    document.getElementById("errorState").style.display = "none";
+    document.getElementById("paymentForm").reset();
+  }
+
+  onPaymentSuccess() {
+    // Close modal and refresh to show unlocked features
+    this.close();
+
+    // Show success toast
+    this.showToast("Premium activated! Reloading...", "success");
+
+    // Reload page after brief delay
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
+  }
+
+  showToast(message, type = "info") {
+    const toast = document.createElement("div");
+    toast.className = `premium-toast ${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    // Trigger animation
+    setTimeout(() => toast.classList.add("visible"), 10);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+      toast.classList.remove("visible");
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+}
+
+// Initialize when DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  window.premiumModal = new PremiumPaymentModal();
+});

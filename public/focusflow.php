@@ -206,6 +206,28 @@ $page_title = 'FocusFlow - Productivity Zone';
             }
         }
 
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+        }
+
         /* Pomodoro Timer - white card matching CollabSphere size */
         .pomodoro-section {
             width: 100%;
@@ -305,54 +327,201 @@ $page_title = 'FocusFlow - Productivity Zone';
             text-decoration: line-through;
         }
 
-        /* Calendar Styles */
+        /* Calendar Styles - Google Calendar Month View */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: var(--space-2);
+            gap: 1px;
+            background: var(--neutral-300);
             margin-top: var(--space-6);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
         }
 
         .calendar-day-header {
             text-align: center;
-            font-weight: 700;
-            color: var(--neutral-700);
-            padding: var(--space-3);
-            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--neutral-600);
+            padding: 12px 8px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #f8f9fa;
+            border-bottom: 2px solid var(--neutral-300);
         }
 
         .calendar-day {
-            aspect-ratio: 1;
+            height: 120px;
             background: white;
-            border: 2px solid var(--neutral-200);
-            border-radius: var(--radius-md);
-            padding: var(--space-2);
+            padding: 6px;
             cursor: pointer;
-            transition: all var(--transition-fast);
+            transition: background var(--transition-fast);
             position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         .calendar-day:hover {
-            border-color: var(--primary-blue);
-            transform: scale(1.05);
+            background: #f8f9fa;
+        }
+
+        .calendar-day.empty {
+            background: #fafafa;
+            cursor: default;
+            pointer-events: none;
         }
 
         .calendar-day.today {
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
-            color: white;
-            border-color: transparent;
+            background: #e8f0fe;
         }
 
-        .calendar-day.has-events::after {
-            content: '';
-            position: absolute;
-            bottom: 4px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
-            background: var(--accent-orange);
+        /* Date number at top corner */
+        .calendar-date-number {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--neutral-700);
+            margin-bottom: 4px;
+            flex-shrink: 0;
+        }
+
+        .calendar-day.today .calendar-date-number {
+            background: var(--primary-blue);
+            color: white;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        /* Event container inside cell */
+        .calendar-events {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        /* Event pill (horizontal bar) */
+        .calendar-event {
+            background: var(--primary-blue);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.4;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .calendar-event:hover {
+            transform: translateX(2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        /* Event priority colors */
+        .calendar-event.priority-high {
+            background: #d93025;
+        }
+
+        .calendar-event.priority-medium {
+            background: #f9ab00;
+        }
+
+        .calendar-event.priority-low {
+            background: #1a73e8;
+        }
+
+        .calendar-event.status-completed {
+            background: #188038;
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        /* Calendar event type colors */
+        .calendar-event.event-type-assignment {
+            background: #d93025;
+        }
+
+        .calendar-event.event-type-study {
+            background: #1a73e8;
+        }
+
+        .calendar-event.event-type-reminder {
+            background: #f9ab00;
+        }
+
+        .calendar-event.event-type-meeting {
+            background: #7c4dff;
+        }
+
+        .calendar-event.event-type-other {
+            background: #5f6368;
+        }
+
+        /* More events indicator */
+        .calendar-more-events {
+            font-size: 0.65rem;
+            color: var(--neutral-600);
+            padding: 2px 6px;
+            cursor: pointer;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .calendar-more-events:hover {
+            color: var(--primary-blue);
+            text-decoration: underline;
+        }
+
+        /* Calendar Responsive Styles */
+        @media (max-width: 980px) {
+            .calendar-day {
+                height: 100px;
+                padding: 4px;
+            }
+
+            .calendar-event {
+                font-size: 0.65rem;
+                padding: 1px 4px;
+            }
+
+            .calendar-date-number {
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .calendar-day {
+                height: 80px;
+                padding: 3px;
+            }
+
+            .calendar-day-header {
+                padding: 8px 4px;
+                font-size: 0.65rem;
+            }
+
+            .calendar-date-number {
+                font-size: 0.65rem;
+            }
+
+            .calendar-event {
+                font-size: 0.6rem;
+                padding: 1px 3px;
+            }
+
+            .calendar-more-events {
+                font-size: 0.6rem;
+            }
         }
 
         /* Study Planner Styles */
@@ -773,7 +942,7 @@ $page_title = 'FocusFlow - Productivity Zone';
                     </div>
                 </div>
 
-                <div class="calendar-grid">
+                <div class="calendar-grid" id="calendar-grid">
                     <div class="calendar-day-header">Sun</div>
                     <div class="calendar-day-header">Mon</div>
                     <div class="calendar-day-header">Tue</div>
@@ -781,9 +950,7 @@ $page_title = 'FocusFlow - Productivity Zone';
                     <div class="calendar-day-header">Thu</div>
                     <div class="calendar-day-header">Fri</div>
                     <div class="calendar-day-header">Sat</div>
-                    <div id="calendar-days">
-                        <!-- Calendar days loaded via JavaScript -->
-                    </div>
+                    <!-- Calendar days loaded via JavaScript -->
                 </div>
             </div>
         </div>
@@ -934,7 +1101,43 @@ $page_title = 'FocusFlow - Productivity Zone';
         </div>
     </div>
 
+    <!-- Calendar Event Modal -->
+    <div id="calendar-event-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-container" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 id="event-modal-title">Add Event</h3>
+                <button class="modal-close" onclick="closeEventModal()">&times;</button>
+            </div>
+            <form id="calendar-event-form" onsubmit="saveCalendarEvent(event)">
+                <input type="hidden" id="event-id" value="">
+                <input type="hidden" id="event-date" value="">
+
+                <div class="modern-input-group">
+                    <label class="modern-label">Event Title*</label>
+                    <input type="text" id="event-title" class="modern-input" placeholder="e.g., Team Meeting" required>
+                </div>
+
+                <div class="modern-input-group">
+                    <label class="modern-label">Type</label>
+                    <select id="event-type" class="modern-input">
+                        <option value="assignment">📝 Assignment</option>
+                        <option value="study">📚 Study Session</option>
+                        <option value="reminder">⏰ Reminder</option>
+                        <option value="meeting">👥 Meeting</option>
+                        <option value="other">📌 Other</option>
+                    </select>
+                </div>
+
+                <div class="flex-gap-4" style="justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="modern-btn modern-btn-secondary" onclick="closeEventModal()">Cancel</button>
+                    <button type="button" id="delete-event-btn" class="modern-btn" style="background: #dc3545; color: white; display: none;" onclick="deleteCalendarEvent()">Delete</button>
+                    <button type="submit" class="modern-btn modern-btn-primary">Save Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="assets/js/focusflow_complete.js"></script>
+    <script src="assets/js/focusflow_complete.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

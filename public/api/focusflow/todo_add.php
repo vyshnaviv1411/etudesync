@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../../../includes/db.php';
+require_once __DIR__ . '/validate_date.php';
 
 header('Content-Type: application/json');
 
@@ -21,6 +22,9 @@ if (empty($title)) {
     echo json_encode(['success' => false, 'message' => 'Title is required']);
     exit;
 }
+
+// CRITICAL: Server-side validation for past dates (centralized)
+validateDateOrExit($due_date, 'due date');
 
 try {
     $stmt = $pdo->prepare("
