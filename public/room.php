@@ -18,6 +18,11 @@ if (empty($_SESSION['user_id'])) {
 }
 
 $uid = (int) $_SESSION['user_id'];
+// check premium status
+$stmt = $pdo->prepare("SELECT is_premium FROM users WHERE id = ?");
+$stmt->execute([$uid]);
+$isPremium = (int)$stmt->fetchColumn();
+
 
 // validate inputs: need room_id and code (code optional)
 $room_code = isset($_GET['code']) ? trim($_GET['code']) : '';
@@ -138,7 +143,7 @@ body.dashboard-page .collab-hero {
 <div class="dashboard-bg"
      aria-hidden="true"
      style="
-       background-image: url('assets/images/collabsbg.jpg');
+       background-image: url('assets/images/infovault_bg.jpg');
        background-size: cover;
        background-position: center;
        background-repeat: no-repeat;
@@ -167,7 +172,13 @@ body.dashboard-page .collab-hero {
 
           <div class="small-muted">Room ID: <?= (int)$room['room_id'] ?></div>
 
-          <a class="btn small" href="collabsphere.php">Back</a>
+          <form method="POST" action="leave_room.php" style="display:inline;">
+  <input type="hidden" name="room_id" value="<?= (int)$room_id ?>">
+  <button type="submit" class="btn small danger">
+    End Session
+  </button>
+</form>
+
         </div>
       </div>
 
@@ -296,6 +307,9 @@ body.dashboard-page .collab-hero {
 
   <div style="height:14px"></div>
 
+ 
+
+
   <!-- FILES -->
   <div class="room-panel glass-card" id="filesPanel">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -303,12 +317,37 @@ body.dashboard-page .collab-hero {
       <small style="color:var(--muted)">Upload important files</small>
     </div>
 
-    <form id="fileUploadForm"
-          data-room="<?= (int)$room_id ?>"
-          style="display:flex;gap:8px;align-items:center;">
-      <input id="fileInput" type="file" />
-      <button type="submit" class="btn primary small">Upload</button>
-    </form>
+   <?php if ($isPremium): ?>
+
+  <!-- PREMIUM USER -->
+  <form id="fileUploadForm"
+        data-room="<?= (int)$room_id ?>"
+        style="display:flex;gap:8px;align-items:center;">
+      <a href="infovault_files.php" class="btn primary small">
+  Choose from InfoVault
+</a>
+
+  </form>
+
+<?php else: ?>
+
+  <!-- NON-PREMIUM USER -->
+  <div style="display:flex;flex-direction:column;gap:8px;">
+    <div class="small-muted">
+      File upload is a premium feature.
+    </div>
+
+    <a href="upgrade.php"
+   class="btn primary small"
+   style="box-shadow:0 0 12px rgba(124,77,255,0.6);">
+  ⭐ Upgrade to Premium
+</a>
+
+  </div>
+
+<?php endif; ?>
+
+
 
     <div id="filesList"
          style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
@@ -329,7 +368,11 @@ const ROOM_ID = <?= (int)$room_id ?>;
 const ROOM_CODE = <?= json_encode($room['room_code']) ?>;
 const USER_ID = <?= (int)$uid ?>;
 const CAN_MANAGE = <?= $canManage ? 'true' : 'false' ?>;
+
+/* 🔑 THIS IS STEP 3 */
+sessionStorage.setItem('ACTIVE_ROOM_ID', ROOM_ID);
 </script>
+
 
 <!-- load core feature scripts (chat has fallback inline below) -->
 <script src="assets/js/whiteboard.js?v=1" defer></script>
@@ -366,6 +409,24 @@ const CAN_MANAGE = <?= $canManage ? 'true' : 'false' ?>;
             style="flex:1;border:none;background:#000"></iframe>
   </div>
 </div>
+<script>
+document.getElementById('endRoomBtn')?.addEventListener('click', () => {
+  if (!confirm('End session? Files will be removed.')) return;
+
+  fetch('api/end_room.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'room_id=' + ROOM_ID
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert('Session ended');
+      location.reload();
+    }
+  });
+});
+</script>
 
 
 <?php

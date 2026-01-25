@@ -1,6 +1,3 @@
-/* public/assets/js/script.js
-   Simple automatic background slider
-*/
 (function () {
   const images = [
     'assets/images/background1.jpg',
@@ -9,26 +6,24 @@
     'assets/images/background4.jpg'
   ];
 
-  const duration = 4000; // ms (changed from 8000 to 4000 = 4 seconds)
-  let idx = 0;
-
   const container = document.getElementById('bg-slider');
   if (!container) return;
 
-  // create slide elements
+  let index = 0;
+
   images.forEach((src, i) => {
-    const el = document.createElement('div');
-    el.className = 'slide';
-    el.style.backgroundImage = `url('${src}')`;
-    if (i === 0) el.classList.add('visible');
-    container.appendChild(el);
+    const slide = document.createElement('div');
+    slide.className = 'slide';
+    slide.style.backgroundImage = `url(${src})`;
+    if (i === 0) slide.classList.add('visible');
+    container.appendChild(slide);
   });
 
   const slides = container.querySelectorAll('.slide');
 
   setInterval(() => {
-    slides[idx].classList.remove('visible');
-    idx = (idx + 1) % slides.length;
-    slides[idx].classList.add('visible');
-  }, duration);
+    slides[index].classList.remove('visible');
+    index = (index + 1) % slides.length;
+    slides[index].classList.add('visible');
+  }, 4000);
 })();

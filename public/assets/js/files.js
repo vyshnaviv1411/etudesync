@@ -1,17 +1,15 @@
-// public/assets/js/files.js
+// etudesync/assets/js/files.js
 document.addEventListener('DOMContentLoaded', () => {
 
-  const uploadForm = document.getElementById('fileUploadForm');
-  const fileInput  = document.getElementById('fileInput');
-  const filesList  = document.getElementById('filesList');
+  const filesList = document.getElementById('filesList');
+  if (!filesList) return;
 
-  if (!uploadForm || !fileInput || !filesList) return;
-
-  const roomId = uploadForm.dataset.room;
+  // Provided by room.php
+  const roomId = typeof ROOM_ID !== 'undefined' ? ROOM_ID : null;
   if (!roomId) return;
 
   /* =========================
-     FETCH FILES
+     FETCH ROOM FILES
   ========================== */
   async function fetchFiles() {
     try {
@@ -19,6 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
         `api/fetch_files.php?room_id=${roomId}`,
         { credentials: 'same-origin' }
       );
+
+      if (!res.ok) {
+        console.error('Fetch failed:', res.status);
+        return;
+      }
 
       const data = await res.json();
       if (!data.success) return;
@@ -37,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!files.length) {
       filesList.innerHTML =
-        `<div style="color:var(--muted)">No files uploaded yet.</div>`;
+        `<div class="small-muted">No files shared in this room.</div>`;
       return;
     }
 
@@ -50,25 +53,24 @@ document.addEventListener('DOMContentLoaded', () => {
       row.style.gap = '12px';
       row.style.padding = '10px';
 
+      const fileUrl = assetUrl(f.file_path);
+
       row.innerHTML = `
-        <div class="file-meta">
-          <div class="file-name" style="font-weight:600">
+        <div>
+          <div style="font-weight:600">
             ${escapeHtml(f.file_name)}
           </div>
-          <div class="file-sub small-muted">
-            ${escapeHtml(f.user_name || 'Unknown')}
-            • ${f.size_readable}
-            • ${new Date(f.uploaded_at).toLocaleString()}
+          <div class="small-muted">
+            Shared by ${escapeHtml(f.shared_by || 'Unknown')}
           </div>
         </div>
 
-        <div class="file-actions">
-          <a class="btn small outline"
-   href="/${f.file_path}"
-   target="_blank">
-   Open
-</a>
-
+        <div>
+          <a href="${fileUrl}"
+             target="_blank"
+             class="btn small outline">
+            Open
+          </a>
         </div>
       `;
 
@@ -77,67 +79,30 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* =========================
-     UPLOAD FILE
-  ========================== */
-  uploadForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+     HELPERS
+  ========================= */
 
-    if (!fileInput.files.length) {
-      alert('Please choose a file');
-      return;
-    }
+  function assetUrl(path) {
+    if (!path) return '';
+    return '/etudesync/' + String(path).replace(/^\/+/, '');
+  }
 
-    const fd = new FormData();
-    fd.append('room_id', roomId);
-    fd.append('file', fileInput.files[0]);
-
-    const btn = uploadForm.querySelector('button[type="submit"]');
-    btn.disabled = true;
-    btn.textContent = 'Uploading…';
-
-    try {
-      const res = await fetch('api/upload_file.php', {
-        method: 'POST',
-        body: fd,
-        credentials: 'same-origin'
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        fileInput.value = '';
-        fetchFiles();
-      } else {
-        alert('Upload failed: ' + (data.error || 'Unknown error'));
-      }
-
-    } catch (err) {
-      console.error('Upload error:', err);
-      alert('Upload failed. Check console.');
-    }
-
-    btn.disabled = false;
-    btn.textContent = 'Upload';
-  });
-
-  /* =========================
-     UTILITY
-  ========================== */
-  function escapeHtml(s) {
-    if (!s) return '';
-    return String(s).replace(/[&<>"']/g, (m) => ({
+  // XSS-safe rendering
+  function escapeHtml(value) {
+    if (!value) return '';
+    return String(value).replace(/[&<>"']/g, c => ({
       '&': '&amp;',
       '<': '&lt;',
       '>': '&gt;',
       '"': '&quot;',
       "'": '&#39;'
-    }[m]));
+    })[c]);
   }
 
   /* =========================
      INIT
   ========================== */
   fetchFiles();
-  setInterval(fetchFiles, 8000); // refresh every 8s
+  setInterval(fetchFiles, 8000);
 
 });

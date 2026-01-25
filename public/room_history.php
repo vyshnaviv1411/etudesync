@@ -21,7 +21,7 @@ $uid = (int) $_SESSION['user_id'];
 <div class="dashboard-bg"
      aria-hidden="true"
      style="
-       background-image: url('assets/images/collabsbg.jpg');
+       background-image: url('assets/images/infovault_bg.jpg');
        background-size: cover;
        background-position: center;
        background-repeat: no-repeat;
@@ -47,15 +47,23 @@ $uid = (int) $_SESSION['user_id'];
       $createdRooms = $createdStmt->fetchAll();
 
       // Fetch rooms the user joined (excluding ones they host to avoid duplicates)
-      $joinedStmt = $pdo->prepare("
-        SELECT r.room_id, r.title, r.topic, r.room_code, rp.joined_at
-        FROM room_participants rp
-        JOIN rooms r ON rp.room_id = r.room_id
-        WHERE rp.user_id = :uid AND r.host_user_id != :uid
-        ORDER BY rp.joined_at DESC
-      ");
-      $joinedStmt->execute([':uid' => $uid]);
-      $joinedRooms = $joinedStmt->fetchAll();
+$joinedStmt = $pdo->prepare("
+   SELECT DISTINCT
+  r.room_id,
+  r.title,
+  r.topic,
+  r.room_code,
+  rp.joined_at
+FROM room_participants rp
+JOIN rooms r ON r.room_id = rp.room_id
+WHERE rp.user_id = :uid
+  AND r.host_user_id <> :uid
+ORDER BY rp.joined_at DESC
+
+");
+$joinedStmt->execute([':uid' => $uid]);
+$joinedRooms = $joinedStmt->fetchAll(PDO::FETCH_ASSOC);
+
       ?>
 
       <section style="margin-top:18px;">
@@ -110,7 +118,6 @@ $uid = (int) $_SESSION['user_id'];
                       <div style="font-size:0.85rem;color:var(--muted)"><?= date('d M Y, H:i', strtotime($r['joined_at'])) ?></div>
                       <div style="margin-top:8px">
                         <a class="btn small" href="room.php?room_id=<?= (int)$r['room_id'] ?>&code=<?= urlencode($r['room_code']) ?>">Open</a>
-                        <a class="btn small outline" href="collabsphere.php" style="margin-left:8px">Details</a>
                       </div>
                     </div>
                   </div>

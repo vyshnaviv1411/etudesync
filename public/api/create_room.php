@@ -1,6 +1,6 @@
 <?php
 // public/api/create_room.php
-// Create room + auto join host + return redirect info (AJAX)
+// Create room ONLY (host is NOT a participant)
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
@@ -35,7 +35,6 @@ if (!empty($_POST['scheduled_time'])) {
         $raw .= ':00';
     }
 
-    // ✅ BLOCK PAST DATE/TIME
     $scheduledTime = new DateTime($raw);
     $now = new DateTime();
 
@@ -68,7 +67,7 @@ try {
         $chk->execute([$room_code]);
     } while ($chk->fetch());
 
-    // Insert room
+    // ✅ Insert room ONLY
     $stmt = $pdo->prepare("
         INSERT INTO rooms (title, topic, room_code, scheduled_time, host_user_id)
         VALUES (?, ?, ?, ?, ?)
@@ -83,22 +82,15 @@ try {
 
     $room_id = (int)$pdo->lastInsertId();
 
-    // ✅ Add host as participant (NO role column)
-    $stmt = $pdo->prepare("
-        INSERT INTO room_participants (room_id, user_id)
-        VALUES (?, ?)
-    ");
-    $stmt->execute([$room_id, $user_id]);
+    // ❌ DO NOT INSERT HOST INTO room_participants
 
-    // 🔑 Session
     $_SESSION['current_room_id'] = $room_id;
 
-    // ✅ Response
     echo json_encode([
         'success'   => true,
         'room_id'   => $room_id,
         'room_code' => $room_code,
-        'redirect'  => 'room.php?code=' . $room_code
+        'redirect'  => 'room.php?room_id=' . $room_id . '&code=' . $room_code
     ]);
     exit;
 
@@ -106,8 +98,7 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error'   => 'Failed to create room',
-        'details' => $e->getMessage()
+        'error'   => 'Failed to create room'
     ]);
     exit;
 }

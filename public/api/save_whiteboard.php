@@ -1,6 +1,6 @@
 <?php
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();
-header('Content-Type: application/json; charset=utf-8');
+header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../includes/db.php';
 
@@ -10,7 +10,7 @@ if (empty($_SESSION['user_id'])) {
 }
 
 $room_id = (int)($_POST['room_id'] ?? 0);
-$data    = $_POST['data'] ?? '';
+$data = $_POST['data'] ?? '';
 
 if ($room_id <= 0 || $data === '') {
     echo json_encode(['success'=>false,'error'=>'Invalid data']);
@@ -18,16 +18,16 @@ if ($room_id <= 0 || $data === '') {
 }
 
 try {
-    // Upsert whiteboard data
     $stmt = $pdo->prepare("
         INSERT INTO whiteboard_data (room_id, data)
-        VALUES (:room, :data)
+        VALUES (:room_id, :data)
         ON DUPLICATE KEY UPDATE
-        data = VALUES(data),
-        updated_at = CURRENT_TIMESTAMP
+          data = VALUES(data),
+          updated_at = CURRENT_TIMESTAMP
     ");
+
     $stmt->execute([
-        ':room' => $room_id,
+        ':room_id' => $room_id,
         ':data' => $data
     ]);
 

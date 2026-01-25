@@ -21,7 +21,7 @@ require_once __DIR__ . '/../includes/header_dashboard.php';
 <div class="dashboard-bg"
      aria-hidden="true"
      style="
-       background-image: url('assets/images/collabsbg.jpg');
+       background-image: url('assets/images/infovault_bg.jpg');
        background-size: cover;
        background-position: center;
        background-repeat: no-repeat;

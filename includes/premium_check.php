@@ -14,7 +14,8 @@ require_once __DIR__ . '/db.php';
  * Centralized premium user management
  */
 define('PREMIUM_WHITELIST', [
-    'siddhitripathi11.16@gmail.com'
+    'siddhitripathi11.16@gmail.com',
+    'vyshnavivalasani@gmail.com'
 ]);
 
 /**

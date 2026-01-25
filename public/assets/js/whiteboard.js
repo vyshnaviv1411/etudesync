@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let brushColor = '#ffffff';
   let history = [];
   let lastRemoteData = null;
-  let isApplyingRemote = false;
+  
 
   /* ------------------ CANVAS SETUP ------------------ */
 
@@ -120,37 +120,36 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function fetchRemoteBoard() {
-    if (drawing) return; // ❗ don’t overwrite while drawing
+  if (drawing) return;
 
-    try {
-      const res = await fetch(`api/fetch_whiteboard.php?room_id=${ROOM_ID}`, {
-        credentials: 'same-origin'
-      });
-      const j = await res.json();
+  try {
+    const res = await fetch(`api/fetch_whiteboard.php?room_id=${ROOM_ID}`, {
+      credentials: 'same-origin'
+    });
+    const j = await res.json();
 
-      if (!j.data || j.data === lastRemoteData) return;
+    if (!j.success || !j.data || j.data === lastRemoteData) return;
 
-      lastRemoteData = j.data;
-      isApplyingRemote = true;
+    lastRemoteData = j.data;
 
-      const img = new Image();
-      img.src = j.data;
-      img.onload = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(
-          img,
-          0,
-          0,
-          canvas.width / (window.devicePixelRatio || 1),
-          canvas.height / (window.devicePixelRatio || 1)
-        );
-        history = [j.data];
-        isApplyingRemote = false;
-      };
-    } catch (e) {
-      console.error('Whiteboard sync error', e);
-    }
+    const img = new Image();
+    img.src = j.data;
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(
+        img,
+        0,
+        0,
+        canvas.width / (window.devicePixelRatio || 1),
+        canvas.height / (window.devicePixelRatio || 1)
+      );
+      history = [j.data];
+    };
+  } catch (e) {
+    console.error('Whiteboard sync error', e);
   }
+}
+
 
   setInterval(fetchRemoteBoard, 2000); // ⏱ polling
 

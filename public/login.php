@@ -5,10 +5,12 @@ if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/header_public.php';
+
 ?>
 
 <div class="auth-page">
-  <div class="auth-wrap">
+  <div class="auth-wrap container">
+
     <div class="glass-auth-card">
 
       <img src="assets/images/logo.jpg" alt="ÉtudeSync" class="logo-center" loading="lazy" />

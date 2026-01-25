@@ -1,10 +1,13 @@
 <?php
+
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/header_public.php';
+
 ?>
 
-<section class="about-wrap">
+<section class="about-wrap container">
+
   <div class="about-card glass-card">
 
     <!-- ABOUT / HERO -->

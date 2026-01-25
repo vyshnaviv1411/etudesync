@@ -1,4 +1,22 @@
 /* EtudeSync: Premium glassmorphism + rotating background (public/assets/css/style.css) */
+/* ===== UNIVERSAL TEXT SYSTEM ===== */
+:root {
+  /* Dark text (for white cards) */
+  --text-dark-main: #0f172a;     /* slate-900 */
+  --text-dark-soft: #334155;     /* slate-700 */
+  --text-dark-muted: #64748b;    /* slate-500 */
+
+  /* Light text (for glass / dark bg) */
+  --text-light-main: #f8fafc;    /* slate-50 */
+  --text-light-soft: #e2e8f0;    /* slate-200 */
+  --text-light-muted: #94a3b8;   /* slate-400 */
+
+  /* Card backgrounds */
+  --card-white: #ffffff;
+  --card-glass: rgba(255,255,255,0.10);
+}
+
+
 :root {
   --accent1: #7c4dff;
   --accent2: #47d7d3;
@@ -122,7 +140,8 @@ body {
 }
 
 /* hero */
-.hero {
+/* ===== HERO: INDEX PAGE ONLY ===== */
+body.index-page .hero {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -130,6 +149,16 @@ body {
   text-align: center;
   padding: 48px 0;
 }
+
+/* ===== HERO RESET FOR NON-INDEX PAGES ===== */
+body:not(.index-page) .hero {
+  display: block;
+  height: auto;
+  padding: 32px 0;
+  text-align: left;
+}
+
+
 .hero-inner {
   max-width: 880px;
   padding: 32px;
@@ -3038,4 +3067,829 @@ body.dashboard-page .module-card .module-name
 
 .profile-dropdown a:hover {
   background: rgba(124,77,255,0.18);
+}
+
+
+/* ===============================
+   FORCE BACKGROUND SLIDER TO RENDER
+   =============================== */
+
+body.index-page #bg-slider {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 0;
+}
+
+body.index-page #bg-slider .slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+}
+
+body.index-page #bg-slider .slide.visible {
+  opacity: 1;
+}
+
+/* Overlay */
+body.index-page .bg-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 1;
+}
+
+/* Content above background */
+body.index-page .site-topbar,
+body.index-page .main-content,
+body.index-page .site-footer {
+  position: relative;
+  z-index: 2;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: Poppins, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+/* HEADER */
+.site-topbar {
+  padding: 16px;
+  background: rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 3;
+}
+
+.site-topbar a {
+  color: #fff;
+  text-decoration: none;
+  margin-right: 12px;
+}
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* GLASS CARD */
+.ff-glass {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(18px);
+  padding: 40px;
+  border-radius: 20px;
+  color: #fff;
+  text-align: center;
+}
+
+/* BUTTON */
+.btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg,#7c4dff,#47d7d3);
+  color: #fff;
+  border-radius: 30px;
+  text-decoration: none;
+}
+
+/* BACKGROUND SLIDER */
+.bg-slider {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bg-slider .slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.bg-slider .slide.visible {
+  opacity: 1;
+}
+
+/* OVERLAY */
+.bg-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 1;
+}
+
+/* FOOTER */
+.site-footer {
+  text-align: center;
+  padding: 14px;
+  background: rgba(0,0,0,0.3);
+  color: #fff;
+  position: relative;
+  z-index: 3;
+}
+
+/* ===== FIX HEADER ALIGNMENT ===== */
+
+.site-topbar {
+  display: flex;
+  align-items: center;
+}
+
+.site-topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.brand-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.hero {
+  min-height: calc(100vh - 120px);
+}
+
+/* ===============================
+   NON-INDEX PAGES CLEAN FIX
+   =============================== */
+
+/* Remove index background overlay */
+body:not(.index-page) .bg-overlay {
+  display: none !important;
+}
+
+/* Kill glass blur on content pages */
+
+
+/* Page background */
+body:not(.index-page) {
+  background: #f6f7fb;
+  color: #222;
+}
+
+/* About page container spacing */
+.about-wrap {
+  padding: 60px 0;
+}
+
+/* About card readability */
+.about-card {
+  border-radius: 20px;
+}
+
+
+
+/* ===============================
+   GLOBAL GLASS HEADER (ALL PAGES)
+   =============================== */
+
+.site-topbar {
+  background: rgba(20, 20, 30, 0.45);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+}
+
+.site-topbar a,
+.brand-name {
+  color: #fff;
+}
+
+/* ===============================
+   BACKGROUND FOR NON-INDEX PAGES
+   =============================== */
+
+body:not(.index-page) {
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(60, 40, 120, 0.35),
+      rgba(15, 15, 25, 0.95)
+    ),
+    linear-gradient(
+      180deg,
+      #1a1a2e,
+      #0f0f1a
+    );
+  color: #fff;
+}
+
+
+.about-card h1,
+.about-card h2,
+.service-card h3,
+.page-hero h1 {
+  color: #fff;
+}
+
+.about-card p,
+.service-card p,
+.service-card li {
+  color: rgba(255,255,255,0.9);
+}
+
+/*final */
+
+/* ===============================
+   GLOBAL BACKGROUND (ALL PAGES)
+   =============================== */
+
+
+
+/* ===============================
+   FORCE WHITE TEXT (NON-INDEX)
+   =============================== */
+
+
+/* ===============================
+   FINAL GLASS CARD STYLE
+   =============================== */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(5px);       /* 👈 reduced blur */
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow:
+    0 20px 45px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.about-card {
+  padding: 60px;
+  margin: 80px auto;
+  max-width: 1100px;
+}
+
+/* ===============================
+   SERVICES LAYOUT FIX
+   =============================== */
+
+.services-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  margin-top: 60px;
+}
+
+.service-card {
+  padding: 40px;
+  border-radius: 22px;
+}
+
+/* Inner structure */
+.service-card .card-inner {
+  display: grid;
+  grid-template-columns: 1.4fr 0.6fr;
+  gap: 40px;
+  align-items: center;
+}
+
+/* Icons floating nicely */
+.service-icon {
+  width: 90px;
+  height: auto;
+  filter: drop-shadow(0 10px 25px rgba(0,0,0,0.4));
+}
+
+/* Testimonials inside cards */
+.service-card blockquote {
+  margin-top: 20px;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+.page-hero {
+  padding: 120px 0 40px;
+  text-align: left;
+}
+
+.page-hero h1 {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.page-hero .lead {
+  max-width: 800px;
+  opacity: 0.9;
+}
+
+/* ===============================
+   SERVICES – HARD CONTAINER FIX
+   =============================== */
+
+.services-grid {
+  list-style: none;
+  padding: 0;
+  margin: 60px auto 120px;
+  max-width: 1100px;        /* 🔥 THIS IS THE KEY */
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.service-card {
+  width: 100%;
+  border-radius: 24px;
+  padding: 44px;
+  position: relative;
+  overflow: hidden;
+
+  background: rgba(255,255,255,0.14);
+  backdrop-filter: blur(10px);            /* reduced blur */
+  -webkit-backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow:
+    0 18px 40px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.service-card .card-inner {
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.service-card .card-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.service-icon {
+  width: 96px;
+  height: auto;
+  filter: drop-shadow(0 12px 28px rgba(0,0,0,0.45));
+}
+
+.service-card .card-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.service-icon {
+  width: 96px;
+  height: auto;
+  filter: drop-shadow(0 12px 28px rgba(0,0,0,0.45));
+}
+
+.service-title {
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+}
+
+.service-points li {
+  opacity: 0.92;
+  margin-bottom: 6px;
+}
+
+.service-card blockquote {
+  margin-top: 18px;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+/* ===============================
+   SERVICES – REMOVE OUTER GLASS
+   =============================== */
+
+/* Kill glass on the page wrapper */
+.page-hero {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+
+  max-width: 1200px;
+  margin: 90px auto 60px;
+  padding: 0 20px;
+
+  position: relative;
+  z-index: 2;
+}
+
+/* Ensure grid itself is NOT glass */
+.services-grid {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  padding: 0;
+  margin-top: 50px;
+}
+
+/* ===============================
+   SERVICE CARD – TRUE GLASS BOX
+   =============================== */
+
+.service-card {
+  position: relative;
+
+  max-width: 980px;
+  margin: 0 auto;
+
+  background: rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border-radius: 22px;
+  padding: 28px 32px;
+
+  box-shadow:
+    0 14px 35px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+
+  overflow: hidden; /* THIS IS CRITICAL */
+}
+
+/* Inner layout */
+.card-inner {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+/* Typography */
+.service-title,
+.service-points li,
+.testimonial,
+.page-hero h1,
+.page-hero p {
+  color: #ffffff !important;
+}
+
+/* Icons */
+.service-icon {
+  width: 80px;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.4));
+}
+
+/* Premium */
+.premium-card {
+  border: 1px solid rgba(124,77,255,0.45);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .card-inner {
+    flex-direction: column;
+  }
+}
+
+
+/* ===============================
+   FINAL SAFE TEXT COLORS
+   =============================== */
+
+body {
+  color: #eaeaf0;
+}
+
+/* Normal content pages */
+.page-hero,
+.about-card,
+.service-card,
+.profile-card,
+.glass-card {
+  color: #eaeaf0;
+}
+
+/* Muted text */
+.small-muted,
+.muted,
+.lead {
+  color: rgba(255,255,255,0.75);
+}
+
+/* Light-background sections (if any) */
+.light-surface,
+.light-surface p,
+.light-surface h1,
+.light-surface h2 {
+  color: #222;
+}
+
+/* ===============================
+   FINAL SKY-BLUE THEME (SAFE)
+   =============================== */
+
+/* Base text */
+body {
+  color: #e6f3ff; /* soft sky-blue white */
+}
+
+/* Main glass containers */
+.glass-card,
+.about-card,
+.service-card,
+.profile-card,
+.page-hero {
+  color: #e6f3ff;
+}
+
+/* Headings – slightly brighter */
+h1, h2, h3 {
+  color: #f0f9ff; /* near-white sky */
+}
+
+/* Muted / secondary text */
+.muted,
+.small-muted,
+.lead {
+  color: rgba(180, 220, 255, 0.75);
+}
+
+/* Links */
+a {
+  color: #9fd6ff; /* sky blue */
+}
+a:hover {
+  color: #c7e8ff;
+}
+
+/* Buttons text safety */
+.btn,
+.btn.primary,
+.btn.small,
+.btn.large {
+  color: #ffffff;
+}
+
+/* Inputs */
+input,
+textarea,
+select {
+  color: #f0f9ff;
+}
+
+/* Optional: light-surface areas (if ever used) */
+.light-surface {
+  background: #f2f9ff;
+}
+.light-surface p,
+.light-surface h1,
+.light-surface h2 {
+  color: #1e293b;
+}
+
+
+/* ==================================================
+   UNIVERSAL SKY-BLUE SURFACE SYSTEM (FINAL)
+   ================================================== */
+
+/* ---------- Page background ---------- */
+body {
+  background:
+    radial-gradient(circle at top,
+      rgba(140, 190, 255, 0.18),
+      rgba(12, 18, 32, 0.95)
+    ),
+    linear-gradient(180deg, #0e1526, #070b14);
+  color: #eaf4ff;
+}
+
+/* ---------- Universal cards / panels ---------- */
+.glass-card,
+.dashboard-glass,
+.profile-card,
+.service-card,
+.about-card,
+.task-card,
+.todo-card,
+.panel,
+.page-box {
+  background: rgba(210, 235, 255, 0.22) !important; /* SKY GLASS */
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 22px;
+  box-shadow:
+    0 18px 50px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.45);
+}
+
+
+/* ==================================================
+   FINAL CONTRAST SYSTEM (NO MORE INVISIBLE TEXT)
+   ================================================== */
+
+/* ---------- DEFAULT: DARK APP ---------- */
+body {
+  background:
+    radial-gradient(circle at top,
+      rgba(120, 160, 255, 0.22),
+      rgba(8, 12, 22, 0.95)
+    ),
+    linear-gradient(180deg, #0b1020, #060810);
+  color: #eaf2ff;
+}
+
+/* ---------- DARK BACKGROUNDS (dashboard, glass, hero) ---------- */
+body,
+.dashboard-page,
+.ff-glass,
+.dashboard-glass,
+.hero-inner,
+.module-card,
+.service-card,
+.about-card {
+  color: #eaf2ff !important;
+}
+
+body h1,
+body h2,
+body h3 {
+  color: #f5f9ff !important;
+}
+
+body p,
+body li,
+body span {
+  color: rgba(235, 245, 255, 0.9) !important;
+}
+
+/* ---------- LIGHT CARDS (tasks, lists, white boxes) ---------- */
+.task-list,
+.task-item,
+.todo-item,
+.todo-card,
+.light-card {
+  background: rgba(240, 248, 255, 0.95) !important;
+  color: #1c2a44 !important;
+}
+
+/* Text INSIDE light cards */
+.task-item h1,
+.task-item h2,
+.task-item h3,
+.task-item p,
+.todo-item p,
+.light-card p {
+  color: #1c2a44 !important;
+}
+
+/* Muted text inside light cards */
+.task-item .muted,
+.todo-item .muted {
+  color: rgba(28, 42, 68, 0.65) !important;
+}
+
+/* ---------- Tabs / filters ---------- */
+.tabs button {
+  color: rgba(235,245,255,0.75);
+}
+.tabs button.active {
+  color: #7db5ff;
+  border-bottom: 2px solid #7db5ff;
+}
+
+/* ---------- Buttons ---------- */
+.btn.primary {
+  background: linear-gradient(90deg, #6b8cff, #47d7d3);
+  color: #fff;
+}
+
+/* ---------- Emergency safety ---------- */
+* {
+  text-shadow: none;
+}
+
+/* ==================================================
+   HARD CONTRAST FIX — NO MORE FADED TEXT
+   ================================================== */
+
+/* ---------- DARK / GLASS AREAS ---------- */
+.focusflow-bg,
+.focusflow-header,
+.focusflow-module-card,
+.focusflow-glass {
+  color: var(--text-on-dark) !important;
+}
+
+.focusflow-header h1,
+.focusflow-header h2,
+.focusflow-header h3,
+.focusflow-module-name {
+  color: #ffffff !important;
+}
+
+.focusflow-header p,
+.focusflow-module-desc {
+  color: rgba(235,245,255,0.85) !important;
+}
+
+/* ---------- WHITE / LIGHT CARDS ---------- */
+.modern-card,
+.todo-item,
+.calendar-day,
+.planner-cell,
+.pomodoro-section {
+  background: #ffffff !important;
+  color: var(--text-on-light) !important;
+}
+
+.modern-card h1,
+.modern-card h2,
+.modern-card h3,
+.todo-item h3,
+.todo-item .todo-title {
+  color: var(--text-on-light) !important;
+}
+
+.modern-card p,
+.todo-item p,
+.modern-card-subtitle {
+  color: var(--text-muted-light) !important;
+}
+
+/* ---------- TABS ---------- */
+.modern-tab {
+  color: var(--neutral-600) !important;
+}
+.modern-tab.active {
+  color: var(--accent1) !important;
+  border-bottom: 2px solid var(--accent1);
+}
+
+/* ---------- BADGES / PILLS ---------- */
+.badge,
+.priority-pill {
+  color: #1e293b !important;
+}
+
+/* ---------- SAFETY NET ---------- */
+.todo-item *,
+.modern-card * {
+  text-shadow: none !important;
+}
+
+/* ===============================
+   FIX: Date input on glass cards
+   =============================== */
+
+.glass-card input[type="date"],
+.profile-card input[type="date"] {
+  background: rgba(20, 28, 40, 0.75) !important;
+  color: #eaf2ff !important;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 10px;
+  padding: 10px 12px;
+  backdrop-filter: blur(6px);
+}
+
+/* Calendar icon color */
+.glass-card input[type="date"]::-webkit-calendar-picker-indicator,
+.profile-card input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+/* Remove white autofill glow */
+.glass-card input[type="date"]:-webkit-autofill {
+  -webkit-text-fill-color: #eaf2ff !important;
+  box-shadow: 0 0 0px 1000px rgba(20, 28, 40, 0.85) inset !important;
+}
+
+/* Focus state */
+.glass-card input[type="date"]:focus,
+.profile-card input[type="date"]:focus {
+  outline: none;
+  border-color: #7c9cff;
+  box-shadow: 0 0 0 3px rgba(124,156,255,0.25);
 }

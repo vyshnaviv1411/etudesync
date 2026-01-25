@@ -3,7 +3,7 @@ let duration = 25 * 60;  // default 25 min
 let timeLeft = duration;
 let timerInterval = null;
 
-const timerDisplay = document.getElementById("timer");
+const timerDisplay = document.getElementById("timer-display");
 const streakDisplay = document.getElementById("streak");
 
 // Load saved data
@@ -61,3 +61,5 @@ document.getElementById("pauseBtn").addEventListener("click", pauseTimer);
 document.getElementById("resetBtn").addEventListener("click", resetTimer);
 
 updateDisplay();
+}
+);

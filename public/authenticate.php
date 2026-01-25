@@ -3,7 +3,7 @@
 session_start();
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/premium_check.php';
-
+$disable_dashboard_bg = false;
 // Simple helper to set flash and redirect
 function flash_redirect($key, $msg, $loc = 'login.php') {
     $_SESSION[$key] = $msg;
@@ -26,11 +26,12 @@ if ($email === '' || $password === '') {
 
 // find user by email
 $stmt = $pdo->prepare(
-  'SELECT id, username, email, password_hash
+  'SELECT id, username, email, password_hash, avatar
    FROM users
    WHERE email = ?
    LIMIT 1'
 );
+
 $stmt->execute([$email]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 

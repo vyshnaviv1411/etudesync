@@ -1,10 +1,13 @@
 <?php
+$disable_dashboard_bg = false;
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/header_public.php';
+
 ?>
 
 <section class="page-hero" aria-labelledby="services-title">
+
   <h1 id="services-title">Services</h1>
   <p class="lead">ÉtudeSync provides tools to help students, teachers and professionals collaborate, learn, and stay focused — all from one tidy study desk.</p>
 
@@ -77,23 +80,38 @@ require_once __DIR__ . '/../includes/header_public.php';
 <li class="service-card glass-card premium-card">
   <div class="card-inner">
     <div class="card-left">
-      <h3 class="service-title">AssessArena (Quizzes & Live Rooms) <span class="premium-tag" aria-hidden="true">Premium</span></h3>
+      <h3 class="service-title">
+        AccessArena (Quizzes & Assessments)
+        <span class="premium-tag" aria-hidden="true">Premium</span>
+      </h3>
+
       <ul class="service-points">
-        <li>Anyone can create a quiz and publish a Quiz Room code</li>
-        <li>Participants join the quiz room, play in real-time (synchronized questions)</li>
-        <li>Automatic evaluation during/after play and individual reports</li>
-        <li>Result history, per-quiz leaderboard and exportable reports</li>
+        <li>Any premium user can act as a mentor or participant per session</li>
+        <li>Create quizzes, publish them, and share a unique quiz code</li>
+        <li>Participants join using the code and attempt the quiz individually</li>
+        <li>Automatic evaluation after submission with detailed result analysis</li>
+        <li>Quiz history, participant performance, and optional leaderboards</li>
       </ul>
-      <blockquote class="testimonial">“We joined a QuizForge room and got instant reports — very useful for quick practice.” — <strong>Amy, Learner</strong></blockquote>
+
+      <blockquote class="testimonial">
+        “AccessArena lets us switch roles easily — create quizzes, share codes,
+        and review performance without fixed teacher-student roles.”
+        — <strong>Student Team, ÉtudeSync</strong>
+      </blockquote>
     </div>
 
     <div class="card-right">
-      <img src="assets/images/icon-quizforge.png" alt="QuizForge icon" class="service-icon" />
+      <img
+        src="assets/images/icon-assessarena.png"
+        alt="AccessArena icon"
+        class="service-icon"
+      />
     </div>
   </div>
 
   <div class="premium-badge" aria-hidden="true">🔒 Premium</div>
 </li>
+
 
 
     <!-- InfoVault (Knowledge Hub) - PREMIUM -->

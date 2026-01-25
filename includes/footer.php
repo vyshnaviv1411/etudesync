@@ -1,23 +1,18 @@
-<?php
-// includes/footer.php
-?>
-    </div> <!-- .container -->
-  </main>
+</main>
 
-  <footer class="site-footer" role="contentinfo">
-    <div class="site-footer__inner container">
-      &copy; <?= date('Y') ?> ÉtudeSync. Built with <span aria-hidden="true">💜</span>.
-    </div>
-  </footer>
+<footer class="site-footer glass-footer">
+  <div class="site-footer__inner container">
+    &copy; <?= date('Y') ?> ÉtudeSync. Built with 💜
+  </div>
+</footer>
 
-  <!-- Scripts: site core + animation helper (deferred) -->
-  <script src="assets/js/script.js" defer></script>
-  <script src="assets/js/animations.js" defer></script>
-  <!-- Premium Payment Modal -->
-  <script src="assets/js/premium.js" defer></script>
-  <script src="assets/js/password_toggle.js"></script>
-  <script src="<?= htmlspecialchars($webBase) ?>/assets/js/music-player.js"></script>
- <script src="<?= htmlspecialchars($imgUrl) ?>/assets/js/profile-dropdown.js"></script>
+<!-- Core Scripts -->
+<script src="assets/js/script.js"></script>
+<script src="assets/js/animations.js"></script>
+<script src="assets/js/premium.js"></script>
+<script src="assets/js/password_toggle.js"></script>
+<script src="assets/js/music-player.js"></script>
+<script src="assets/js/profile-dropdown.js"></script>
 
 </body>
 </html>

@@ -23,7 +23,7 @@ if (empty($_FILES['file'])) {
   exit;
 }
 
-$uploadDir = __DIR__ . '/../assets/uploads/infovault/';
+$uploadDir = __DIR__ . '/../../assets/uploads/infovault/';
 if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
 
 $file = $_FILES['file'];
@@ -48,4 +48,5 @@ $stmt->execute([
   filesize($path)
 ]);
 
-echo json_encode(['success'=>true]);
+header('Location: ../infovault_files.php');
+exit;

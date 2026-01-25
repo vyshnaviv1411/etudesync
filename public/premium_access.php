@@ -2,7 +2,7 @@
 // public/premium_access.php
 session_start();
 require_once __DIR__ . '/../includes/db.php';
-
+$disable_dashboard_bg = true;
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -19,7 +19,7 @@ $page_title = 'Premium Checkout';
 // Include global header
 require_once __DIR__ . '/../includes/header_dashboard.php';
 ?>
-
+<div class="premium-bg"></div>
 <!-- Mark body for dashboard page styling -->
 <script>
 document.addEventListener('DOMContentLoaded', function(){
@@ -29,6 +29,35 @@ document.addEventListener('DOMContentLoaded', function(){
 
 <!-- Premium Payment Page Styles -->
 <style>
+    /* Premium Page Background */
+.premium-bg {
+    position: fixed;   /* 🔥 MUST BE FIXED */
+    inset: 0;
+    z-index: -1;
+
+    background-image: url('assets/images/infovault_bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    pointer-events: none;
+}
+
+
+/* Soft vignette (edges darker, center clear) */
+.premium-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+
+.premium-bg::after {
+    backdrop-filter: blur(0.7px) brightness(0.5) saturate(1.05);
+}
+
+
+/* Light blur + brightness so image looks natural */
+
     /* Premium Checkout Page - Glassmorphism Payment Gateway */
     :root {
         --accent1: #7c4dff;
@@ -38,6 +67,7 @@ document.addEventListener('DOMContentLoaded', function(){
         --input-bg: rgba(255, 255, 255, 0.08);
         --input-border: rgba(255, 255, 255, 0.2);
     }
+    
 
     /* Override main-content for centered layout */
     .premium-payment-wrapper {
@@ -46,13 +76,14 @@ document.addEventListener('DOMContentLoaded', function(){
         align-items: center;
         justify-content: center;
         padding: 40px 20px;
-        position: relative;
     }
 
     /* Main Payment Container */
     .payment-container {
         width: 100%;
-        max-width: 900px;
+        max-width: 1100px;   /* restores premium width */
+    gap: 32px;
+         transform: scale(1.02);
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 24px;
@@ -73,28 +104,40 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     /* Glassmorphic Card */
-    .glass-card {
-        background: var(--glass-bg);
-        border: 1px solid var(--glass-border);
-        backdrop-filter: blur(18px) saturate(170%);
-        -webkit-backdrop-filter: blur(18px) saturate(170%);
-        border-radius: 20px;
-        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-        padding: 32px;
-        position: relative;
-        overflow: hidden;
-    }
+   .glass-card {
+    padding: 40px;
 
-    .glass-card::before {
-        content: "";
-        position: absolute;
-        inset: -40%;
-        background: radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.18), transparent 60%),
-                    radial-gradient(circle at 85% 90%, rgba(71, 215, 211, 0.15), transparent 60%);
-        opacity: 0.6;
-        pointer-events: none;
-        mix-blend-mode: screen;
-    }
+    background: rgba(255, 255, 255, 0.16);
+
+    backdrop-filter: blur(26px) saturate(170%);
+    -webkit-backdrop-filter: blur(26px) saturate(170%);
+
+    border: 1px solid rgba(255, 255, 255, 0.35);
+
+    box-shadow:
+        0 35px 90px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+
+    border-radius: 26px;
+}
+
+
+
+
+ .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        130deg,
+        rgba(255,255,255,0.35),
+        rgba(255,255,255,0.12) 40%,
+        rgba(255,255,255,0.04) 65%
+    );
+    pointer-events: none;
+}
+
+
 
     /* Order Summary Section */
     .order-summary {

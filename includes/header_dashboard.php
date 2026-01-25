@@ -1,10 +1,13 @@
 <?php
 // includes/header_dashboard.php
+
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
+$disable_dashboard_bg = $disable_dashboard_bg ?? false;
 
-$webBase = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+
+$webBase = '/etudesync/public';
 $body_class = $body_class ?? 'page-wrapper';
 ?>
 <!doctype html>
@@ -18,16 +21,18 @@ $body_class = $body_class ?? 'page-wrapper';
 
 <body class="<?= htmlspecialchars($body_class) ?>">
 
-<!-- ===== BACKGROUND (NON-INTERACTIVE) ===== -->
-<div class="dashboard-bg" aria-hidden="true">
-  <video autoplay muted loop playsinline>
-    <source src="<?= htmlspecialchars($webBase) ?>/assets/videos/desk1.mp4" type="video/mp4">
-  </video>
-  <div class="dashboard-bg-overlay"></div>
-</div>
+<?php if (!$disable_dashboard_bg): ?>
+  <div class="dashboard-bg" aria-hidden="true">
+    <video autoplay muted loop playsinline>
+      <source src="<?= htmlspecialchars($webBase) ?>/assets/videos/desk1.mp4" type="video/mp4">
+    </video>
+    <div class="dashboard-bg-overlay"></div>
+  </div>
 
-<div id="bg-slider" class="bg-slider" aria-hidden="true"></div>
-<div class="bg-overlay" aria-hidden="true"></div>
+  <div id="bg-slider" class="bg-slider" aria-hidden="true"></div>
+  <div class="bg-overlay" aria-hidden="true"></div>
+<?php endif; ?>
+
 
 <!-- ===== HEADER ===== -->
 <header class="site-topbar" role="banner" style="position:relative; z-index:99999;">
@@ -61,10 +66,6 @@ $body_class = $body_class ?? 'page-wrapper';
   </svg>
 </button>
 
-      <!-- NOTIFICATIONS -->
-      <a href="<?= $webBase ?>/notifications.php"
-         class="header-icon"
-         title="Notifications">🔔</a>
 
       <!-- PROFILE -->
       <?php if (!empty($_SESSION['user_id'])):
@@ -102,7 +103,7 @@ $body_class = $body_class ?? 'page-wrapper';
             <a href="<?= $webBase ?>/profile.php">Edit Profile</a>
 
             <?php if (empty($_SESSION['is_premium'])): ?>
-              <a href="<?= $webBase ?>/upgrade.php">Upgrade</a>
+              <a href="<?= $webBase ?>/premium_access.php">Upgrade</a>
             <?php endif; ?>
 
             <a href="<?= $webBase ?>/logout.php">Logout</a>

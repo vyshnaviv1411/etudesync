@@ -193,3 +193,112 @@ body {
 }
 
 
+/* =====================================
+   INFOVAULT CONTENT FIX
+===================================== */
+
+.infovault-inner {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+/* Prevent giant icons/images */
+.infovault-inner img {
+    max-width: 80px;
+    height: auto;
+}
+
+/* File cards */
+.file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.file-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 14px 16px;
+    border-radius: 14px;
+
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.18);
+
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+}
+
+.file-meta {
+    font-size: 0.8rem;
+    opacity: 0.75;
+}
+
+/* File action buttons */
+.file-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* Danger button */
+.btn.danger {
+    background: #dc3545;
+    color: #fff;
+}
+
+.btn.danger{
+  background: rgba(255,80,80,0.15);
+  border: 1px solid rgba(255,80,80,0.35);
+  color: #ff9b9b;
+}
+.btn.danger:hover{
+  background: rgba(255,80,80,0.25);
+}
+
+.mindmap-node input {
+  pointer-events: auto;
+}
+
+.mindmap-node {
+  pointer-events: auto;
+}
+
+.mindmap-node::after {
+  content: "⠿";
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  font-size: 12px;
+  opacity: 0.6;
+  cursor: move;
+}
+
+.btn.danger {
+  background: linear-gradient(135deg, #ff5f6d, #ff9966);
+  color: #fff;
+}
+
+#mindmap-canvas{
+  position:relative;
+  height:520px;
+  border-radius:18px;
+  background:rgba(15,20,30,0.35);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.08);
+
+  overflow: auto;              /* ✅ enable scroll */
+}
+
+/* BIG workspace */
+#mindmap-canvas::before{
+  content:'';
+  position:absolute;
+  width:3000px;
+  height:2000px;
+}
+

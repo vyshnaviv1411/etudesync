@@ -93,11 +93,11 @@ document.addEventListener('DOMContentLoaded', function(){
     <div class="dash-premium-row">
 
 
-      <!-- AssessArena -->
-      <a href="<?= $isPremium ? 'assessarena.php' : '#' ?>"
+      <!-- AccessArena -->
+      <a href="<?= $isPremium ? 'accessarena/accessarena_home.php' : '#' ?>"
          class="module-card <?= $isPremium ? '' : 'locked' ?>">
-        <img src="assets/images/icon-quizforge.png" alt="AssessArena" class="module-icon" />
-        <div class="module-name">AssessArena</div>
+        <img src="assets/images/icon-assessarena.png" alt="AccessArena" class="module-icon" />
+        <div class="module-name">AccessArena</div>
         <?php if (!$isPremium): ?>
           <span class="lock-badge">🔒 Premium</span>
         <?php endif; ?>
@@ -157,8 +157,16 @@ document.addEventListener('DOMContentLoaded', function(){
   document.querySelectorAll('.module-card.locked').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      // Redirect to premium access page
-      window.location.href = 'premium_access.php';
+
+      const t = document.createElement('div');
+      t.className = 'upgrade-toast';
+      t.textContent = 'This feature is premium. Redirecting to upgrade...';
+      document.body.appendChild(t);
+      setTimeout(() => t.classList.add('visible'), 20);
+
+      setTimeout(() => {
+        window.location.href = 'premium_access.php';
+      }, 1200);
     });
   });
 

@@ -2,6 +2,8 @@
 session_start();
 require_once __DIR__ . '/../includes/db.php';
 
+
+$disable_dashboard_bg = true;
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -52,33 +54,53 @@ $page_title = 'MindPlay - Well-Being & Productivity';
         }
 
         /* Background with MindPlay image - matching FocusFlow structure EXACTLY */
-        .mindplay-bg {
-            position: fixed;
-            inset: 0;
-            z-index: -120;
-            overflow: hidden;
-            pointer-events: none;
-            background-image: url('assets/images/mindplay-bg.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
+       /* Base background container */
+.mindplay-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -120;
+    overflow: hidden;
+    pointer-events: none;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
 
-        .mindplay-bg::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, rgba(2,6,23,0.45), rgba(2,6,23,0.25));
-            z-index: 1;
-        }
+/* Dashboard background */
+.mindplay-bg.dashboard-bg {
+    background-image: url('assets/images/mindplay-bg.jpeg');
+}
 
-        .mindplay-bg::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            backdrop-filter: blur(0.5px);
-            z-index: 2;
-        }
+/* Sub-feature background */
+.mindplay-bg.subfeature-bg {
+    background-image: url('assets/images/infovault_bg.jpg');
+}
+
+/* Overlay stays same */
+/* ONE clean background treatment */
+.mindplay-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.06); /* very light veil */
+    z-index: 1;
+}
+
+.mindplay-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(0.2px);
+    z-index: 2;
+}
+.mindplay-bg.subfeature-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(0.6px) brightness(1.25) saturate(1.1);
+    z-index: 2;
+}  
+
 
         /* Container - matching FocusFlow EXACTLY */
         .mindplay-container {
@@ -213,7 +235,7 @@ $page_title = 'MindPlay - Well-Being & Productivity';
 
         /* Glass Panel - matching FocusFlow */
         .glass-panel {
-            background: rgba(15,20,30,0.45);
+            background: rgba(20,30,35,0.30);
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 18px;
             padding: 32px;
@@ -677,7 +699,8 @@ $page_title = 'MindPlay - Well-Being & Productivity';
 </head>
 <body>
     <!-- Background with MindPlay image -->
-    <div class="mindplay-bg"></div>
+    <div id="page-bg" class="mindplay-bg dashboard-bg"></div>
+
 
     <?php require_once __DIR__ . '/../includes/header_dashboard.php'; ?>
 
@@ -686,9 +709,8 @@ $page_title = 'MindPlay - Well-Being & Productivity';
         <!-- Hub View (Default) -->
         <div id="hub-view" class="module-view active">
             <div class="mindplay-header">
-                <h1>Your Well-Being & Productivity Hub</h1>
-                <p>Track your mood, reflect in your journal, play mindful games, and view insights.</p>
-            </div>
+               
+            
 
             <div class="mindplay-modules-grid">
                 <div class="mindplay-module-card" onclick="MindPlay.showModule('mood')">
@@ -714,6 +736,7 @@ $page_title = 'MindPlay - Well-Being & Productivity';
                     <div class="mindplay-module-name">Reports</div>
                     <div class="mindplay-module-desc">Insights & analytics</div>
                 </div>
+            </div>
             </div>
         </div>
 
@@ -879,34 +902,53 @@ $page_title = 'MindPlay - Well-Being & Productivity';
                 console.log('MindPlay initialized');
                 this.showHub();
             },
+            setDashboardBg() {
+    const bg = document.getElementById('page-bg');
+    bg.classList.remove('subfeature-bg');
+    bg.classList.add('dashboard-bg');
+},
+
+setSubFeatureBg() {
+    const bg = document.getElementById('page-bg');
+    bg.classList.remove('dashboard-bg');
+    bg.classList.add('subfeature-bg');
+},
+
 
             // Module Navigation
-            showHub() {
-                document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
-                document.getElementById('hub-view').classList.add('active');
-                this.currentModule = 'hub';
-            },
+           showHub() {
+    document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
+    document.getElementById('hub-view').classList.add('active');
+    this.currentModule = 'hub';
 
-            showModule(module) {
-                document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
-                const viewId = module + '-view';
-                document.getElementById(viewId).classList.add('active');
-                this.currentModule = module;
+    // ✅ Dashboard background
+    this.setDashboardBg();
+},
 
-                // Load module data
-                switch(module) {
-                    case 'mood':
-                        this.loadMoodData();
-                        break;
-                    case 'journal':
-                        this.loadJournalData();
-                        this.startJournalAutoSave();
-                        break;
-                    case 'reports':
-                        this.loadReports();
-                        break;
-                }
-            },
+
+        showModule(module) {
+    document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
+    const viewId = module + '-view';
+    document.getElementById(viewId).classList.add('active');
+    this.currentModule = module;
+
+    // ✅ Sub-feature background
+    this.setSubFeatureBg();
+
+    switch(module) {
+        case 'mood':
+            this.loadMoodData();
+            break;
+        case 'journal':
+            this.loadJournalData();
+            this.startJournalAutoSave();
+            break;
+        case 'reports':
+            this.loadReports();
+            break;
+    }
+},
+
 
             // Message Display
             showMessage(containerId, message, type = 'info') {
@@ -983,47 +1025,63 @@ $page_title = 'MindPlay - Well-Being & Productivity';
             // JOURNAL
             // =====================================================
             async loadJournalData() {
-                const dateDisplay = document.getElementById('journal-date');
-                dateDisplay.textContent = this.currentJournalDate;
+    const dateDisplay = document.getElementById('journal-date');
+    dateDisplay.textContent = this.currentJournalDate;
 
-                // Enable/disable next button
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('journal-next-btn').disabled = (this.currentJournalDate >= today);
+    const textarea = document.getElementById('journal-content');
+    const submitBtn = document.getElementById('journal-submit-btn');
 
-                try {
-                    const response = await fetch(`api/mindplay/journal_get.php?entry_date=${this.currentJournalDate}`);
-                    const data = await response.json();
+    try {
+        const response = await fetch(
+            `api/mindplay/journal_get.php?entry_date=${this.currentJournalDate}`
+        );
+        const data = await response.json();
 
-                    const textarea = document.getElementById('journal-content');
-                    const submitBtn = document.getElementById('journal-submit-btn');
+        if (!data.success || !Array.isArray(data.data.entries)) {
+            textarea.value = '';
+            textarea.disabled = true;
+            submitBtn.disabled = true;
+            return;
+        }
 
-                    if (data.success && data.data.today_entry) {
-                        const entry = data.data.today_entry;
-                        textarea.value = entry.content || '';
+        const entry = data.data.entries.find(
+            e => e.entry_date === this.currentJournalDate
+        );
 
-                        // Lock if submitted or past date
-                        if (entry.is_locked) {
-                            textarea.disabled = true;
-                            submitBtn.disabled = true;
-                            this.showMessage('journal-message', 'This entry is locked and cannot be edited.', 'info');
-                        } else {
-                            textarea.disabled = false;
-                            submitBtn.disabled = false;
-                        }
-                    } else {
-                        textarea.value = '';
-                        const isPast = this.currentJournalDate < today;
-                        textarea.disabled = isPast;
-                        submitBtn.disabled = isPast;
+        if (entry) {
+            textarea.value = entry.content || '';
+            textarea.disabled = entry.is_locked;
+            submitBtn.disabled = entry.is_locked;
 
-                        if (isPast) {
-                            this.showMessage('journal-message', 'No entry for this date.', 'info');
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error loading journal:', error);
-                }
-            },
+            if (entry.is_locked) {
+                this.showMessage(
+                    'journal-message',
+                    'This entry is read-only.',
+                    'info'
+                );
+            }
+        } else {
+            textarea.value = '';
+            textarea.disabled = true;
+            submitBtn.disabled = true;
+
+            this.showMessage(
+                'journal-message',
+                'No journal entry for this day.',
+                'info'
+            );
+        }
+
+        // Disable "Next" if today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('journal-next-btn').disabled =
+            this.currentJournalDate >= today;
+
+    } catch (error) {
+        console.error('Error loading journal:', error);
+    }
+},
+
 
             navigateJournalDate(direction) {
                 const currentDate = new Date(this.currentJournalDate);
@@ -1231,6 +1289,7 @@ $page_title = 'MindPlay - Well-Being & Productivity';
                 html += '</div>';
                 return html;
             }
+            
         };
 
         // Initialize on page load

@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../includes/db.php';
-
+$disable_dashboard_bg = true;
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -24,6 +24,23 @@ $page_title = 'FocusFlow - Productivity Zone';
     <link rel="stylesheet" href="assets/css/modern.css">
     <style>
         /* CSS Design Tokens - matching homepage */
+
+        :root {
+  /* FIXED NEUTRALS (missing before) */
+  --neutral-900: #1e293b;   /* dark slate */
+  --neutral-800: #334155;
+  --neutral-700: #475569;
+  --neutral-600: #64748b;
+  --neutral-500: #94a3b8;
+  --neutral-100: #f1f5f9;
+  --neutral-50:  #f8fafc;
+
+  /* Universal readable blue */
+  --text-on-dark: #eaf2ff;
+  --text-on-light: #1e293b;
+  --text-muted-light: #64748b;
+}
+
         :root {
             --accent1: #7c4dff;
             --accent2: #47d7d3;
@@ -52,33 +69,70 @@ $page_title = 'FocusFlow - Productivity Zone';
         }
 
         /* Background with custom desk image */
-        .focusflow-bg {
-            position: fixed;
-            inset: 0;
-            z-index: -120;
-            overflow: hidden;
-            pointer-events: none;
-            background-image: url('assets/images/focusflow-bg.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
+        /* ===== FocusFlow Background System ===== */
+.focusflow-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -120;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
 
-        .focusflow-bg::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, rgba(2,6,23,0.45), rgba(2,6,23,0.25));
-            z-index: 1;
-        }
 
-        .focusflow-bg::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            backdrop-filter: blur(0.5px);
-            z-index: 2;
-        }
+/* Main dashboard background */
+.focusflow-bg.dashboard-bg {
+    background-image: url('assets/images/focusflow-bg.jpg');
+}
+
+/* Sub-features background */
+.focusflow-bg.subfeature-bg {
+    background-image: url('assets/images/infovault_bg.jpg');
+}
+
+/* VERY LIGHT overlay – keeps original colors */
+.focusflow-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        circle at center,
+        rgba(255,255,255,0.08) 0%,
+        rgba(0,0,0,0.10) 60%,
+        rgba(0,0,0,0.22) 100%
+    );
+    z-index: 1;
+}
+
+
+
+/* Tiny blur only */
+.focusflow-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(0.6px) brightness(1.08) saturate(1.05);
+    z-index: 2;
+}
+.focusflow-bg.dashboard-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(0.6px) brightness(0.80) saturate(1.0);
+    z-index: 2;
+}
+
+.focusflow-bg.subfeature-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(0.6px) brightness(1.25) saturate(1.1);
+    z-index: 2;
+}
+
+
+
 
         .focusflow-container {
             min-height: calc(100vh - 120px);
@@ -89,8 +143,16 @@ $page_title = 'FocusFlow - Productivity Zone';
             padding: 40px 20px;
             position: relative;
             z-index: 3;
-        }
-
+}
+.focusflow-glass {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(10, 20, 40, 0.3), 0 6px 16px rgba(5, 5, 15, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-clip: padding-box;
+}
         /* Hero glass card matching CollabSphere EXACTLY */
         .focusflow-header {
             width: 100%;
@@ -828,20 +890,81 @@ $page_title = 'FocusFlow - Productivity Zone';
                 grid-template-columns: 1fr;
             }
         }
+/* FIX text contrast inside white pomodoro card */
+.pomodoro-section h2 {
+    color: var(--neutral-900) !important;
+}
+
+.pomodoro-section p {
+    color: var(--neutral-600) !important;
+}
+
+/* ===== TASK LABEL VISIBILITY FIX ===== */
+
+/* Base badge style */
+.task-badge {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap !important;
+}
+
+/* Date badge */
+.task-badge.date {
+  background: #eef2ff;
+  color: #3730a3 !important;/* strong indigo */
+}
+
+/* Priority badges */
+.task-badge.high {
+  background: #fee2e2;
+  color: #991b1b !important;
+}
+
+.task-badge.medium {
+  background: #fef3c7;
+  color: #92400e !important;
+}
+
+.task-badge.low {
+  background: #dcfce7;
+  color: #166534 !important;
+}
+
+/* Status badges */
+.task-badge.pending {
+  background: #e0f2fe;
+  color: #075985 !important;
+}
+
+.task-badge.in-progress {
+  background: #ede9fe;
+  color: #5b21b6 !important;
+}
+
+.task-badge.completed {
+  background: #dcfce7;
+  color: #166534 !important;
+}
+
+
+        
     </style>
 </head>
 <body>
     <?php require_once __DIR__ . '/../includes/header_dashboard.php'; ?>
 
     <!-- Background gradient overlay -->
-    <div class="focusflow-bg"></div>
+<div id="focusflow-bg" class="focusflow-bg dashboard-bg"></div>
+
 
     <div class="focusflow-container">
-        <div class="focusflow-header">
-            <h1>Good to see you, <span class="focus-user"><?= htmlspecialchars($_SESSION['user_name'] ?? 'Student') ?></span></h1>
-            <p>Your Personal Productivity Zone — Stay Focused, Get Things Done</p>
-        </div>
-
+       
         <!-- Module Cards Grid -->
         <div class="focusflow-modules-grid">
             <a href="javascript:void(0)" class="focusflow-module-card" onclick="openModule('pomodoro')">
@@ -1212,4 +1335,5 @@ $page_title = 'FocusFlow - Productivity Zone';
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="assets/js/focusflow_complete.js?v=<?php echo time(); ?>"></script>
 </body>
-</html>
+</html> 
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>

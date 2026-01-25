@@ -10,6 +10,17 @@
  * Get today's date at start of day (00:00:00) for accurate comparison
  * @returns {Date} Today's date with time set to 00:00:00
  */
+const WEEKDAY_COLORS = {
+  0: '#ef4444', // Sunday - Red
+  1: '#3b82f6', // Monday - Blue
+  2: '#22c55e', // Tuesday - Green
+  3: '#a855f7', // Wednesday - Purple
+  4: '#f59e0b', // Thursday - Orange
+  5: '#06b6d4', // Friday - Cyan
+  6: '#64748b'  // Saturday - Gray
+};
+
+
 function getToday() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -182,58 +193,71 @@ async function requestNotificationPermission() {
 document.addEventListener('DOMContentLoaded', function() {
     checkNotificationPermission();
 });
+function setFocusFlowBg(type) {
+    const bg = document.getElementById('focusflow-bg');
+    if (!bg) return;
+
+    bg.classList.remove('dashboard-bg', 'subfeature-bg');
+    bg.classList.add(type === 'sub' ? 'subfeature-bg' : 'dashboard-bg');
+}
 
 // ================================================
 // MODULE NAVIGATION
 // ================================================
 
 function openModule(moduleName) {
-    // Hide the module grid
+    // 🔹 Background switch (safe)
+    if (typeof setFocusFlowBg === 'function') {
+        setFocusFlowBg('sub');
+    }
+
     const grid = document.querySelector('.focusflow-modules-grid');
     if (grid) grid.style.display = 'none';
 
-    // Hide all module pages
     document.querySelectorAll('.module-page').forEach(page => {
         page.style.display = 'none';
     });
 
-    // Show selected module
     const moduleElement = document.getElementById(`module-${moduleName}`);
-    if (moduleElement) {
-        moduleElement.style.display = 'block';
+    if (!moduleElement) {
+        console.error(`Module not found: module-${moduleName}`);
+        return;
     }
 
-    // Load data for specific modules
-    if (moduleName === 'pomodoro') {
+    moduleElement.style.display = 'block';
+
+    // Load data
+    if (moduleName === 'pomodoro' && typeof loadPomodoroStats === 'function') {
         loadPomodoroStats();
-    } else if (moduleName === 'todo') {
+    } else if (moduleName === 'todo' && typeof loadTodos === 'function') {
         loadTodos();
     } else if (moduleName === 'calendar') {
-        loadEventsFromStorage(); // Load events first
-        renderCalendar();
+        loadEventsFromStorage?.();
+        renderCalendar?.();
     } else if (moduleName === 'planner') {
-        loadPlanner();
+        loadPlanner?.();
     } else if (moduleName === 'progress') {
-        loadProgress();
+        loadProgress?.();
     }
 
-    // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function closeModule() {
-    // Hide all module pages
+    if (typeof setFocusFlowBg === 'function') {
+        setFocusFlowBg('dashboard');
+    }
+
     document.querySelectorAll('.module-page').forEach(page => {
         page.style.display = 'none';
     });
 
-    // Show the module grid
     const grid = document.querySelector('.focusflow-modules-grid');
     if (grid) grid.style.display = 'grid';
 
-    // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
 
 // ================================================
 // POMODORO TIMER
@@ -254,10 +278,15 @@ function updateTimerDisplay() {
 }
 
 function startTimer() {
-    const customMin = parseInt(document.getElementById('custom-minutes').value);
-    if (customMin && !timerRunning) {
-        timeRemaining = customMin * 60;
+    const savedState = localStorage.getItem('pomodoroState');
+
+if (!timerRunning && savedState) {
+    const state = JSON.parse(savedState);
+    if (!state.running && state.duration) {
+        timeRemaining = state.duration; // ✅ RESUME
     }
+}
+
 
     timerRunning = true;
     document.getElementById('start-btn').disabled = true;
@@ -290,22 +319,39 @@ function startTimer() {
 function pauseTimer() {
     timerRunning = false;
     clearInterval(timerInterval);
+
     document.getElementById('start-btn').disabled = false;
     document.getElementById('pause-btn').disabled = true;
     document.getElementById('timer-status').textContent = 'Paused ⏸️';
     document.getElementById('timer-status').style.color = 'var(--warning)';
 
+    // ✅ SAVE paused state instead of deleting it
+    const pausedState = {
+        duration: timeRemaining,
+        running: false
+    };
+    localStorage.setItem('pomodoroState', JSON.stringify(pausedState));
+}
+
+
+function resetTimer() {
+    clearInterval(timerInterval);
+    timerRunning = false;
+
+    // Use last selected value or default
+    const customMin = parseInt(document.getElementById('custom-minutes').value) || 25;
+    timeRemaining = customMin * 60;
+
+    updateTimerDisplay();
+
+    document.getElementById('start-btn').disabled = false;
+    document.getElementById('pause-btn').disabled = true;
+    document.getElementById('timer-status').textContent = 'Ready to start';
+    document.getElementById('timer-status').style.color = 'var(--neutral-500)';
+
     localStorage.removeItem('pomodoroState');
 }
 
-function resetTimer() {
-    pauseTimer();
-    timeRemaining = 25 * 60;
-    updateTimerDisplay();
-    document.getElementById('timer-status').textContent = 'Ready to start';
-    document.getElementById('timer-status').style.color = 'var(--neutral-500)';
-    document.getElementById('custom-minutes').value = '';
-}
 
 async function completeTimer() {
     clearInterval(timerInterval);
@@ -621,43 +667,77 @@ async function loadTodos() {
             return;
         }
 
-        todoList.innerHTML = data.todos.map(todo => `
-            <div class="todo-item ${todo.status === 'completed' ? 'completed' : ''}" data-id="${todo.id}">
-                <div class="flex-between">
-                    <div class="flex-gap-4" style="align-items:flex-start; flex:1;">
-                        <input type="checkbox"
-                            ${todo.status === 'completed' ? 'checked' : ''}
-                            onchange="toggleTodo(${todo.id}, this.checked)"
-                            style="width:20px; height:20px; cursor:pointer;">
-                        <div style="flex:1;">
-                            <h3 class="todo-title" style="margin:0 0 var(--space-2); font-size:1rem;">
-                                ${escapeHtml(todo.title)}
-                            </h3>
-                            ${todo.description ? `<p style="color:var(--neutral-600); font-size:0.875rem; margin:0 0 var(--space-2);">${escapeHtml(todo.description)}</p>` : ''}
-                            <div class="flex-gap-2" style="flex-wrap:wrap;">
-                                ${todo.due_date ? `<span class="modern-badge modern-badge-info">📅 ${formatDate(todo.due_date)}</span>` : ''}
-                                <span class="modern-badge modern-badge-${getPriorityColor(todo.priority)}">${todo.priority}</span>
-                                <span class="modern-badge modern-badge-${getStatusColor(todo.status)}">${todo.status.replace('_', ' ')}</span>
+        todoList.innerHTML = data.todos.map(todo => {
+            const statusClass =
+                todo.status === 'in_progress'
+                    ? 'in-progress'
+                    : todo.status;
+
+            return `
+                <div class="todo-item ${todo.status === 'completed' ? 'completed' : ''}" data-id="${todo.id}">
+                    <div class="flex-between">
+
+                        <div class="flex-gap-4" style="align-items:flex-start; flex:1;">
+                            <input type="checkbox"
+                                ${todo.status === 'completed' ? 'checked' : ''}
+                                onchange="toggleTodo(${todo.id}, this.checked)"
+                                style="width:20px; height:20px; cursor:pointer;">
+
+                            <div style="flex:1;">
+                                <h3 class="todo-title" style="margin:0 0 var(--space-2); font-size:1rem;">
+                                    ${escapeHtml(todo.title)}
+                                </h3>
+
+                                ${todo.description
+                                    ? `<p style="color:var(--neutral-600); font-size:0.875rem; margin:0 0 var(--space-2);">
+                                        ${escapeHtml(todo.description)}
+                                       </p>`
+                                    : ''
+                                }
+
+                                <!-- 🔥 FIXED BADGES -->
+                                <div class="flex flex-wrap flex-gap-2 mt-4">
+                                    ${todo.due_date
+                                        ? `<span class="task-badge date">📅 ${formatDate(todo.due_date)}</span>`
+                                        : ''
+                                    }
+
+                                    <span class="task-badge ${todo.priority}">
+                                        ${todo.priority.toUpperCase()}
+                                    </span>
+
+                                    <span class="task-badge ${statusClass}">
+                                        ${todo.status.replace('_', ' ').toUpperCase()}
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="flex-gap-2">
-                        ${todo.status !== 'completed' ? `
-                            <button class="modern-btn modern-btn-sm modern-btn-secondary" onclick="updateTodoStatus(${todo.id}, 'in_progress')">
-                                In Progress
+
+                        <div class="flex-gap-2">
+                            ${todo.status !== 'completed'
+                                ? `<button class="modern-btn modern-btn-sm modern-btn-secondary"
+                                           onclick="updateTodoStatus(${todo.id}, 'in_progress')">
+                                      In Progress
+                                   </button>`
+                                : ''
+                            }
+
+                            <button class="modern-btn modern-btn-sm modern-btn-danger"
+                                    onclick="deleteTodo(${todo.id})">
+                                🗑️
                             </button>
-                        ` : ''}
-                        <button class="modern-btn modern-btn-sm modern-btn-danger" onclick="deleteTodo(${todo.id})">
-                            🗑️
-                        </button>
+                        </div>
+
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
+
     } catch (error) {
         console.error('Error loading todos:', error);
     }
 }
+
 
 function filterTodos(filter) {
     currentFilter = filter;
@@ -795,6 +875,8 @@ function generateCalendarMatrix(year, month) {
 
     const weeks = [];
     let currentWeek = [];
+   
+
 
     // Fill empty cells before month starts (for alignment)
     for (let i = 0; i < firstDay; i++) {
@@ -926,7 +1008,16 @@ async function renderCalendar() {
         }
 
         // STEP 4: Merge calendar events with todos
-        const mergedEvents = mergeEventsWithTodos(todosData, calendarEvents);
+        // Load weekly planner if not loaded
+await loadWeeklyPlannerData();
+console.log('🔥 DEBUG weeklyPlannerData:', weeklyPlannerData);
+
+// Generate planner events for this month
+const plannerEvents = generatePlannerEventsForMonth(currentYear, currentMonth);
+
+// Merge: todos + manual calendar + planner
+const mergedEvents = mergeAllEvents(todosData, calendarEvents, plannerEvents);
+
         console.log('🔀 Merged events for', Object.keys(mergedEvents).length, 'dates');
 
         // STEP 5: Render HTML from matrix
@@ -995,8 +1086,45 @@ function mergeEventsWithTodos(todosData, calendarEventsData) {
     return merged;
 }
 
+function mergeAllEvents(todosData, calendarEventsData, plannerEventsData) {
+    const merged = {};
+
+    // Todos
+    Object.keys(todosData).forEach(dateStr => {
+        merged[dateStr] = todosData[dateStr].map(todo => ({
+            ...todo,
+            sourceType: 'todo'
+        }));
+    });
+
+    // Manual calendar events
+    Object.keys(calendarEventsData).forEach(dateStr => {
+        if (!merged[dateStr]) merged[dateStr] = [];
+        calendarEventsData[dateStr].forEach(ev => {
+            merged[dateStr].push({
+                ...ev,
+                sourceType: 'calendar'
+            });
+        });
+    });
+
+    // Weekly planner events
+    Object.keys(plannerEventsData).forEach(dateStr => {
+        if (!merged[dateStr]) merged[dateStr] = [];
+        plannerEventsData[dateStr].forEach(ev => {
+            merged[dateStr].push(ev);
+        });
+    });
+
+    return merged;
+}
+
+
 function renderDayEvents(events, dateStr) {
+  
+
     try {
+        
         if (!events || !Array.isArray(events) || events.length === 0) {
             return '';
         }
@@ -1007,6 +1135,7 @@ function renderDayEvents(events, dateStr) {
         // Show first N events
         const visibleEvents = events.slice(0, MAX_VISIBLE_EVENTS);
         visibleEvents.forEach(event => {
+            let eventStyle = '';
             if (!event || !event.title) return;
 
             const eventTitle = String(event.title).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -1023,7 +1152,16 @@ function renderDayEvents(events, dateStr) {
             } else {
                 // Calendar event styling with delete button
                 const typeClass = event.type ? `event-type-${event.type}` : '';
-                eventClass += ` ${typeClass}`;
+eventClass += ` ${typeClass}`;
+
+// 🎨 Apply weekday color (planner only)
+if (event.sourceType === 'planner' && typeof event.dayOfWeek === 'number') {
+    const color = WEEKDAY_COLORS[event.dayOfWeek];
+    if (color) {
+        eventStyle = `style="background:${color}"`;
+    }
+}
+
 
                 // Get reference to the event pill for positioning the popover
                 clickHandler = `
@@ -1042,9 +1180,10 @@ function renderDayEvents(events, dateStr) {
             }
 
             html += `
-                <div class="${eventClass}"
-                     title="${eventTitle}"
-                     onclick="event.stopPropagation(); ${clickHandler}">
+    <div class="${eventClass}"
+         ${eventStyle || ''}
+         title="${eventTitle}"
+         onclick="event.stopPropagation(); ${clickHandler}">
                     <span class="calendar-event-title">${eventTitle}</span>
                     ${deleteButton}
                 </div>
@@ -1340,6 +1479,68 @@ function loadEventsFromStorage() {
         nextEventId = 1;
     }
 }
+
+async function loadWeeklyPlannerData() {
+    try {
+        const response = await fetch('api/focusflow/planner_list.php');
+        const data = await response.json();
+
+        if (data.success) {
+            weeklyPlannerData = data.plans || [];
+            console.log('📘 Weekly planner loaded:', weeklyPlannerData.length);
+        }
+    } catch (error) {
+        console.error('Failed to load weekly planner:', error);
+        weeklyPlannerData = [];
+    }
+}
+
+function generatePlannerEventsForMonth(year, month) {
+    const plannerEvents = {};
+
+    // Safety check
+    if (!Array.isArray(weeklyPlannerData) || weeklyPlannerData.length === 0) {
+        console.warn('⚠️ No weekly planner data available');
+        return plannerEvents;
+    }
+
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const dayOfWeek = date.getDay(); // JS: 0=Sunday … 6=Saturday
+
+        weeklyPlannerData.forEach(plan => {
+
+            // ✅ NORMALIZE DAY (DB → JS)
+            // If DB stores Sunday as 7, convert it to 0
+            const plannerDay =
+                plan.day_of_week === 7 ? 0 : plan.day_of_week;
+
+            // ✅ THIS IS THE REAL FIX
+            if (plannerDay === dayOfWeek) {
+
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+                if (!plannerEvents[dateStr]) {
+                    plannerEvents[dateStr] = [];
+                }
+
+                plannerEvents[dateStr].push({
+                    id: `planner-${plan.id}-${dateStr}`,
+                    title: `${plan.title} (${formatTime(plan.start_time)}–${formatTime(plan.end_time)})`,
+                    type: 'study',
+                    sourceType: 'planner',
+                    dayOfWeek: plannerDay   // ✅ normalized value
+                });
+            }
+        });
+    }
+
+    console.log('📅 Planner events generated:', plannerEvents);
+    return plannerEvents;
+}
+
 
 // ================================================
 // STUDY PLANNER
