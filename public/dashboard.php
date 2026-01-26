@@ -18,22 +18,14 @@ if (empty($_SESSION['user_id'])) {
 /* -----------------------
    ENSURE USERNAME IN SESSION
 ------------------------ */
-if (empty($_SESSION['user_name'])) {
-    $stmt = $pdo->prepare("SELECT username, is_premium FROM users WHERE id = :id LIMIT 1");
-    $stmt->execute([':id' => $_SESSION['user_id']]);
-    $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($userRow) {
-        $_SESSION['user_name']  = $userRow['username'];
-        $_SESSION['is_premium'] = $userRow['is_premium'];
-    }
-}
-
 /* -----------------------
-   USER DATA
+   USER DATA (ALWAYS FROM DB)
 ------------------------ */
-$isPremium = !empty($_SESSION['is_premium']) && $_SESSION['is_premium'] == 1;
-$userName  = htmlspecialchars($_SESSION['user_name']);
+$userName = htmlspecialchars($_SESSION['user_name']);
+$isPremium = isPremiumUser($_SESSION['user_id']);
+
+
+
 
 require_once __DIR__ . '/../includes/header_dashboard.php';
 ?>

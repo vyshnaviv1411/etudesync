@@ -61,7 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
             ${escapeHtml(f.file_name)}
           </div>
           <div class="small-muted">
-            Shared by ${escapeHtml(f.shared_by || 'Unknown')}
+        Shared by ${escapeHtml(f.user_name || 'Unknown')}
+
           </div>
         </div>
 

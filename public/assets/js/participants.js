@@ -43,3 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
   loadParticipants();
   setInterval(loadParticipants, 5000);
 });
+
+setInterval(() => {
+  fetch('api/ping_room.php', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: 'room_id=' + ROOM_ID
+  });
+}, 15000);
+

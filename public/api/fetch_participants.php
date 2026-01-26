@@ -12,17 +12,18 @@ if ($room_id <= 0) {
 }
 
 try {
-    $stmt = $pdo->prepare("
-        SELECT 
-            rp.user_id,
-            rp.joined_at,
-            u.username,
-            u.avatar
-        FROM room_participants rp
-        LEFT JOIN users u ON u.id = rp.user_id
-        WHERE rp.room_id = :room
-        ORDER BY rp.joined_at ASC
-    ");
+   $stmt = $pdo->prepare("
+    SELECT 
+        rp.user_id,
+        u.username,
+        u.avatar
+    FROM room_participants rp
+    JOIN users u ON u.id = rp.user_id
+    WHERE rp.room_id = :room
+      AND rp.last_active > NOW() - INTERVAL 30 SECOND
+    ORDER BY rp.last_active DESC
+");
+
     $stmt->execute([':room' => $room_id]);
 
     $participants = [];

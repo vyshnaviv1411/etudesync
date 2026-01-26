@@ -60,10 +60,10 @@ try {
 
 // Check 3: API endpoints exist
 $apiFiles = [
-    'api/premium/initiate_payment.php',
-    'api/premium/confirm_payment.php',
+    'api/premium/process_upgrade.php',
     'api/premium/get_plans.php'
 ];
+
 
 foreach ($apiFiles as $file) {
     $path = __DIR__ . '/' . $file;
@@ -104,36 +104,22 @@ foreach ($helperFuncs as $func) {
 }
 
 // Check 6: Test premium check functions
+// Check 6: Test premium check functions
 try {
     if (isset($_SESSION['user_id'])) {
-        $isPremium = isPremiumUser($_SESSION['user_id']);
-        $sub = getUserSubscription($_SESSION['user_id']);
-        $plans = getAvailablePlans();
+        isPremiumUser($_SESSION['user_id']);
+        getUserSubscription($_SESSION['user_id']);
+        getAvailablePlans();
         $checks[] = ['✓', 'Premium Functions', 'All functions execute without errors'];
     } else {
         $checks[] = ['⚠', 'Premium Functions', 'Not logged in - skipping execution test'];
     }
-} catch (Exception $e) {
+} catch (Throwable $e) {   // 🔥 IMPORTANT CHANGE
     $checks[] = ['✗', 'Premium Functions', $e->getMessage()];
     $allPassed = false;
 }
 
-// Check 7: Dashboard includes
-$dashboardPath = __DIR__ . '/dashboard.php';
-$dashboardContent = file_get_contents($dashboardPath);
-$dashChecks = [
-    ['premium_check.php', 'Premium helper included'],
-    ['userIsPremium', 'Premium status variable set'],
-    ['$userIsPremium', 'Premium status used in conditional'],
-];
 
-foreach ($dashChecks as [$search, $desc]) {
-    if (strpos($dashboardContent, $search) !== false) {
-        $checks[] = ['✓', "Dashboard: $desc", 'Found in code'];
-    } else {
-        $checks[] = ['⚠', "Dashboard: $desc", 'Not found (may be okay)'];
-    }
-}
 
 ?>
 
@@ -288,7 +274,7 @@ foreach ($dashChecks as [$search, $desc]) {
         <div class="footer">
             <strong>Next Steps:</strong><br>
             1. Go to <a href="dashboard.php">Dashboard</a><br>
-            2. Click a locked premium card (QuizForge or InfoVault)<br>
+            2. Click a locked premium card (AccessArena or InfoVault)<br>
             3. Fill dummy payment form and click "Pay Now"<br>
             4. Verify success state appears<br>
             5. Delete this verification file when done

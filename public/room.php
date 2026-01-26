@@ -61,13 +61,23 @@ try {
         "SELECT id FROM room_participants WHERE room_id = :room AND user_id = :user"
     );
     $stmt->execute([':room' => $room_id, ':user' => $uid]);
+if (!$stmt->fetchColumn()) {
+    // first time join
+    $ins = $pdo->prepare(
+        "INSERT INTO room_participants (room_id, user_id, last_active)
+         VALUES (:room, :user, NOW())"
+    );
+    $ins->execute([':room' => $room_id, ':user' => $uid]);
+} else {
+    // already joined → update activity
+    $upd = $pdo->prepare(
+        "UPDATE room_participants
+         SET last_active = NOW()
+         WHERE room_id = :room AND user_id = :user"
+    );
+    $upd->execute([':room' => $room_id, ':user' => $uid]);
+}
 
-    if (!$stmt->fetchColumn()) {
-        $ins = $pdo->prepare(
-            "INSERT INTO room_participants (room_id, user_id) VALUES (:room, :user)"
-        );
-        $ins->execute([':room' => $room_id, ':user' => $uid]);
-    }
 } catch (Exception $e) {
     // ignore for now
 }
@@ -337,7 +347,7 @@ body.dashboard-page .collab-hero {
       File upload is a premium feature.
     </div>
 
-    <a href="upgrade.php"
+    <a href="premium_access.php"
    class="btn primary small"
    style="box-shadow:0 0 12px rgba(124,77,255,0.6);">
   ⭐ Upgrade to Premium

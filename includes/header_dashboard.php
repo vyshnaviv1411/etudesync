@@ -4,6 +4,13 @@
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
+require_once __DIR__ . '/premium_check.php';
+
+$isPremium = false;
+if (!empty($_SESSION['user_id'])) {
+    $isPremium = isPremiumUser($_SESSION['user_id']);
+}
+
 $disable_dashboard_bg = $disable_dashboard_bg ?? false;
 
 
@@ -102,9 +109,10 @@ $body_class = $body_class ?? 'page-wrapper';
                ">
             <a href="<?= $webBase ?>/profile.php">Edit Profile</a>
 
-            <?php if (empty($_SESSION['is_premium'])): ?>
-              <a href="<?= $webBase ?>/premium_access.php">Upgrade</a>
-            <?php endif; ?>
+            <?php if (!$isPremium): ?>
+  <a href="<?= $webBase ?>/premium_access.php">Upgrade</a>
+<?php endif; ?>
+
 
             <a href="<?= $webBase ?>/logout.php">Logout</a>
           </div>

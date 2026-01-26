@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_name = $_SESSION['user_name'] ?? 'Student';
 $user_email = $_SESSION['user_email'] ?? '';
-$premium_message = $_SESSION['premium_message'] ?? 'Unlock premium features to access AssessArena and InfoVault.';
+$premium_message = $_SESSION['premium_message'] ?? 'Unlock premium features to access AccessArena and InfoVault.';
 unset($_SESSION['premium_message']); // Clear message after reading
 
 $page_title = 'Premium Checkout';
@@ -550,11 +550,11 @@ document.addEventListener('DOMContentLoaded', function(){
                     </div>
                     <div class="price-row">
                         <span>GST (18%)</span>
-                        <span>₹54</span>
+                        <span>₹100</span>
                     </div>
                     <div class="price-row total">
                         <span>Total</span>
-                        <span>₹353</span>
+                        <span>₹399</span>
                     </div>
                 </div>
             </div>
@@ -650,7 +650,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
                 <!-- Submit Button -->
                 <button type="submit" class="submit-button">
-                    Pay ₹353 & Unlock Premium
+                    Pay ₹399 & Unlock Premium
                 </button>
 
                 <div class="back-link">
@@ -707,24 +707,42 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // Handle Payment Submission (Dummy - Always Fails)
     function handlePayment(event) {
-        event.preventDefault();
+    event.preventDefault();
 
-        // Show loading state
-        const submitButton = document.querySelector('.submit-button');
-        const originalText = submitButton.textContent;
-        submitButton.textContent = 'Processing...';
-        submitButton.disabled = true;
+    const btn = document.querySelector('.submit-button');
+    btn.disabled = true;
+    btn.textContent = 'Processing...';
 
-        // Simulate processing delay
-        setTimeout(() => {
-            // Reset button
-            submitButton.textContent = originalText;
-            submitButton.disabled = false;
+    // Collect card inputs (dummy only)
+    const formData = new FormData();
+    formData.append('cardName', document.getElementById('card-name').value);
+    formData.append('cardNumber', document.getElementById('card-number').value);
+    formData.append('cardExpiry', document.getElementById('card-expiry').value);
+    formData.append('cardCVV', document.getElementById('card-cvv').value);
 
-            // Show error toast
-            showErrorToast('Payment authorization required. This feature is currently available only to authorized premium accounts.');
-        }, 1500);
-    }
+    fetch('/etudesync/public/api/premium/process_upgrade.php', {
+
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.textContent = 'Pay ₹399 & Unlock Premium';
+
+        if (data.success) {
+            alert('🎉 Premium Activated Successfully!');
+            window.location.href = 'dashboard.php';
+        } else {
+            showErrorToast(data.error || 'Payment failed');
+        }
+    })
+    .catch(() => {
+        btn.disabled = false;
+        btn.textContent = 'Pay ₹399 & Unlock Premium';
+        showErrorToast('Server error. Try again.');
+    });
+}
 
     // Show Error Toast
     function showErrorToast(message) {
