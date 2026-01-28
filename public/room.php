@@ -24,6 +24,7 @@ $stmt->execute([$uid]);
 $isPremium = (int)$stmt->fetchColumn();
 
 
+
 // validate inputs: need room_id and code (code optional)
 $room_code = isset($_GET['code']) ? trim($_GET['code']) : '';
 
@@ -318,6 +319,76 @@ body.dashboard-page .collab-hero {
   <div style="height:14px"></div>
 
  
+<!-- ACCESSARENA : LIVE QUIZ -->
+<div class="room-panel glass-card" id="accessArenaPanel">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <strong>AccessArena</strong>
+    <span class="small-muted">Live Quiz</span>
+  </div>
+
+  <div style="height:12px"></div>
+
+  <?php if ($isPremium): ?>
+
+    <!-- MENTOR SECTION -->
+    <div class="aa-section">
+      <div class="aa-title">Mentor</div>
+
+      <a href="accessarena/mentor/create_quiz.php"
+         class="btn primary small"
+         style="width:100%;margin-top:8px;">
+        ➕ Create Quiz
+      </a>
+      
+
+      <a href="accessarena/mentor/publish_quiz.php"
+         class="btn primary small"
+         style="width:100%;margin-top:8px;">
+        ➕ Upload Quiz
+      </a>
+
+    </div>
+
+    <div class="aa-divider"></div>
+
+    <!-- PARTICIPANT SECTION -->
+    <div class="aa-section">
+      <div class="aa-title">Participant</div>
+
+      <input
+        id="aaQuizCode"
+        type="text"
+        placeholder="Enter quiz code"
+        class="aa-input"
+      />
+
+      <button
+        id="aaJoinQuizBtn"
+        class="btn primary small"
+        style="width:100%;margin-top:8px;">
+        Join Quiz
+      </button>
+    </div>
+
+  <?php else: ?>
+
+    <!-- NON-PREMIUM -->
+    <div class="small-muted" style="margin-top:8px;">
+      Live quizzes are a premium feature.
+    </div>
+
+    <a href="premium_access.php"
+       class="btn primary small"
+       style="width:100%;margin-top:10px;">
+      ⭐ Upgrade to Premium
+    </a>
+
+  <?php endif; ?>
+
+</div>
+
+
 
 
   <!-- FILES -->
@@ -435,6 +506,22 @@ document.getElementById('endRoomBtn')?.addEventListener('click', () => {
       location.reload();
     }
   });
+});
+</script>
+
+<script>
+document.getElementById('aaJoinQuizBtn')?.addEventListener('click', () => {
+  const code = document.getElementById('aaQuizCode').value.trim();
+
+  if (!code) {
+    alert('Please enter a quiz code');
+    return;
+  }
+
+  window.location.href =
+window.location.href =
+  'accessarena/participant/join_quiz.php?code=' + encodeURIComponent(code);
+
 });
 </script>
 

@@ -1061,16 +1061,27 @@ setSubFeatureBg() {
                 );
             }
         } else {
-            textarea.value = '';
-            textarea.disabled = true;
-            submitBtn.disabled = true;
+    const today = new Date().toISOString().split('T')[0];
 
-            this.showMessage(
-                'journal-message',
-                'No journal entry for this day.',
-                'info'
-            );
-        }
+    textarea.value = '';
+
+    if (this.currentJournalDate === today) {
+        // ✅ TODAY → allow writing
+        textarea.disabled = false;
+        submitBtn.disabled = false;
+    } else {
+        // ❌ Past / future without entry → lock
+        textarea.disabled = true;
+        submitBtn.disabled = true;
+
+        this.showMessage(
+            'journal-message',
+            'No journal entry for this day.',
+            'info'
+        );
+    }
+}
+
 
         // Disable "Next" if today
         const today = new Date().toISOString().split('T')[0];

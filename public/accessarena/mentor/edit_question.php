@@ -4,7 +4,8 @@ if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 require_once __DIR__ . '/../../../includes/db.php';
 require_once __DIR__ . '/../../../includes/premium_check.php';
 
-$body_class = 'dashboard-page accessarena-page';
+$body_class = 'dashboard-page accessarena-page edit-question-page';
+
 $disable_dashboard_bg = true;
 
 require_once __DIR__ . '/../../../includes/header_dashboard.php';
@@ -126,13 +127,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </form>
     </div>
 
-    <!-- RIGHT -->
-    <div class="questions-right">
-      <div class="question-card">
-        <h3>Preview</h3>
-        <p><?= htmlspecialchars($question['question_text']) ?></p>
-      </div>
-    </div>
 
   </div>
 </div>

@@ -1033,13 +1033,7 @@ $page_title = 'FocusFlow - Productivity Zone';
 
                 <div id="timer-status" style="color: var(--neutral-500); margin: var(--space-4) 0;">Ready to start</div>
 
-                <!-- Notification Permission Banner -->
-                <div id="notification-banner" style="display: none; background: rgba(255, 193, 7, 0.1); border: 2px solid #ffc107; border-radius: 12px; padding: 12px 16px; margin: 16px 0; text-align: center;">
-                    <p style="margin: 0 0 8px 0; color: #f57c00; font-weight: 600;">🔔 Enable notifications to get alerted when timer completes</p>
-                    <button class="modern-btn modern-btn-secondary" onclick="requestNotificationPermission()" style="font-size: 0.875rem; padding: 8px 16px;">
-                        Enable Notifications
-                    </button>
-                </div>
+                
 
                 <div class="timer-controls">
                     <button class="modern-btn modern-btn-primary modern-btn-lg" id="start-btn" onclick="startTimer()">

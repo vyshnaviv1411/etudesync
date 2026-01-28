@@ -15,45 +15,39 @@ requirePremium();
 
 <script>document.body.classList.add('dashboard-page');</script>
 
-<!-- Background -->
-<div class="dashboard-bg" aria-hidden="true"
+<div class="dashboard-bg"
      style="background-image:url('../../assets/images/infovault_bg.jpg');">
 </div>
-
 
 <link rel="stylesheet" href="../../assets/css/accessarena.css">
 
 <div class="collab-viewport no-quiz-page">
-  <div class="collab-hero">
+  <div class="no-quiz-card">
 
+    <h1>No Quiz Selected</h1>
 
-  <div class="collab-card accessarena-card no-quiz-card">
+    <p class="lead">
+      You need to create a quiz before adding questions.
+    </p>
 
-
-      <h1 style="margin-bottom:10px;">No Quiz Selected</h1>
-
-      <p class="lead" style="margin-bottom:20px;">
-        You need to create a quiz before adding questions.
+    <div class="glass-card">
+      <p>
+        Start by creating a quiz draft.
+        Once created, you can add questions,
+        publish it, and share the quiz code.
       </p>
-
-      <div class="glass-card" style="padding:18px;margin-bottom:20px">
-        <p class="small-muted">
-          Start by creating a quiz draft.  
-          Once created, you can add questions, publish it, and share the code.
-        </p>
-      </div>
-
-      <a href="create_quiz.php" class="btn primary">
-        ➕ Create Quiz
-      </a>
-
-      <div style="margin-top:16px">
-        <a href="mentor_home.php" class="btn small">
-          ← Back to Dashboard
-        </a>
-      </div>
-
     </div>
+
+    <a href="create_quiz.php" class="btn primary">
+      ➕ Create Quiz
+    </a>
+
+    <div>
+      <a href="mentor_home.php" class="btn small">
+        ← Back to Dashboard
+      </a>
+    </div>
+
   </div>
 </div>
 

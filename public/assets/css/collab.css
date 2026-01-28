@@ -1088,3 +1088,79 @@ body.dashboard-page .collab-card {
   font-size: 1rem;
   line-height: 1.6;
 }
+
+
+/* ===============================
+   ACCESSARENA – ROOM PANEL
+================================ */
+
+.accessarena-room-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.accessarena-room-panel .panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.aa-mentor,
+.aa-participant,
+.aa-locked {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Join row */
+.aa-join-row {
+  display: flex;
+  gap: 8px;
+}
+
+.aa-join-row input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  color: #fff;
+  outline: none;
+}
+
+.aa-join-row input::placeholder {
+  color: rgba(255,255,255,0.5);
+}
+
+
+/* AccessArena (Room only) */
+#aaJoinQuizBtn { cursor:pointer; }
+
+#aaQuizCode {
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.04);
+  color:#fff;
+  margin-top:6px;
+}
+
+.aa-section {
+  display:flex;
+  flex-direction:column;
+}
+
+.aa-title {
+  font-weight:700;
+  font-size:0.95rem;
+  color:#fff;
+}
+
+.aa-divider {
+  height:1px;
+  background:rgba(255,255,255,0.08);
+  margin:14px 0;
+}

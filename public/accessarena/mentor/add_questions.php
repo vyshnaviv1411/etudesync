@@ -51,32 +51,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($question && $a && $b && in_array($correct, ['A','B','C','D'])) {
 
-        $stmt = $pdo->prepare("
-            INSERT INTO accessarena_questions
-            (quiz_id, question_text, option_a, option_b, option_c, option_d, correct_option)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ");
-        $stmt->execute([$quiz_id, $question, $a, $b, $c, $d, $correct]);
+    $stmt = $pdo->prepare("
+        INSERT INTO accessarena_questions
+        (quiz_id, question_text, option_a, option_b, option_c, option_d, correct_option)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ");
+    $stmt->execute([$quiz_id, $question, $a, $b, $c, $d, $correct]);
 
-        // Update total_questions
-        $pdo->prepare("
-            UPDATE accessarena_quizzes
-            SET total_questions = total_questions + 1
-            WHERE id = ?
-        ")->execute([$quiz_id]);
+    // Update total_questions
+    $pdo->prepare("
+        UPDATE accessarena_quizzes
+        SET total_questions = total_questions + 1
+        WHERE id = ?
+    ")->execute([$quiz_id]);
 
-        $success = "Question added successfully!";
-    } else {
-        $error = "Please fill required fields correctly.";
-    }
+    // 🔥 REDIRECT (THIS FIXES DUPLICATION)
+    header("Location: add_questions.php?quiz_id=$quiz_id&added=1");
+    exit;
+
+} else {
+    $error = "Please fill required fields correctly.";
+}
+
 }
 // Fetch questions for this quiz
 $qStmt = $pdo->prepare("
   SELECT *
   FROM accessarena_questions
   WHERE quiz_id = ?
-  ORDER BY id DESC
+  ORDER BY id ASC
 ");
+
 $qStmt->execute([$quiz_id]);
 $questions = $qStmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -163,56 +168,65 @@ $questions = $qStmt->fetchAll(PDO::FETCH_ASSOC);
       <h3 style="margin-bottom:12px;">Questions Added</h3>
 
       <?php if ($questions): ?>
-        <?php foreach ($questions as $q): ?>
-          <div class="question-card">
+  <?php $qn = 1; foreach ($questions as $q): ?>
 
-            <div class="question-title">
-              <?= htmlspecialchars($q['question_text']) ?>
-            </div>
+    <div class="question-card">
 
-            <ul class="options-list">
-              <li><b>A.</b> <?= htmlspecialchars($q['option_a']) ?></li>
-              <li><b>B.</b> <?= htmlspecialchars($q['option_b']) ?></li>
-              <?php if ($q['option_c']): ?>
-                <li><b>C.</b> <?= htmlspecialchars($q['option_c']) ?></li>
-              <?php endif; ?>
-              <?php if ($q['option_d']): ?>
-                <li><b>D.</b> <?= htmlspecialchars($q['option_d']) ?></li>
-              <?php endif; ?>
-            </ul>
+      <div class="question-title">
+        <span class="q-number">Q<?= $qn ?>.</span>
+        <?= htmlspecialchars($q['question_text']) ?>
+      </div>
 
-            <div class="correct-answer">
-              Correct Answer: <strong><?= $q['correct_option'] ?></strong>
-            </div>
+      <ul class="options-list">
+        <li><b>A.</b> <?= htmlspecialchars($q['option_a']) ?></li>
+        <li><b>B.</b> <?= htmlspecialchars($q['option_b']) ?></li>
 
-            <div class="question-actions">
-              <a href="edit_question.php?id=<?= $q['id'] ?>" class="btn small">
-                Edit
-              </a>
+        <?php if (!empty($q['option_c'])): ?>
+          <li><b>C.</b> <?= htmlspecialchars($q['option_c']) ?></li>
+        <?php endif; ?>
 
-              <a href="delete_question.php?id=<?= $q['id'] ?>&quiz_id=<?= $quiz_id ?>"
-                 class="btn small danger"
-                 onclick="return confirm('Delete this question?');">
-                Delete
-              </a>
-            </div>
+        <?php if (!empty($q['option_d'])): ?>
+          <li><b>D.</b> <?= htmlspecialchars($q['option_d']) ?></li>
+        <?php endif; ?>
+      </ul>
 
-          </div>
-        <?php endforeach; ?>
+      <div class="correct-answer">
+        Correct Answer: <strong><?= htmlspecialchars($q['correct_option']) ?></strong>
+      </div>
 
-        <!-- PUBLISH BUTTON -->
-        <a href="publish_quiz.php?quiz_id=<?= $quiz_id ?>"
-           class="btn primary publish-btn">
-          🚀 Publish Quiz
+      <div class="question-actions">
+        <a href="edit_question.php?id=<?= $q['id'] ?>" class="btn small">
+          Edit
         </a>
 
-      <?php else: ?>
-        <div class="small-muted">No questions added yet.</div>
-      <?php endif; ?>
+        <a href="delete_question.php?id=<?= $q['id'] ?>&quiz_id=<?= $quiz_id ?>"
+           class="btn small danger"
+           onclick="return confirm('Delete this question?');">
+          Delete
+        </a>
+      </div>
 
     </div>
 
+  <?php $qn++; endforeach; ?>
+
+
+
+<?php else: ?>
+  <div class="small-muted">No questions added yet.</div>
+<?php endif; ?>
+
+
+    </div>
+  
   </div>
+<a href="publish_action.php?quiz_id=<?= $quiz_id ?>"
+   class="btn primary publish-btn"
+   onclick="return confirm('Publish this quiz? You cannot edit it after publishing.');">
+  🚀 Publish Quiz
+</a>
+
+
 </div>
 
 <script src="../../assets/js/accessarena.js" defer></script>

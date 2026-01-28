@@ -130,7 +130,8 @@ require_once __DIR__ . '/../includes/header_dashboard.php';
                     </button>
                   </form>
 
-                  <button class="btn small danger">Delete</button>
+        
+                
                 </div>
               </div>
             <?php endforeach; ?>

@@ -999,3 +999,2528 @@ footer {
 body.dashboard-page {
   overflow-x: hidden;
 }
+
+/* ===== ADD QUESTIONS – TEXT VISIBILITY FIX ===== */
+.questions-layout,
+.questions-layout * {
+  color: #0f172a; /* deep navy */
+}
+
+.questions-left input,
+.questions-left textarea,
+.questions-left select {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(0,0,0,0.15);
+}
+
+.questions-left select option {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+.question-card {
+  background: rgba(255,255,255,0.95) !important;
+  color: #0f172a !important;
+}
+
+.question-card * {
+  color: #0f172a !important;
+}
+
+.correct-answer {
+  color: #2563eb !important;
+  font-weight: 600;
+}
+
+/* Question number */
+.q-number {
+  font-weight: 700;
+  margin-right: 6px;
+  color: #4f46e5; /* soft indigo */
+}
+
+/* =========================================================
+   NO QUIZ PAGE — HARD RESET (KILL ALL WHITE LAYERS)
+========================================================= */
+
+/* 1️⃣ Kill ALL inherited glass / white backgrounds */
+body.dashboard-page .no-quiz-page *,
+body.dashboard-page .no-quiz-page *::before,
+body.dashboard-page .no-quiz-page *::after {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 2️⃣ Fix background once & for all */
+body.dashboard-page .dashboard-bg {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: -10 !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* 3️⃣ Center page properly */
+body.dashboard-page .no-quiz-page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* 4️⃣ ONLY this card should exist */
+body.dashboard-page .no-quiz-card {
+  background: rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+
+  border-radius: 18px !important;  /* RECTANGLE */
+  padding: 36px 38px !important;
+  max-width: 560px;
+  width: 100%;
+
+  box-shadow:
+    0 30px 70px rgba(0,0,0,0.25) !important;
+
+  text-align: center;
+}
+
+/* 5️⃣ Inner message glass (only one allowed) */
+body.dashboard-page .no-quiz-card .glass-card {
+  background: rgba(255,255,255,0.65) !important;
+  border-radius: 14px;
+  padding: 18px;
+  margin: 20px 0;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.15);
+}
+
+/* 6️⃣ Text colors */
+body.dashboard-page .no-quiz-card h1 {
+  color: #0f172a !important;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+body.dashboard-page .no-quiz-card .lead {
+  color: #1f2937 !important;
+  font-size: 15px;
+}
+
+body.dashboard-page .no-quiz-card p {
+  color: #111 !important;
+}
+
+/* 7️⃣ Buttons visible */
+body.dashboard-page .no-quiz-card .btn {
+  margin-top: 12px;
+}
+
+/* =====================================================
+   QUIZ HISTORY – HARD RESET (NO GLASS, NO CYLINDER)
+===================================================== */
+
+.quiz-history-container {
+  /* Kill glass / blur completely */
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+
+  /* Proper rectangle */
+  border-radius: 18px !important;
+  padding: 48px 56px !important;
+
+  /* Clean card shadow */
+  box-shadow: 0 20px 50px rgba(0,0,0,0.18) !important;
+
+  border: none !important;
+  position: relative;
+}
+
+/* REMOVE reflection / gradient layers */
+.quiz-history-container::before,
+.quiz-history-container::after {
+  display: none !important;
+}
+
+/* Prevent inherited flex centering stretch */
+.quiz-history-container {
+  align-self: stretch !important;
+}
+
+/* ======================
+   QUIZ CARDS – CLEAN
+====================== */
+
+.quiz-history-card {
+  background: #f9fafb !important; /* soft solid */
+  border-radius: 14px;
+  padding: 22px;
+
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.quiz-history-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 50px rgba(124,58,237,0.35);
+}
+
+/* ======================
+   REMOVE CAPSULE FEEL
+====================== */
+
+.quiz-row span,
+.quiz-index {
+  border-radius: 6px !important;
+}
+
+/* ======================
+   PAGE SPACING FIX
+====================== */
+
+.accessarena-page .collab-hero {
+  align-items: flex-start !important;
+  padding-top: 120px;
+  padding-bottom: 120px;
+}
+
+/* =========================================
+   QUIZ HISTORY – FIX WHITE PAGE WRAPPER
+   (MAIN is the culprit)
+========================================= */
+
+body.quiz-history-page main {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Ensure background image is visible */
+body.quiz-history-page {
+  background: transparent !important;
+}
+
+/* Keep quiz card normal */
+body.quiz-history-page .quiz-history-container {
+  background: #ffffff;
+  border-radius: 18px;
+}
+
+/* =====================================================
+   PUBLISH QUIZ PAGE
+===================================================== */
+
+.publish-wrapper {
+  max-width: 1100px !important;
+  padding: 48px 56px !important;
+  border-radius: 18px !important;
+  background: rgba(255,255,255,0.9) !important;
+  box-shadow: 0 30px 70px rgba(0,0,0,.25);
+}
+
+/* GRID */
+.publish-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 26px;
+  margin-top: 36px;
+}
+
+/* CARD */
+.publish-card {
+  background: rgba(255,255,255,0.96);
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 16px 36px rgba(0,0,0,.15);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.publish-card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 30px 70px rgba(124,58,237,.45),
+    0 0 28px rgba(168,85,247,.35);
+}
+
+/* TITLE */
+.publish-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: #0f172a;
+}
+
+/* ROW */
+.publish-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.publish-row span:first-child {
+  font-weight: 600;
+  color: #475569;
+}
+
+/* ACTIONS */
+.publish-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* EMPTY */
+.publish-empty {
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* FOOTER STABILITY */
+.site-footer {
+  margin-top: 80px !important;
+}
+
+/* ============================
+   PUBLISH QUIZ – TEXT VISIBILITY FIX
+============================ */
+
+/* Force dark readable text inside publish cards */
+.publish-card,
+.publish-card * {
+  color: #0f172a !important; /* deep navy */
+}
+
+/* Labels (Quiz Code, Questions, Time Limit) */
+.publish-row span:first-child {
+  color: #475569 !important; /* slate */
+  font-weight: 600;
+}
+
+/* Values */
+.publish-row span:last-child,
+.publish-row strong {
+  color: #020617 !important; /* almost black */
+  font-weight: 700;
+}
+
+/* Quiz title */
+.publish-card h3 {
+  color: #020617 !important;
+}
+
+/* Buttons text */
+.publish-card .btn {
+  color: #ffffff !important;
+}
+
+/* =====================================================
+   QUIZ HISTORY – ISOLATED FIX (NO GLOBAL IMPACT)
+===================================================== */
+
+/* Only quiz history page */
+.quiz-history-scope {
+  max-width: 1180px;
+  margin: 80px auto 120px;
+  padding: 48px 56px;
+
+  background: rgba(255,255,255,0.14);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  border-radius: 16px; /* rectangle */
+  box-shadow: 0 30px 70px rgba(0,0,0,0.25);
+}
+
+/* FIX CYLINDER LOOK */
+.quiz-history-scope,
+.quiz-history-scope * {
+  border-radius: 12px;
+}
+
+/* Header */
+.quiz-history-scope .quiz-history-header h1 {
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.quiz-history-scope .quiz-history-header p {
+  color: rgba(255,255,255,0.75);
+  font-size: 15px;
+}
+
+/* Grid */
+.quiz-history-scope .quiz-history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 26px;
+  margin-top: 36px;
+}
+
+/* Cards */
+.quiz-history-scope .quiz-card {
+  background: rgba(255,255,255,0.92);
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Status badge */
+.quiz-history-scope .quiz-status {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Draft / Published */
+.quiz-history-scope .quiz-status.draft {
+  background: rgba(255,193,7,0.25);
+  color: #ffb300;
+}
+
+.quiz-history-scope .quiz-status.published {
+  background: rgba(76,175,80,0.25);
+  color: #2e7d32;
+}
+
+/* Empty state */
+.quiz-history-scope .quiz-empty {
+  background: rgba(255,255,255,0.75);
+  border-radius: 14px;
+  padding: 36px;
+  text-align: center;
+}
+
+/* Footer spacing ONLY for quiz history */
+.quiz-history-scope {
+  margin-bottom: 140px;
+}
+
+
+.quiz-history-scope {
+  min-height: calc(100vh - 160px);
+  display: flex;
+  flex-direction: column;
+}
+
+.quiz-history-content {
+  flex: 1;
+}
+
+/* ==============================
+   ACCESSARENA – INSTRUCTIONS
+   ============================== */
+
+.accessarena-quiz {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quiz-instructions-card {
+  width: 100%;
+  max-width: 560px;
+  padding: 40px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+  text-align: center;
+}
+
+.quiz-instructions-card h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0b1c2d;
+  margin-bottom: 6px;
+}
+
+.quiz-instructions-card .quiz-subtitle {
+  color: #34495e;
+  font-size: 1rem;
+  margin-bottom: 26px;
+}
+
+.quiz-rules {
+  text-align: left;
+  background: rgba(255,255,255,0.75);
+  border-radius: 16px;
+  padding: 22px;
+  margin-bottom: 28px;
+}
+
+.quiz-rules li {
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+  color: #1f2d3d;
+}
+
+.quiz-start-btn {
+  padding: 14px 30px;
+  font-size: 1rem;
+  border-radius: 999px;
+}
+
+
+/* ==============================
+   ACCESSARENA – ATTEMPT QUIZ
+   ============================== */
+
+.quiz-attempt-card {
+  width: 100%;
+  max-width: 720px;
+  padding: 42px;
+  border-radius: 24px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 35px 90px rgba(0,0,0,0.3);
+}
+
+/* QUIZ HEADER */
+.quiz-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.quiz-header h1 {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #0b1c2d;
+}
+
+.quiz-timer {
+  margin-top: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #6c2bd9;
+}
+
+/* QUESTION CARD */
+.quiz-question-box {
+  background: rgba(255,255,255,0.92);
+  border-radius: 18px;
+  padding: 26px;
+  margin-bottom: 24px;
+}
+
+.quiz-question-box h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 18px;
+}
+
+/* OPTIONS */
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.quiz-option:hover {
+  background: #f4f1ff;
+  border-color: #7c4dff;
+}
+
+.quiz-option input {
+  transform: scale(1.25);
+}
+
+.quiz-option span {
+  font-size: 0.95rem;
+  color: #222;
+}
+
+/* SUBMIT */
+.quiz-submit {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.quiz-submit button {
+  padding: 14px 36px;
+  font-size: 1rem;
+  border-radius: 999px;
+}
+
+
+/* ===== RESULT & ANALYSIS ===== */
+
+.quiz-summary-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:14px;
+  margin-bottom:26px;
+}
+
+.summary-box{
+  background:rgba(255,255,255,0.15);
+  border-radius:10px;
+  padding:14px;
+  text-align:center;
+}
+
+.analysis-card{
+  background:rgba(255,255,255,0.14);
+  border-radius:10px;
+  padding:16px;
+  margin-bottom:14px;
+}
+
+.analysis-q{
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.analysis-rows{
+  display:grid;
+  grid-template-columns:1fr 1fr auto;
+  gap:12px;
+  align-items:center;
+}
+
+.analysis-rows span{
+  color:rgba(255,255,255,0.75);
+}
+
+.correct{color:#5CFF8A;font-weight:700;}
+.wrong{color:#FF6B6B;font-weight:700;}
+
+/* ===== LEADERBOARD ===== */
+
+.leaderboard-table{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:20px;
+}
+
+.leaderboard-row{
+  display:grid;
+  grid-template-columns:0.6fr 2fr 1fr 1fr;
+  padding:12px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.12);
+  align-items:center;
+}
+
+.leaderboard-row.head{
+  font-weight:700;
+  background:rgba(255,255,255,0.2);
+}
+
+.leaderboard-row.top{
+  border:1px solid rgba(124,77,255,0.6);
+  box-shadow:0 0 12px rgba(124,77,255,0.35);
+}
+
+/* ===============================
+   HEADER (VERY CLEAR)
+================================ */
+.accessarena-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.accessarena-header h2 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #020617; /* almost black */
+}
+
+.accessarena-header p {
+  margin-top: 10px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+/* ===============================
+   GRID
+================================ */
+.quiz-history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 32px;
+}
+
+/* ===============================
+   CARD (SOLID, NO GLASS)
+================================ */
+.quiz-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 26px 26px 28px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.18);
+  color: #020617;
+}
+
+/* ===============================
+   TOP ROW
+================================ */
+.quiz-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.quiz-index {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+/* ===============================
+   STATUS BADGE (LOUD)
+================================ */
+.quiz-status {
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.quiz-status.completed {
+  background: #22c55e;
+  color: #ffffff;
+}
+
+.quiz-status.progress {
+  background: #f59e0b;
+  color: #ffffff;
+}
+
+/* ===============================
+   TITLE
+================================ */
+.quiz-title {
+  margin: 10px 0 18px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #020617;
+}
+
+/* ===============================
+   META INFO
+================================ */
+.quiz-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+
+/* ===============================
+   ACTION BUTTON
+================================ */
+.quiz-actions {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.quiz-actions .btn {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 10px;
+}
+
+/* ===============================
+   EMPTY STATE
+================================ */
+.quiz-empty {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 80px 24px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+}
+
+.quiz-empty h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #020617;
+}
+
+.quiz-empty p {
+  margin: 12px 0 22px;
+  font-size: 1rem;
+  color: #334155;
+}
+
+/* ===============================
+   BACK BUTTON
+================================ */
+.center-back {
+  margin-top: 56px;
+  text-align: center;
+}
+
+/* MAIN ACCESSARENA CARD */
+.accessarena-card {
+  padding: 64px 56px 56px; /* TOP padding increased */
+}
+
+/* HEADER – HARD SPACING FIX */
+.accessarena-header {
+  text-align: center;
+  padding-bottom: 48px;       /* real spacing */
+  margin-bottom: 48px;        /* visual separation */
+  border-bottom: 1px solid rgba(0,0,0,0.08); /* divider */
+}
+
+.accessarena-header h2 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #020617;
+}
+
+.accessarena-header p {
+  margin-top: 12px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.quiz-history-grid {
+  margin-top: 48px;
+}
+
+/* =====================================================
+   ACCESSARENA HOME — SPACING FIX (NO SCROLL)
+===================================================== */
+
+/* Reduce excessive hero padding */
+.accessarena-page .collab-hero {
+  padding-top: 48px !important;
+  padding-bottom: 48px !important;
+}
+
+/* Reduce card bottom padding */
+.accessarena-page .collab-card.accessarena-card {
+  padding-bottom: 45px !important;
+}
+
+/* Reduce header spacing */
+.accessarena-page .accessarena-header {
+  margin-bottom: 32px !important;
+  padding-bottom: 32px !important;
+}
+
+/* Remove artificial footer push */
+.accessarena-page main {
+  padding-bottom: 0 !important;
+}
+
+/* Keep footer close but visible */
+.accessarena-page .site-footer,
+.accessarena-page footer {
+  margin-top: 24px !important;
+}
+
+/* ===============================
+   EDIT QUESTION — HARD RESET
+=============================== */
+
+.edit-question-page .collab-card,
+.edit-question-page .accessarena-card {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+/* Edit form card */
+.edit-question-page .edit-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 28px 32px;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.15);
+}
+
+/* Edit preview clarity fix */
+.edit-question-page .questions-right .question-card {
+  background: #ffffff;
+  color: #0f172a;
+  opacity: 1;
+  box-shadow: 0 16px 36px rgba(0,0,0,0.15);
+}
+
+.edit-question-page .questions-right .question-card * {
+  color: #0f172a;
+  opacity: 1;
+}
+
+/* Edit page spacing polish */
+.edit-question-page .questions-split {
+  align-items: flex-start;
+  gap: 64px;
+}
+
+/* ===============================
+   EDIT QUESTION — SINGLE COLUMN
+=============================== */
+
+.edit-question-page .questions-split {
+  display: flex;
+  justify-content: center;
+}
+
+/* Center + widen edit form */
+.edit-question-page .questions-left {
+  width: 100%;
+  max-width: 900px;   /* ⬅️ BIG FORM */
+}
+
+/* Bigger white card */
+.edit-question-page .edit-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px 48px;
+  box-shadow: 0 25px 55px rgba(0,0,0,0.18);
+}
+
+/* Bigger text & inputs for edit page */
+.edit-question-page .accessarena-form label {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.edit-question-page .accessarena-form textarea {
+  min-height: 140px;
+  font-size: 16px;
+}
+
+.edit-question-page .accessarena-form input,
+.edit-question-page .accessarena-form select {
+  font-size: 16px;
+  padding: 14px 16px;
+}
+
+/* Edit page header polish */
+.edit-question-page .collab-card-head {
+  text-align: center;
+  margin-bottom: 48px;
+}
+/* ===============================
+   EDIT QUESTION — TITLE FIX
+=============================== */
+
+.edit-question-page h2,
+.edit-question-page .edit-card h2 {
+  color: #0f172a !important;   /* deep navy */
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+.edit-question-page .edit-card h2 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.edit-question-page .edit-card .sub {
+  color: #475569;   /* slate */
+  opacity: 1;
+}
+
+
+/* =========================================
+   EDIT QUESTION — SUBTITLE FINAL FIX
+========================================= */
+
+.edit-question-page .edit-card .sub {
+  color: #334155 !important;   /* dark slate */
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+.edit-question-page .edit-card,
+.edit-question-page .edit-card * {
+  opacity: 1 !important;
+}
+
+/* =========================================
+   ACCESSARENA — INSTRUCTIONS PAGE FIX
+   (ISOLATED, SAFE)
+========================================= */
+
+body.accessarena-instructions-only .collab-hero {
+  padding-top: 40px !important;
+  padding-bottom: 40px !important;
+}
+
+/* Reduce card vertical padding */
+body.accessarena-instructions-only .collab-card.accessarena-card {
+  padding: 40px 48px !important;
+}
+
+/* Header spacing FIX */
+body.accessarena-instructions-only .accessarena-header {
+  margin-bottom: 24px !important;
+  padding-bottom: 24px !important;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+body.accessarena-instructions-only .accessarena-header h2 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #020617;
+}
+
+body.accessarena-instructions-only .accessarena-header p {
+  font-size: 15px;
+  color: #334155;
+}
+
+/* ===============================
+   INSTRUCTIONS VISIBILITY FIX
+=============================== */
+
+/* Instruction box */
+body.accessarena-instructions-only .quiz-instructions-card {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.15);
+  padding: 28px 32px !important;
+  margin: 0 auto 28px;
+  text-align: left !important;
+}
+
+/* LEFT ALIGN the list properly */
+body.accessarena-instructions-only .quiz-instructions-card ul {
+  padding-left: 22px !important;
+  margin: 0;
+}
+
+/* Make rules CLEAR */
+body.accessarena-instructions-only .quiz-instructions-card li {
+  color: #0f172a !important;
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  list-style: disc;
+}
+
+/* Buttons spacing */
+body.accessarena-instructions-only form {
+  margin-top: 20px;
+}
+
+
+/* =========================================
+   ACCESSARENA — ATTEMPT QUIZ (FINAL CLEAN UI)
+   Scoped. Safe. No Overrides Elsewhere.
+========================================= */
+
+body.accessarena-attempt-only .collab-hero {
+  align-items: flex-start !important;
+  padding: 80px 20px 120px;
+}
+
+/* Main exam container */
+body.accessarena-attempt-only .collab-card.accessarena-card {
+  max-width: 720px !important;
+  padding: 48px 44px !important;
+  border-radius: 18px !important;     /* ⛔ no pill */
+  background: #ffffff !important;
+  box-shadow: 0 30px 70px rgba(0,0,0,0.18);
+  border: 1px solid #e5e7eb;
+}
+
+/* Header */
+body.accessarena-attempt-only .accessarena-header {
+  text-align: center;
+  margin-bottom: 42px !important;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+body.accessarena-attempt-only .accessarena-header h2 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #020617;
+}
+
+body.accessarena-attempt-only .accessarena-header p {
+  font-size: 15px;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* TIMER emphasis */
+body.accessarena-attempt-only #timer {
+  font-weight: 800;
+  color: #7c3aed;
+}
+
+/* ===============================
+   QUESTION BLOCK (RECTANGLE)
+================================ */
+
+body.accessarena-attempt-only .quiz-attempt-card {
+  background: #f8fafc !important;
+  border-radius: 14px !important;     /* ⛔ no cylinder */
+  padding: 28px 30px !important;
+  margin-bottom: 26px !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+  border: 1px solid #e5e7eb;
+}
+
+/* Question text */
+body.accessarena-attempt-only .quiz-attempt-card > div:first-child {
+  font-size: 16px;
+  font-weight: 700;
+  color: #020617;
+  margin-bottom: 18px;
+}
+
+/* ===============================
+   OPTIONS (CLEAN, FLAT)
+================================ */
+
+body.accessarena-attempt-only .quiz-attempt-card label {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+
+body.accessarena-attempt-only .quiz-attempt-card label:hover {
+  border-color: #7c3aed;
+  background: #f4f1ff;
+}
+
+body.accessarena-attempt-only .quiz-attempt-card input[type="radio"] {
+  transform: scale(1.2);
+}
+
+/* ===============================
+   SUBMIT BUTTON
+================================ */
+
+body.accessarena-attempt-only .btn.primary {
+  padding: 14px 36px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #7c3aed, #9333ea);
+  box-shadow: 0 18px 40px rgba(124,58,237,0.45);
+}
+
+/* ===============================
+   FOOTER SPACING FIX
+================================ */
+
+body.accessarena-attempt-only main {
+  padding-bottom: 0 !important;
+}
+
+body.accessarena-attempt-only footer,
+body.accessarena-attempt-only .site-footer {
+  margin-top: 80px !important;
+}
+
+/* =====================================================
+   ACCESSARENA ATTEMPT — HARD RESET (NO PILLS, NO GLASS)
+===================================================== */
+
+body.accessarena-attempt-only .collab-hero {
+  align-items: flex-start !important;
+  padding: 100px 20px 140px !important;
+}
+
+/* MAIN EXAM CONTAINER */
+body.accessarena-attempt-only .collab-card.accessarena-card {
+  max-width: 760px !important;
+  width: 100%;
+  background: #ffffff !important;
+  padding: 56px 52px !important;
+
+  border-radius: 16px !important; /* ⛔ NO CYLINDER */
+  box-shadow: 0 32px 80px rgba(0,0,0,0.22) !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* HEADER */
+body.accessarena-attempt-only .accessarena-header {
+  margin-bottom: 48px !important;
+  padding-bottom: 24px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+body.accessarena-attempt-only .accessarena-header h2 {
+  font-size: 34px !important;
+  font-weight: 800 !important;
+  color: #020617 !important;
+}
+
+/* 🔥 TIMER VISIBILITY FIX */
+body.accessarena-attempt-only .accessarena-header p {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #020617 !important;
+}
+
+body.accessarena-attempt-only #timer {
+  color: #7c3aed !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.5px;
+}
+
+/* =====================================================
+   QUESTION CARD — TRUE RECTANGLE
+===================================================== */
+
+body.accessarena-attempt-only .quiz-attempt-card {
+  background: #f8fafc !important;
+  border-radius: 12px !important; /* ⛔ KILL CYLINDER */
+  padding: 28px 30px !important;
+  margin-bottom: 28px !important;
+
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 12px 26px rgba(0,0,0,0.08) !important;
+}
+
+/* QUESTION TEXT */
+body.accessarena-attempt-only .quiz-attempt-card > div:first-child {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: #020617 !important;
+  margin-bottom: 20px !important;
+}
+
+/* =====================================================
+   OPTIONS — HARD RESET (THIS WAS THE PROBLEM)
+===================================================== */
+
+body.accessarena-attempt-only .quiz-attempt-card label {
+  all: unset; /* 💣 KILLS GLOBAL PILL STYLES */
+
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px;
+
+  padding: 14px 16px !important;
+  margin-bottom: 12px !important;
+
+  border-radius: 8px !important; /* ✅ RECTANGLE */
+  border: 1px solid #d1d5db !important;
+  background: #ffffff !important;
+
+  cursor: pointer !important;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+body.accessarena-attempt-only .quiz-attempt-card label:hover {
+  background: #f4f1ff !important;
+  border-color: #7c3aed !important;
+}
+
+/* RADIO */
+body.accessarena-attempt-only .quiz-attempt-card input[type="radio"] {
+  transform: scale(1.25);
+  accent-color: #7c3aed;
+}
+
+/* OPTION TEXT */
+body.accessarena-attempt-only .quiz-attempt-card label span,
+body.accessarena-attempt-only .quiz-attempt-card label {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #020617 !important;
+}
+
+/* =====================================================
+   SUBMIT BUTTON
+===================================================== */
+
+body.accessarena-attempt-only .btn.primary {
+  padding: 14px 38px !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, #7c3aed, #9333ea) !important;
+
+  box-shadow: 0 18px 44px rgba(124,58,237,0.5) !important;
+}
+
+/* =====================================================
+   FOOTER SPACING (NO CRUSH)
+===================================================== */
+
+body.accessarena-attempt-only main {
+  padding-bottom: 0 !important;
+}
+
+body.accessarena-attempt-only footer,
+body.accessarena-attempt-only .site-footer {
+  margin-top: 100px !important;
+}
+
+/* =========================================================
+   ACCESSARENA ATTEMPT — ABSOLUTE PILL KILL (FINAL)
+========================================================= */
+
+body.accessarena-attempt-only label,
+body.accessarena-attempt-only label * {
+  border-radius: 0 !important;
+}
+
+/* OPTION CONTAINER — FORCE RECTANGLE */
+body.accessarena-attempt-only .quiz-attempt-card label {
+  all: unset !important;              /* 💣 wipes EVERYTHING */
+  box-sizing: border-box !important;
+
+  display: grid !important;
+  grid-template-columns: 24px 1fr;
+  align-items: center;
+
+  padding: 14px 18px !important;
+  margin-bottom: 14px !important;
+
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+
+  border-radius: 8px !important;      /* ✅ REAL RECTANGLE */
+  cursor: pointer !important;
+}
+
+/* RADIO BUTTON */
+body.accessarena-attempt-only .quiz-attempt-card input[type="radio"] {
+  all: revert !important;             /* restore browser default */
+  transform: scale(1.2);
+  accent-color: #7c3aed;
+  margin: 0 !important;
+}
+
+/* OPTION TEXT */
+body.accessarena-attempt-only .quiz-attempt-card label {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #020617 !important;
+}
+
+/* HOVER (NO PILL GLOW) */
+body.accessarena-attempt-only .quiz-attempt-card label:hover {
+  background: #f4f1ff !important;
+  border-color: #7c3aed !important;
+}
+
+/* ===========================
+   QUESTION CARD (RECTANGLE)
+=========================== */
+
+body.accessarena-attempt-only .quiz-attempt-card {
+  background: #f8fafc !important;
+  border-radius: 10px !important;
+  padding: 28px !important;
+  margin-bottom: 32px !important;
+
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.08) !important;
+}
+
+/* =====================================================
+   ACCESSARENA ATTEMPT — CLEAN EXAM UI (ISOLATED)
+===================================================== */
+
+body.accessarena-attempt-only .aa-option {
+  display: block;
+  margin-bottom: 14px;
+  cursor: pointer;
+}
+
+/* hide ugly radio */
+body.accessarena-attempt-only .aa-option input {
+  display: none;
+}
+
+/* REAL OPTION BOX (RECTANGLE) */
+body.accessarena-attempt-only .aa-option-box {
+  display: block;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;   /* ✅ RECTANGLE */
+  font-size: 15px;
+  font-weight: 600;
+  color: #020617;
+  transition: all 0.25s ease;
+}
+
+/* hover */
+body.accessarena-attempt-only .aa-option:hover .aa-option-box {
+  background: #f4f1ff;
+  border-color: #7c3aed;
+}
+
+/* selected */
+body.accessarena-attempt-only .aa-option input:checked + .aa-option-box {
+  background: #ede9fe;
+  border-color: #7c3aed;
+  box-shadow: inset 0 0 0 2px #7c3aed;
+}
+
+/* =====================================================
+   ACCESSARENA ATTEMPT — HARD RESET (NO PILLS, NO GLASS)
+===================================================== */
+
+body.accessarena-attempt-only .collab-hero {
+  align-items: flex-start !important;
+  padding: 100px 20px 140px !important;
+}
+
+/* MAIN EXAM CONTAINER */
+body.accessarena-attempt-only .collab-card.accessarena-card {
+  max-width: 760px !important;
+  width: 100%;
+  background: #ffffff !important;
+  padding: 56px 52px !important;
+
+  border-radius: 16px !important; /* ⛔ NO CYLINDER */
+  box-shadow: 0 32px 80px rgba(0,0,0,0.22) !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* HEADER */
+body.accessarena-attempt-only .accessarena-header {
+  margin-bottom: 48px !important;
+  padding-bottom: 24px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+body.accessarena-attempt-only .accessarena-header h2 {
+  font-size: 34px !important;
+  font-weight: 800 !important;
+  color: #020617 !important;
+}
+
+/* 🔥 TIMER VISIBILITY FIX */
+body.accessarena-attempt-only .accessarena-header p {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #020617 !important;
+}
+
+body.accessarena-attempt-only #timer {
+  color: #7c3aed !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.5px;
+}
+
+/* =====================================================
+   QUESTION CARD — TRUE RECTANGLE
+===================================================== */
+
+body.accessarena-attempt-only .quiz-attempt-card {
+  background: #f8fafc !important;
+  border-radius: 12px !important; /* ⛔ KILL CYLINDER */
+  padding: 28px 30px !important;
+  margin-bottom: 28px !important;
+
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 12px 26px rgba(0,0,0,0.08) !important;
+}
+
+/* QUESTION TEXT */
+body.accessarena-attempt-only .quiz-attempt-card > div:first-child {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: #020617 !important;
+  margin-bottom: 20px !important;
+}
+
+/* =====================================================
+   OPTIONS — HARD RESET (THIS WAS THE PROBLEM)
+===================================================== */
+
+body.accessarena-attempt-only .quiz-attempt-card label {
+  all: unset; /* 💣 KILLS GLOBAL PILL STYLES */
+
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px;
+
+  padding: 14px 16px !important;
+  margin-bottom: 12px !important;
+
+  border-radius: 8px !important; /* ✅ RECTANGLE */
+  border: 1px solid #d1d5db !important;
+  background: #ffffff !important;
+
+  cursor: pointer !important;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+body.accessarena-attempt-only .quiz-attempt-card label:hover {
+  background: #f4f1ff !important;
+  border-color: #7c3aed !important;
+}
+
+/* RADIO */
+body.accessarena-attempt-only .quiz-attempt-card input[type="radio"] {
+  transform: scale(1.25);
+  accent-color: #7c3aed;
+}
+
+/* OPTION TEXT */
+body.accessarena-attempt-only .quiz-attempt-card label span,
+body.accessarena-attempt-only .quiz-attempt-card label {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #020617 !important;
+}
+
+/* =====================================================
+   SUBMIT BUTTON
+===================================================== */
+
+body.accessarena-attempt-only .btn.primary {
+  padding: 14px 38px !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, #7c3aed, #9333ea) !important;
+
+  box-shadow: 0 18px 44px rgba(124,58,237,0.5) !important;
+}
+
+/* =====================================================
+   FOOTER SPACING (NO CRUSH)
+===================================================== */
+
+body.accessarena-attempt-only main {
+  padding-bottom: 0 !important;
+}
+
+body.accessarena-attempt-only footer,
+body.accessarena-attempt-only .site-footer {
+  margin-top: 100px !important;
+}
+
+
+/* =====================================================
+   ACCESSARENA RESULT — CLEAN & READABLE (ISOLATED)
+===================================================== */
+
+body.accessarena-result-only .collab-hero {
+  align-items: flex-start !important;
+  padding: 100px 20px 120px !important;
+}
+
+/* MAIN RESULT CARD */
+body.accessarena-result-only .collab-card.accessarena-card {
+  max-width: 860px !important;
+  width: 100%;
+  background: #ffffff !important;   /* 🔥 solid white */
+  padding: 56px 56px 60px !important;
+
+  border-radius: 18px !important;   /* rectangle */
+  box-shadow: 0 30px 70px rgba(0,0,0,0.18) !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* HEADER FIX */
+body.accessarena-result-only .accessarena-header {
+  margin-bottom: 48px !important;
+  padding-bottom: 24px !important;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+body.accessarena-result-only .accessarena-header h2 {
+  font-size: 34px !important;
+  font-weight: 800 !important;
+  color: #020617 !important;
+}
+
+body.accessarena-result-only .accessarena-header p {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #334155 !important;
+}
+
+/* SUMMARY BOXES — CLEAR */
+body.accessarena-result-only .summary-box {
+  background: #f8fafc !important;
+  border: 1px solid #e5e7eb;
+  color: #020617 !important;
+  font-weight: 700;
+}
+
+/* QUESTION ANALYSIS CARD */
+body.accessarena-result-only .analysis-card {
+  background: #f9fafb !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  padding: 18px 20px !important;
+}
+
+/* QUESTION TEXT */
+body.accessarena-result-only .analysis-q {
+  color: #020617 !important;
+  font-weight: 700;
+}
+
+/* ANSWER ROWS */
+body.accessarena-result-only .analysis-rows span {
+  color: #475569 !important;
+  font-weight: 600;
+}
+
+/* CORRECT / WRONG */
+body.accessarena-result-only .correct {
+  color: #16a34a !important;
+  font-weight: 800;
+}
+
+body.accessarena-result-only .wrong {
+  color: #dc2626 !important;
+  font-weight: 800;
+}
+
+/* FOOTER SPACING — FIXED */
+body.accessarena-result-only main {
+  padding-bottom: 0 !important;
+}
+
+body.accessarena-result-only footer,
+body.accessarena-result-only .site-footer {
+  margin-top: 80px !important;
+}
+
+/* =====================================================
+   ACCESSARENA RESULT — VISIBILITY FIX
+===================================================== */
+
+/* SUMMARY GRID */
+body.accessarena-result-only .quiz-summary-grid {
+  margin-top: 32px;
+}
+
+/* SUMMARY BOXES — FORCE READABLE */
+body.accessarena-result-only .summary-box {
+  background: #f8fafc !important;
+  border: 1px solid #e5e7eb !important;
+  color: #020617 !important;
+}
+
+body.accessarena-result-only .summary-box span {
+  color: #475569 !important;
+  font-weight: 600;
+}
+
+body.accessarena-result-only .summary-box strong {
+  color: #020617 !important;
+  font-weight: 800;
+}
+
+/* QUESTION-WISE TITLE */
+body.accessarena-result-only h3 {
+  color: #020617 !important;
+  font-weight: 800;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+/* ANALYSIS CARD — SOLID */
+body.accessarena-result-only .analysis-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 14px !important;
+  padding: 20px 22px !important;
+}
+
+/* QUESTION TEXT */
+body.accessarena-result-only .analysis-q {
+  color: #020617 !important;
+  font-weight: 700;
+}
+
+/* ANSWER ROWS */
+body.accessarena-result-only .analysis-rows span {
+  color: #475569 !important;
+  font-weight: 600;
+}
+
+body.accessarena-result-only .analysis-rows strong {
+  color: #020617 !important;
+  font-weight: 700;
+}
+
+/* CORRECT / WRONG */
+body.accessarena-result-only .analysis-rows .correct {
+  color: #16a34a !important;
+  font-weight: 800;
+}
+
+body.accessarena-result-only .analysis-rows .wrong {
+  color: #dc2626 !important;
+  font-weight: 800;
+}
+
+/* Quiz History spacing fix only */
+.quiz-history-scope {
+  padding-top: 48px !important;
+  padding-bottom: 48px !important;
+}
+
+.accessarena-page .collab-hero {
+  padding-top: 56px !important;
+  padding-bottom: 56px !important;
+}
+
+.accessarena-page footer {
+  margin-top: 32px !important;
+}
+
+/* =====================================================
+   QUIZ HISTORY — FINAL VISIBILITY FIX (LAST)
+   Scope-safe. No side effects.
+===================================================== */
+
+.quiz-history-solid {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+}
+
+/* Quiz cards — solid, readable */
+.quiz-history-solid .quiz-card {
+  background: #ffffff !important;
+  color: #020617 !important;
+  opacity: 1 !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+  border: 1px solid #e5e7eb;
+}
+
+/* Text force visibility */
+.quiz-history-solid .quiz-card * {
+  color: #020617 !important;
+  opacity: 1 !important;
+}
+
+/* Quiz title */
+.quiz-history-solid .quiz-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #020617 !important;
+}
+
+/* Meta info */
+.quiz-history-solid .quiz-meta span {
+  color: #334155 !important;
+  font-weight: 600;
+}
+
+/* Status badge */
+.quiz-history-solid .quiz-status.completed {
+  background: #22c55e !important;
+  color: #ffffff !important;
+  font-weight: 700;
+}
+
+/* Buttons — fully visible */
+.quiz-history-solid .quiz-actions .btn {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Leaderboard button fix */
+.quiz-history-solid .btn.outline {
+  background: #ffffff !important;
+  color: #1d4ed8 !important;
+  border: 2px solid #1d4ed8 !important;
+  font-weight: 700;
+}
+
+.quiz-history-solid .btn.outline:hover {
+  background: #1d4ed8 !important;
+  color: #ffffff !important;
+}
+
+/* =====================================
+   LEADERBOARD — CLEAN & READABLE (ONLY)
+===================================== */
+
+.leaderboard-scope .leaderboard-card {
+  background: #ffffff !important;
+  border-radius: 18px;
+  padding: 56px;
+  max-width: 900px;
+  box-shadow: 0 30px 70px rgba(0,0,0,0.2);
+}
+
+/* HEADER */
+.leaderboard-header {
+  text-align: center;
+  margin-bottom: 42px;
+}
+
+.leaderboard-header h2 {
+  font-size: 34px;
+  font-weight: 800;
+  color: #020617;
+}
+
+.leaderboard-header p {
+  margin-top: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* TABLE */
+.leaderboard-table {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ROW */
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr;
+  align-items: center;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+/* HEADER ROW */
+.leaderboard-row.head {
+  background: #eef2ff;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* TOP RANKS */
+.leaderboard-row.top {
+  background: #ede9fe;
+  border-color: #7c3aed;
+  box-shadow: 0 8px 24px rgba(124,58,237,0.25);
+}
+
+/* TEXT */
+.rank-badge {
+  font-weight: 800;
+  color: #4f46e5;
+}
+
+.username {
+  font-weight: 700;
+  color: #020617;
+}
+
+.score,
+.accuracy {
+  font-weight: 700;
+  color: #020617;
+}
+
+/* EMPTY */
+.leaderboard-empty {
+  text-align: center;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* BACK */
+.leaderboard-back {
+  margin-top: 48px;
+  text-align: center;
+}
+
+
+/* ==============================
+   LEADERBOARD VISIBILITY FIX
+   (FINAL CHECKPOINT)
+============================== */
+
+.leaderboard-scope .leaderboard-header h2 {
+  color: #020617 !important;
+  opacity: 1 !important;
+}
+
+.leaderboard-scope .leaderboard-header p {
+  color: #334155 !important;
+  opacity: 1 !important;
+}
+
+/* Reduce useless empty space */
+.leaderboard-scope .leaderboard-header {
+  margin-bottom: 28px !important;
+}
+
+/* Table container spacing */
+.leaderboard-scope .leaderboard-table {
+  margin-top: 12px !important;
+}
+
+/* Header row — MUST be visible */
+.leaderboard-scope .leaderboard-row.head {
+  background: #eef2ff !important;
+  color: #020617 !important;
+  font-weight: 800 !important;
+}
+
+/* Data rows text visibility */
+.leaderboard-scope .leaderboard-row span {
+  color: #020617 !important;
+  opacity: 1 !important;
+  font-weight: 700;
+}
+
+/* Username slightly stronger */
+.leaderboard-scope .leaderboard-row .username {
+  font-weight: 800;
+}
+
+/* Score & accuracy clarity */
+.leaderboard-scope .leaderboard-row .score,
+.leaderboard-scope .leaderboard-row .accuracy {
+  color: #020617 !important;
+}
+
+/* Rank badge clarity */
+.leaderboard-scope .rank-badge {
+  color: #4f46e5 !important;
+  font-weight: 900;
+}
+
+/* Back button spacing */
+.leaderboard-scope .leaderboard-back {
+  margin-top: 36px !important;
+}
+
+
+/* =====================================================
+   LEADERBOARD — SPACING HARD FIX (FINAL)
+   Zero impact on other pages
+===================================================== */
+
+/* Kill vertical centering */
+body.accessarena-leaderboard-only .collab-hero {
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  padding-top: 72px !important;
+  padding-bottom: 96px !important;
+}
+
+/* Normalize leaderboard card size */
+body.accessarena-leaderboard-only .leaderboard-card {
+  padding: 40px 44px !important;   /* ⬅️ REAL fix */
+  margin: 0 auto !important;
+}
+
+/* Remove inherited AccessArena padding */
+body.accessarena-leaderboard-only .accessarena-card {
+  padding: 0 !important;
+}
+
+/* Header spacing (tight & clean) */
+body.accessarena-leaderboard-only .leaderboard-header {
+  margin-bottom: 24px !important;
+}
+
+/* Table spacing */
+body.accessarena-leaderboard-only .leaderboard-table {
+  margin-top: 16px !important;
+}
+
+/* Back button spacing */
+body.accessarena-leaderboard-only .leaderboard-back {
+  margin-top: 32px !important;
+}
+
+/* =====================================================
+   LEADERBOARD — FINAL MICRO SPACING FIX (ABSOLUTE LAST)
+===================================================== */
+
+/* Push card slightly upward (not centered) */
+body.accessarena-leaderboard-only .collab-hero {
+  align-items: flex-start !important;
+  padding-top: 48px !important;   /* ⬅️ was too big */
+  padding-bottom: 80px !important;
+}
+
+/* Tighten main card vertically */
+body.accessarena-leaderboard-only .leaderboard-card {
+  padding-top: 36px !important;
+  padding-bottom: 32px !important;
+}
+
+/* Reduce header breathing space */
+body.accessarena-leaderboard-only .leaderboard-header {
+  margin-bottom: 20px !important;
+}
+
+body.accessarena-leaderboard-only .leaderboard-header h2 {
+  margin-bottom: 6px !important;
+}
+
+body.accessarena-leaderboard-only .leaderboard-header p {
+  margin-top: 4px !important;
+}
+
+/* Table closer to header */
+body.accessarena-leaderboard-only .leaderboard-table {
+  margin-top: 10px !important;
+}
+
+/* Anchor back button cleanly */
+body.accessarena-leaderboard-only .leaderboard-back {
+  margin-top: 28px !important;
+}
+
+.leaderboard-scope .leaderboard-card {
+  max-width: 1050px !important;
+}
+
+/* =========================================
+   LEADERBOARD — FINAL SIZE & SPACING FIX
+   (SAFE OVERRIDE)
+========================================= */
+
+/* Main leaderboard white box */
+.leaderboard-scope .leaderboard-card {
+  max-width: 1150px;     /* 🔥 increase width */
+  width: 100%;
+  padding: 64px 72px;   /* 🔥 more horizontal space */
+  margin: 0 auto;
+}
+
+/* Header spacing */
+.leaderboard-header {
+  margin-bottom: 32px;
+}
+
+/* Table container spacing */
+.leaderboard-table {
+  margin-top: 16px;
+}
+
+/* Rows — make them feel bigger */
+.leaderboard-row {
+  padding: 18px 26px;   /* 🔥 taller + wider rows */
+  border-radius: 12px;
+}
+
+/* Header row stronger */
+.leaderboard-row.head {
+  padding: 18px 26px;
+  font-weight: 800;
+}
+
+/* =========================================
+   LEADERBOARD — FORCE WIDTH OVERRIDE
+   (FINAL, UNBREAKABLE)
+========================================= */
+
+.leaderboard-scope .collab-card.accessarena-card.leaderboard-card {
+  max-width: 1300px !important;   /* 🔥 INCREASE WIDTH HERE */
+  width: 100% !important;
+  padding: 90px 100px !important;  /* 🔥 MORE HORIZONTAL SPACE */
+  margin: 0 auto !important;
+}
+
+/* ===========================
+   LEADERBOARD LIST PAGES
+   Safe • Clean • No pills
+=========================== */
+
+.quiz-history-scope {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.quiz-history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px;
+  margin-top: 36px;
+}
+
+.quiz-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px 24px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.15);
+}
+
+.quiz-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.quiz-index {
+  font-weight: 700;
+  color: #475569;
+}
+
+.quiz-status.completed {
+  background: #22c55e;
+  color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.quiz-title {
+  margin: 14px 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #020617;
+}
+
+.quiz-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.quiz-actions {
+  margin-top: 16px;
+  text-align: right;
+}
+
+.quiz-actions .btn {
+  padding: 8px 16px;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+/* =====================================================
+   LEADERBOARD LIST — HEADER & FOOTER SPACING FIX
+   Scoped to quiz-history-scope ONLY
+===================================================== */
+
+/* Space from header */
+.quiz-history-scope {
+  margin-top: 80px;     /* ⬅️ space below header */
+  margin-bottom: 120px; /* ⬅️ space above footer */
+}
+
+/* Ensure grid doesn’t stick to header text */
+.quiz-history-grid {
+  margin-top: 40px; /* replaces cramped look */
+}
+
+/* Footer breathing room ONLY for this page */
+.quiz-history-scope + .center-back,
+.quiz-history-scope ~ footer,
+.quiz-history-scope ~ .site-footer {
+  margin-top: 60px;
+}
+
+/* =========================
+   MENTOR ANALYSIS (SCOPED)
+========================= */
+
+.mentor-analysis h3 {
+  margin-top: 36px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #020617;
+}
+
+.analysis-distribution {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.dist-box {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.analysis-table {
+  margin-top: 16px;
+}
+
+.analysis-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.analysis-row.head {
+  font-weight: 800;
+  background: #eef2ff;
+}
+
+.analysis-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 14px;
+}
+
+.analysis-rows {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.tag.easy { color: #16a34a; font-weight: 800; }
+.tag.medium { color: #f59e0b; font-weight: 800; }
+.tag.hard { color: #dc2626; font-weight: 800; }
+
+
+/* ===========================
+   MENTOR ANALYSIS – FIXED UI
+   Scoped • Safe • Clean
+=========================== */
+
+.mentor-analysis {
+  padding: 36px 42px;
+}
+
+/* Header clarity */
+.mentor-analysis .accessarena-header h2 {
+  margin-bottom: 6px;
+}
+
+.mentor-analysis .accessarena-header p {
+  opacity: 0.9;
+}
+
+/* Section spacing */
+.mentor-analysis h3 {
+  margin-top: 42px;
+  margin-bottom: 18px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #020617;
+}
+
+/* Summary cards spacing */
+.mentor-analysis .quiz-summary-grid {
+  margin-top: 28px;
+  margin-bottom: 40px;
+}
+
+/* Distribution boxes */
+.analysis-distribution {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+  margin-bottom: 42px;
+}
+
+.dist-box {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.dist-box strong {
+  font-size: 22px;
+  display: block;
+  color: #020617;
+}
+
+.dist-box span {
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+}
+
+/* Participant table spacing */
+.analysis-table {
+  margin-top: 18px;
+  margin-bottom: 42px;
+}
+
+.analysis-row {
+  padding: 12px 16px;
+}
+
+/* Question cards */
+.analysis-card {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.analysis-rows {
+  display: flex;
+  gap: 18px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+/* Difficulty tags */
+.tag.easy {
+  background: #22c55e;
+  color: #fff;
+}
+
+.tag.medium {
+  background: #f59e0b;
+  color: #fff;
+}
+
+.tag.hard {
+  background: #ef4444;
+  color: #fff;
+}
+
+.tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Bottom back button spacing */
+.mentor-analysis .center-back {
+  margin-top: 46px;
+}
+
+
+/* =====================================================
+   MENTOR ANALYSIS — FINAL HARD VISIBILITY FIX
+   Scoped • Safe • No global impact
+===================================================== */
+
+/* Solid white analysis card */
+.mentor-analysis {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+}
+
+/* Kill inherited fade */
+.mentor-analysis * {
+  opacity: 1 !important;
+}
+
+/* Header clarity */
+.mentor-analysis .accessarena-header h2 {
+  color: #020617 !important;
+  font-weight: 900;
+}
+
+.mentor-analysis .accessarena-header p {
+  color: #334155 !important;
+  font-weight: 600;
+}
+
+/* Summary boxes — force solid */
+.mentor-analysis .summary-box {
+  background: #f8fafc !important;
+  border: 1px solid #e5e7eb;
+  color: #020617 !important;
+}
+
+.mentor-analysis .summary-box span {
+  color: #475569 !important;
+  font-weight: 600;
+}
+
+.mentor-analysis .summary-box strong {
+  color: #020617 !important;
+  font-weight: 900;
+}
+
+/* Section titles */
+.mentor-analysis h3 {
+  color: #020617 !important;
+  font-weight: 900;
+}
+
+/* Score distribution boxes */
+.mentor-analysis .dist-box {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb;
+}
+
+.mentor-analysis .dist-box strong {
+  color: #020617 !important;
+  font-weight: 900;
+}
+
+.mentor-analysis .dist-box span {
+  color: #475569 !important;
+  font-weight: 700;
+}
+
+/* Participant table */
+.mentor-analysis .analysis-row {
+  background: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.mentor-analysis .analysis-row span {
+  color: #020617 !important;
+  font-weight: 600;
+}
+
+.mentor-analysis .analysis-row.head {
+  background: #eef2ff;
+  font-weight: 800;
+}
+
+/* Question cards */
+.mentor-analysis .analysis-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb;
+}
+
+.mentor-analysis .analysis-card strong {
+  color: #020617 !important;
+  font-weight: 800;
+}
+
+/* Correct / Wrong */
+.mentor-analysis .correct {
+  color: #16a34a !important;
+  font-weight: 800;
+}
+
+.mentor-analysis .wrong {
+  color: #dc2626 !important;
+  font-weight: 800;
+}
+
+/* Difficulty tags */
+.mentor-analysis .tag.easy {
+  background: #22c55e !important;
+}
+
+.mentor-analysis .tag.medium {
+  background: #f59e0b !important;
+}
+
+.mentor-analysis .tag.hard {
+  background: #ef4444 !important;
+}
+
+/* =========================================
+   MENTOR ANALYSIS — FINAL SPACING FIX
+   Alignment only • No visual side effects
+========================================= */
+
+.mentor-analysis {
+  padding-left: 48px;
+  padding-right: 48px;
+}
+
+/* Center summary grid */
+.mentor-analysis .quiz-summary-grid {
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Center distribution section */
+.mentor-analysis .analysis-distribution {
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Center tables */
+.mentor-analysis .analysis-table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Center question cards */
+.mentor-analysis .analysis-card {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 900px;
+}
+
+/* Ensure headings are centered visually */
+.mentor-analysis h3 {
+  text-align: center;
+}
+
+/* =====================================
+   MENTOR ANALYSIS – HEADER / FOOTER GAP
+   Scoped • Safe • Final
+===================================== */
+
+/* Push content down from header */
+.accessarena-leaderboard-only .collab-viewport,
+.mentor-analysis {
+  margin-top: 80px;
+}
+
+/* Extra breathing room before footer */
+.mentor-analysis {
+  margin-bottom: 100px;
+}
+
+/* Ensure footer never sticks to card */
+.mentor-analysis + footer,
+footer {
+  margin-top: 80px;
+}
+

@@ -1,8 +1,11 @@
 <?php
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+
 require_once __DIR__ . '/../../../includes/db.php';
 require_once __DIR__ . '/../../../includes/premium_check.php';
-require_once __DIR__ . '/../../../includes/header_dashboard.php';
+
+$body_class = 'dashboard-page accessarena-page';
+$disable_dashboard_bg = true;
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../../login.php');
@@ -10,69 +13,147 @@ if (!isset($_SESSION['user_id'])) {
 }
 requirePremium();
 
-if (!isset($_GET['quiz_id']) || !is_numeric($_GET['quiz_id'])) {
-    die('Invalid quiz');
-}
-
-$quiz_id = (int)$_GET['quiz_id'];
 $uid = $_SESSION['user_id'];
 
-/* Fetch quiz */
+/* Fetch ONLY published quizzes */
 $stmt = $pdo->prepare("
-  SELECT * FROM accessarena_quizzes
-  WHERE id=? AND creator_id=?
+  SELECT id, title, quiz_code, total_questions, time_limit, created_at
+  FROM accessarena_quizzes
+  WHERE creator_id = ? AND status = 'published'
+  ORDER BY created_at DESC
 ");
-$stmt->execute([$quiz_id, $uid]);
-$quiz = $stmt->fetch(PDO::FETCH_ASSOC);
+$stmt->execute([$uid]);
+$quizzes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-if (!$quiz) {
-    die('Quiz not found');
-}
-
-/* If already published → do NOT regenerate code */
-if ($quiz['status'] === 'published') {
-    $code = $quiz['quiz_code'];
-} else {
-
-    // Generate ONCE
-    $code = strtoupper(substr(bin2hex(random_bytes(3)), 0, 6));
-
-    $pdo->prepare("
-      UPDATE accessarena_quizzes
-      SET status='published', quiz_code=?
-      WHERE id=?
-    ")->execute([$code, $quiz_id]);
-}
+require_once __DIR__ . '/../../../includes/header_dashboard.php';
 ?>
 
-<!-- BACKGROUND -->
-<div class="dashboard-bg" style="background-image:url('../../assets/images/infovault_bg.jpg')"></div>
-
-<div class="collab-card accessarena-card" style="max-width:600px;text-align:center">
-
-  <h1>Quiz Published 🎉</h1>
-  <p class="lead"><?= htmlspecialchars($quiz['title']) ?></p>
-
-  <div class="glass-card" style="padding:22px;margin:24px 0">
-    <h3>Quiz Code</h3>
-    <code style="font-size:26px;letter-spacing:3px">
-      <?= htmlspecialchars($code) ?>
-    </code>
-    <p class="small-muted" style="margin-top:10px">
-      Share this code with participants to join
-    </p>
-  </div>
-
-  <div style="display:flex;gap:12px;justify-content:center">
-    <a href="../quiz_history.php" class="btn primary">
-      📚 Quiz History
-    </a>
-
-    <a href="../results/quiz_results.php?quiz_id=<?= $quiz_id ?>" class="btn ghost">
-      📊 View Results
-    </a>
-  </div>
-
+<!-- Background -->
+<div class="dashboard-bg"
+     aria-hidden="true"
+     style="background-image:url('../../assets/images/infovault_bg.jpg');">
 </div>
+
+<link rel="stylesheet" href="../../assets/css/accessarena.css">
+
+<div class="collab-viewport">
+  <div class="collab-hero">
+
+    <!-- MAIN GLASS CONTAINER -->
+    <div class="collab-card accessarena-card publish-wrapper">
+
+      <!-- HEADER -->
+      <div class="accessarena-header">
+        <h1 class="accessarena-title">Published Quizzes</h1>
+        <p class="accessarena-subtitle">
+          Share quiz codes or push quizzes directly to CollabSphere rooms
+        </p>
+      </div>
+
+      <?php if (!$quizzes): ?>
+        <div class="publish-empty">
+          <p>No quizzes published yet.</p>
+          <a href="quiz_history.php" class="btn primary">
+            Go to Quiz History
+          </a>
+        </div>
+      <?php else: ?>
+
+        <div class="publish-grid">
+          <?php foreach ($quizzes as $q): ?>
+            <div class="publish-card">
+
+              <h3><?= htmlspecialchars($q['title']) ?></h3>
+
+              <div class="publish-row">
+                <span>Quiz Code</span>
+                <strong><?= htmlspecialchars($q['quiz_code']) ?></strong>
+              </div>
+
+              <div class="publish-row">
+                <span>Questions</span>
+                <span><?= (int)$q['total_questions'] ?></span>
+              </div>
+
+              <div class="publish-row">
+                <span>Time Limit</span>
+                <span><?= $q['time_limit'] ? $q['time_limit'].' min' : '—' ?></span>
+              </div>
+
+              <div class="publish-actions">
+
+                <!-- COPY CODE -->
+                <button type="button"
+                        class="btn small copy-quiz-btn"
+                        data-code="<?= htmlspecialchars($q['quiz_code']) ?>">
+                  📋 Copy Code
+                </button>
+
+                <!-- SHARE TO ROOM (REAL REDIRECT) -->
+    <button
+  type="button"
+  class="btn small primary share-room-btn"
+  data-quiz="<?= (int)$q['id'] ?>">
+  🔗 Share to Room
+</button>
+
+
+
+
+              </div>
+
+            </div>
+          <?php endforeach; ?>
+        </div>
+
+      <?php endif; ?>
+
+      <div style="text-align:center;margin-top:30px">
+        <a href="mentor_home.php" class="btn small">
+          ← Back to Dashboard
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- COPY CODE SCRIPT -->
+<script>
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest('.copy-quiz-btn');
+  if (!btn) return;
+
+  const code = btn.dataset.code;
+  if (!code) return;
+
+  navigator.clipboard.writeText(code).then(() => {
+    const original = btn.innerText;
+    btn.innerText = '✅ Copied';
+    setTimeout(() => {
+      btn.innerText = original;
+    }, 1500);
+  }).catch(() => {
+    alert('Failed to copy quiz code');
+  });
+});
+</script>
+<script>
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest('.share-room-btn');
+  if (!btn) return;
+
+  const roomId = prompt('Enter ROOM ID:');
+  if (!roomId) return;
+
+  const roomCode = prompt('Enter ROOM CODE:');
+  if (!roomCode) return;
+
+  // ✅ DIRECT REDIRECT — NO BACKEND TOUCH
+  window.location.href =
+    `/etudesync/public/room.php?room_id=${encodeURIComponent(roomId)}&code=${encodeURIComponent(roomCode)}`;
+});
+</script>
+
 
 <?php require_once __DIR__ . '/../../../includes/footer.php'; ?>

@@ -69,3 +69,17 @@ CREATE TABLE accessarena_answers (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE accessarena_attempts_summary (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  participant_id INT NOT NULL,
+  total_questions INT NOT NULL,
+  attempted INT NOT NULL,
+  correct INT NOT NULL,
+  wrong INT NOT NULL,
+  score_percentage DECIMAL(5,2),
+
+  CONSTRAINT fk_summary_participant
+    FOREIGN KEY (participant_id)
+    REFERENCES accessarena_participants(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

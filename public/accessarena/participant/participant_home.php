@@ -1,5 +1,5 @@
 <?php
-// public/accessarena/mentor/mentor_home.php
+// public/accessarena/participant/participant_home.php
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
@@ -27,14 +27,13 @@ require_once __DIR__ . '/../../../includes/header_dashboard.php';
   document.body.classList.add('dashboard-page');
 </script>
 
+<!-- Background -->
 <div class="dashboard-bg" aria-hidden="true"
      style="background-image: url('../../assets/images/infovault_bg.jpg');">
 </div>
 
-
 <link rel="stylesheet" href="../../assets/css/info.css">
 <link rel="stylesheet" href="../../assets/css/accessarena.css?v=1">
-
 
 <div class="collab-viewport">
   <div class="collab-hero">
@@ -44,47 +43,35 @@ require_once __DIR__ . '/../../../includes/header_dashboard.php';
 
       <!-- Header -->
       <div class="accessarena-header">
-        <h2>Mentor Dashboard</h2>
-        <p>Manage your quizzes from creation to results</p>
+        <h2>Participant Dashboard</h2>
+        <p>Join quizzes, view results, and track your progress</p>
       </div>
 
-      <!-- Mentor Menu -->
+      <!-- Participant Menu -->
       <div class="accessarena-actions">
 
-        <a href="create_quiz.php" class="action-card">
-          <div class="action-icon">📝</div>
-          <div class="action-title">Create Quiz</div>
-          <div class="action-sub">Create a new quiz draft</div>
+        <a href="join_quiz.php" class="action-card">
+          <div class="action-icon">🔑</div>
+          <div class="action-title">Join Quiz</div>
+          <div class="action-sub">Enter quiz code to participate</div>
         </a>
 
-        <a href="add_questions.php" class="action-card">
-          <div class="action-icon">➕</div>
-          <div class="action-title">Add Questions</div>
-          <div class="action-sub">Add MCQs to your quiz</div>
-        </a>
-
-        <a href="publish_quiz.php" class="action-card">
-          <div class="action-icon">🚀</div>
-          <div class="action-title">Publish Quiz</div>
-          <div class="action-sub">Generate quiz code</div>
-        </a>
-
-        <a href="mentor_results.php" class="action-card">
+        <a href="participant_results.php" class="action-card">
           <div class="action-icon">📊</div>
           <div class="action-title">Results & Analysis</div>
-          <div class="action-sub">View participant performance</div>
+          <div class="action-sub">View your performance in detail</div>
         </a>
 
-        <a href="quiz_history.php" class="action-card">
-          <div class="action-icon">📚</div>
-          <div class="action-title">Quiz History</div>
-          <div class="action-sub">View all your quizzes</div>
-        </a>
-
-        <a href="mentor_leaderboard.php" class="action-card">
+        <a href="participant_leaderboard.php" class="action-card">
           <div class="action-icon">🏆</div>
           <div class="action-title">Leaderboard</div>
-          <div class="action-sub">Top performers</div>
+          <div class="action-sub">See top scorers</div>
+        </a>
+
+        <a href="my_attempts.php" class="action-card">
+          <div class="action-icon">📚</div>
+          <div class="action-title">My Quiz History</div>
+          <div class="action-sub">All quizzes you attempted</div>
         </a>
 
       </div>

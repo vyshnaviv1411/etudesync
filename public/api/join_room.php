@@ -24,6 +24,10 @@ if (empty($_SESSION['user_id'])) {
 $user_id   = (int) $_SESSION['user_id'];
 $room_code = trim($_POST['room_code'] ?? '');
 
+$source = $_POST['source'] ?? '';
+$isShareQuiz = ($source === 'share_quiz');
+
+
 if ($room_code === '') {
     echo json_encode([
         'success' => false,
@@ -57,13 +61,18 @@ $room_id = (int) $room['room_id'];
 /* -------------------------
    PREVENT HOST JOIN
 -------------------------- */
-if ((int) $room['host_user_id'] === $user_id) {
+/* -------------------------
+   PREVENT HOST JOIN
+   (ALLOW SHARE-QUIZ FLOW)
+-------------------------- */
+if ((int) $room['host_user_id'] === $user_id && !$isShareQuiz) {
     echo json_encode([
         'success' => false,
         'error'   => 'Host cannot join their own room'
     ]);
     exit;
 }
+
 
 /* -------------------------
    INSERT / UPDATE PARTICIPANT
