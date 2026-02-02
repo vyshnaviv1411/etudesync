@@ -48,131 +48,88 @@ require_once __DIR__ . '/../includes/header_dashboard.php';
 
       <!-- 🔑 CREATE ROOM FORM -->
       <form
-        id="createRoomForm"
-        class="create-room-form"
-        method="POST"
-        action="api/create_room.php"
-        autocomplete="off"
-      >
+  id="createRoomForm"
+  class="create-room-form"
+  method="POST"
+  action="api/create_room.php"
+  autocomplete="off"
+>
 
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <div style="flex:1;min-width:200px;">
-            <label for="title"
-                   style="display:block;font-weight:700;margin-bottom:6px;">
-              Room Title
-            </label>
-            <input
-              id="title"
-              name="title"
-              type="text"
-              required
-              maxlength="200"
-              placeholder="e.g. DBMS Quick Revision"
-              style="
-                width:100%;
-                padding:12px;
-                border-radius:10px;
-                border:1px solid rgba(255,255,255,0.08);
-                background:rgba(255,255,255,0.02);
-                color:#fff;
-              "
-            />
-          </div>
+  <!-- INPUT ROW -->
+  <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;">
+    
+    <div style="flex:1;min-width:240px;">
+      <label for="title" style="display:block;font-weight:700;margin-bottom:6px;">
+        Room Title
+      </label>
+      <input
+        id="title"
+        name="title"
+        type="text"
+        required
+        maxlength="200"
+        placeholder="e.g. DBMS Quick Revision"
+        style="
+          width:100%;
+          padding:12px;
+          border-radius:10px;
+          border:1px solid rgba(255,255,255,0.08);
+          background:rgba(255,255,255,0.02);
+          color:#fff;
+        "
+      />
+    </div>
 
-          <div style="flex:1;min-width:200px;">
-            <label for="topic"
-                   style="display:block;font-weight:700;margin-bottom:6px;">
-              Topic (optional)
-            </label>
-            <input
-              id="topic"
-              name="topic"
-              type="text"
-              maxlength="200"
-              placeholder="e.g. ER Diagrams"
-              style="
-                width:100%;
-                padding:12px;
-                border-radius:10px;
-                border:1px solid rgba(255,255,255,0.08);
-                background:rgba(255,255,255,0.02);
-                color:#fff;
-              "
-            />
-          </div>
-        </div>
+    <div style="flex:1;min-width:240px;">
+      <label for="topic" style="display:block;font-weight:700;margin-bottom:6px;">
+        Topic (optional)
+      </label>
+      <input
+        id="topic"
+        name="topic"
+        type="text"
+        maxlength="200"
+        placeholder="e.g. ER Diagrams"
+        style="
+          width:100%;
+          padding:12px;
+          border-radius:10px;
+          border:1px solid rgba(255,255,255,0.08);
+          background:rgba(255,255,255,0.02);
+          color:#fff;
+        "
+      />
+    </div>
 
-        <div style="margin-top:12px;margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;">
-          <div style="flex:1;min-width:220px;">
-            <label for="scheduled_time"
-                   style="display:block;font-weight:700;margin-bottom:6px;">
-              Scheduled time (optional)
-            </label>
-            <input
-              id="scheduled_time"
-              name="scheduled_time"
-              type="datetime-local"
-              style="
-                width:100%;
-                padding:12px;
-                border-radius:10px;
-                border:1px solid rgba(255,255,255,0.08);
-                background:rgba(255,255,255,0.02);
-                color:#fff;
-              "
-            />
-                      <script>
-  (function () {
-    const input = document.getElementById('scheduled_time');
-    if (!input) return;
+  </div>
 
-    const now = new Date();
-    now.setSeconds(0, 0); // clean seconds
+  <!-- BUTTON ROW -->
+  <div style="text-align:center;margin-top:10px;">
+    <button
+      id="submitCreate"
+      type="submit"
+      class="btn primary"
+      style="padding:12px 26px;border-radius:10px;">
+      Create Room
+    </button>
+  </div>
 
-    // convert to yyyy-MM-ddTHH:mm
-    const minValue = now.toISOString().slice(0, 16);
-    input.min = minValue;
-  })();
-</script>
-          </div>
+  <!-- BACK -->
+  <div style="margin-top:18px;text-align:center;">
+    <a href="collabsphere.php"
+       class="btn primary"
+       style="padding:10px 18px;border-radius:10px;">
+      ← Back to Modules
+    </a>
+  </div>
 
+  <!-- STATUS -->
+  <div
+    id="crMsg"
+    style="margin-top:14px;color:rgba(255,255,255,0.9);display:none;">
+  </div>
 
-
-          <div style="flex:0 0 160px;display:flex;flex-direction:column;justify-content:flex-end;">
-            <!-- ✅ MUST BE type="submit" -->
-            <button
-              id="submitCreate"
-              type="submit"
-              class="btn primary"
-              style="padding:12px;border-radius:10px;margin-top:6px;">
-              Create Room
-            </button>
-          </div>
-        </div>
-
-      <div style="margin-bottom:14px;">
-  <a href="collabsphere.php"
-     class="btn primary"
-     style="
-       display:inline-block;
-       padding:10px 18px;
-       border-radius:10px;
-       font-size:0.95rem;
-       text-decoration:none;
-     ">
-    ← Back to Modules
-  </a>
-</div>
-
-
-
-        <!-- status / error message -->
-        <div
-          id="crMsg"
-          style="margin-top:14px;color:rgba(255,255,255,0.9);display:none;">
-        </div>
-
-      </form>
+</form>
 
       <div style="margin-top:18px;color:rgba(255,255,255,0.7);font-size:0.95rem;">
         <strong>Tip:</strong>

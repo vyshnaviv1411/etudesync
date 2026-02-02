@@ -13,6 +13,8 @@
 
 session_start();
 header('Content-Type: application/json');
+date_default_timezone_set('Asia/Kolkata');
+
 
 require_once __DIR__ . '/../../../includes/db.php';
 
@@ -74,7 +76,9 @@ try {
     // =====================================================
     // 4. CALCULATE LOCKED STATUS FOR EACH ENTRY
     // =====================================================
-    $today = date('Y-m-d');
+   $today = (new DateTime('now', new DateTimeZone('Asia/Kolkata')))
+            ->format('Y-m-d');
+
 
     foreach ($entries as &$entry) {
         // Entry is locked if:

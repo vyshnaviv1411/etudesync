@@ -13,6 +13,8 @@
 
 session_start();
 header('Content-Type: application/json');
+date_default_timezone_set('Asia/Kolkata');
+
 
 require_once __DIR__ . '/../../../includes/db.php';
 
@@ -68,50 +70,29 @@ try {
             'mood' => $mood['mood_value']
         ];
     }
+// =====================================================
+// 3B. JOURNAL CONSISTENCY (FINAL – NO STREAK)
+// =====================================================
+date_default_timezone_set('Asia/Kolkata');
 
-    // =====================================================
-    // 3B. JOURNAL CONSISTENCY
-    // =====================================================
-    $journalStmt = $pdo->prepare(
-        "SELECT entry_date, is_submitted
-         FROM journal_entries
-         WHERE user_id = :user_id
-           AND entry_date BETWEEN :start_date AND :end_date
-         ORDER BY entry_date ASC"
-    );
-    $journalStmt->execute([
-        ':user_id' => $user_id,
-        ':start_date' => $start_date,
-        ':end_date' => $end_date
-    ]);
-    $journalData = $journalStmt->fetchAll(PDO::FETCH_ASSOC);
+// Count how many UNIQUE days the user has written a journal
+$journalStmt = $pdo->prepare(
+    "SELECT COUNT(DISTINCT entry_date) AS total_days
+     FROM journal_entries
+     WHERE user_id = :user_id
+       AND is_submitted = 1
+       AND entry_date <= CURDATE()"
+);
 
-    $totalEntries = count($journalData);
-    $submittedEntries = 0;
-    $currentStreak = 0;
-    $longestStreak = 0;
+$journalStmt->execute([
+    ':user_id' => $user_id
+]);
 
-    foreach ($journalData as $entry) {
-        if ($entry['is_submitted'] == 1) {
-            $submittedEntries++;
-        }
-    }
+$journalResult = $journalStmt->fetch(PDO::FETCH_ASSOC);
 
-    // Calculate streak (simplified - consecutive days from today backwards)
-    $today = date('Y-m-d');
-    $checkDate = $today;
-    while (true) {
-        $found = false;
-        foreach ($journalData as $entry) {
-            if ($entry['entry_date'] === $checkDate) {
-                $currentStreak++;
-                $found = true;
-                break;
-            }
-        }
-        if (!$found) break;
-        $checkDate = date('Y-m-d', strtotime($checkDate . ' -1 day'));
-    }
+// ✅ This is the correct value you want
+$totalJournalDays = (int) ($journalResult['total_days'] ?? 0);
+
 
     // =====================================================
     // 3C. GAME INSIGHTS
@@ -168,12 +149,21 @@ try {
     // - Mood consistency: 30 points (based on entries in range)
     // - Journal consistency: 30 points (based on streak)
     // - Game activity: 40 points (based on regular play)
+// =====================================================
+// 3D. OVERALL WELL-BEING SCORE (FIXED)
+// =====================================================
 
-    $moodScore = min(30, (count($moodData) / $days) * 30);
-    $journalScore = min(30, ($currentStreak / 7) * 30); // 7-day streak = full points
-    $gameScore = min(40, ($totalGamesPlayed / ($days * 2)) * 40); // 2 games per day = full points
+// Mood score (max 30)
+$moodScore = min(30, (count($moodData) / $days) * 30);
 
-    $wellBeingScore = round($moodScore + $journalScore + $gameScore);
+// Journal score based on DAYS WRITTEN (max 30)
+$journalScore = min(30, ($totalJournalDays / $days) * 30);
+
+// Game score (max 40)
+$gameScore = min(40, ($totalGamesPlayed / ($days * 2)) * 40);
+
+$wellBeingScore = round($moodScore + $journalScore + $gameScore);
+
 
     // =====================================================
     // 4. RETURN COMPREHENSIVE REPORT
@@ -192,12 +182,10 @@ try {
                 'mood_distribution' => $moodDistribution,
                 'mood_timeline' => $moodTimeline
             ],
-            'journal_insights' => [
-                'total_entries' => $totalEntries,
-                'submitted_entries' => $submittedEntries,
-                'current_streak' => $currentStreak,
-                'consistency_rate' => $totalEntries > 0 ? round(($submittedEntries / $totalEntries) * 100) : 0
+          'journal_insights' => [
+                 'days_written' => $totalJournalDays
             ],
+
             'game_insights' => [
                 'total_games_played' => $totalGamesPlayed,
                 'games' => $gameInsights,

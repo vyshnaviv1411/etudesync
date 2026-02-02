@@ -229,10 +229,9 @@ body.dashboard-page .collab-hero {
           <input id="wbColor" type="color" value="#ffffff"
                  style="width:42px;height:30px;border-radius:8px;border:none" />
 
-          <button id="wbUndo"   type="button" class="btn small outline">Undo</button>
-          <button id="wbClear"  type="button" class="btn small outline">Clear</button>
-          <button id="wbSave"   type="button" class="btn small">Save</button>
-          <button id="wbExport" type="button" class="btn small outline">Export PNG</button>
+          <button id="wbUndo"   type="button" class="btn small">Undo</button>
+          <button id="wbClear"  type="button" class="btn small">Clear</button>
+          <button id="wbExport" type="button" class="btn small">Export PNG</button>
         </div>
       </div>
 

@@ -14,6 +14,8 @@
 
 session_start();
 header('Content-Type: application/json');
+date_default_timezone_set('Asia/Kolkata');
+
 
 require_once __DIR__ . '/../../../includes/db.php';
 
@@ -48,9 +50,11 @@ if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $entry_date)) {
     ]);
     exit;
 }
+$today = (new DateTime('now', new DateTimeZone('Asia/Kolkata')))
+            ->format('Y-m-d');
 
-// BUSINESS RULE: Cannot create entries for future dates
-if ($entry_date > date('Y-m-d')) {
+/* Cannot create future entries */
+if ($entry_date > $today) {
     echo json_encode([
         'success' => false,
         'message' => 'Cannot create journal entries for future dates'
@@ -58,15 +62,13 @@ if ($entry_date > date('Y-m-d')) {
     exit;
 }
 
-// BUSINESS RULE: Past days are locked (cannot edit)
-$today = date('Y-m-d');
+/* Past days are locked */
 if ($entry_date < $today) {
     echo json_encode([
         'success' => false,
         'message' => 'Past journal entries are locked and cannot be edited',
         'data' => [
             'entry_date' => $entry_date,
-            'is_past' => true,
             'locked' => true
         ]
     ]);

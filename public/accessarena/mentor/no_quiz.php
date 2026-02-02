@@ -38,7 +38,7 @@ requirePremium();
       </p>
     </div>
 
-    <a href="create_quiz.php" class="btn primary">
+    <a href="create_quiz.php" class="btn small">
       ➕ Create Quiz
     </a>
 

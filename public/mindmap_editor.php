@@ -56,7 +56,6 @@ function e($s){
 <div class="collab-hero">
 <div class="collab-card" style="max-width:1100px;">
 
-  <!-- HEADER -->
   <div class="collab-card-head">
     <h1><?= e($mindmap['title']) ?></h1>
     <p class="lead">Build and organize your ideas visually</p>
@@ -90,7 +89,6 @@ function e($s){
 </div>
 
 
-  <!-- ACTION BAR -->
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
     <a href="infovault_mindmaps.php" class="btn primary small">← Back</a>
 
@@ -102,9 +100,11 @@ function e($s){
     </div>
   </div>
 
-  <!-- CANVAS -->
+  <!-- ✅ CANVAS (FIXED STRUCTURE) -->
   <div id="mindmap-canvas">
-    <svg id="connections" width="100%" height="100%"></svg>
+    <div id="mindmap-workspace">
+      <svg id="connections"></svg>
+    </div>
   </div>
 
 </div>
@@ -115,26 +115,27 @@ function e($s){
 #mindmap-canvas{
   position:relative;
   height:520px;
+  overflow:auto;
   border-radius:18px;
   background:rgba(15,20,30,0.35);
   backdrop-filter:blur(12px);
   border:1px solid rgba(255,255,255,0.08);
-
-  overflow: auto;              /* ✅ enable scroll */
 }
 
-/* BIG workspace */
-#mindmap-canvas::before{
-  content:'';
-  position:absolute;
+/* ✅ REAL WORKSPACE */
+#mindmap-workspace{
+  position:relative;
   width:3000px;
   height:2000px;
 }
 
-
+/* ✅ SVG follows workspace (NO distortion) */
 #connections{
   position:absolute;
-  inset:0;
+  top:0;
+  left:0;
+  width:3000px;
+  height:2000px;
   pointer-events:none;
   z-index:1;
 }
@@ -182,14 +183,16 @@ function e($s){
 <script>
 const mindmapId = <?= $mindmap_id ?>;
 const nodes = <?= json_encode($nodes) ?>;
+
 const canvas = document.getElementById('mindmap-canvas');
+const workspace = document.getElementById('mindmap-workspace');
 const svg = document.getElementById('connections');
 
 const nodeMap = {};
 let selectedNode = null;
-let isDeleting = false; // ✅ CRITICAL FIX
+let isDeleting = false;
 
-/* Render nodes */
+/* Render existing nodes */
 nodes.forEach(n => {
   createNode(n.id, n.text, n.x, n.y, n.parent_id);
 });
@@ -197,7 +200,6 @@ nodes.forEach(n => {
 window.onload = drawLines;
 window.onresize = drawLines;
 
-/* Create node */
 function createNode(id, text, x, y, parent){
   const el = document.createElement('div');
   el.className = 'mindmap-node ' + (parent ? 'child' : 'root');
@@ -205,9 +207,9 @@ function createNode(id, text, x, y, parent){
   el.style.top  = y + 'px';
   el.dataset.id = id;
   el.dataset.parent = parent ?? '';
-
   el.innerHTML = `<input value="${text}">`;
-  canvas.appendChild(el);
+
+  workspace.appendChild(el);
   nodeMap[id] = el;
 
   el.onclick = e => {
@@ -217,12 +219,11 @@ function createNode(id, text, x, y, parent){
 
   el.addEventListener('mousedown', e => {
     if (e.target.tagName === 'INPUT') return;
-    e.preventDefault();
 
     const startX = e.clientX;
     const startY = e.clientY;
     const rect = el.getBoundingClientRect();
-    const canvasRect = canvas.getBoundingClientRect();
+    const canvasRect = workspace.getBoundingClientRect();
 
     function onMove(ev){
       el.style.left = (rect.left + ev.clientX - startX - canvasRect.left) + 'px';
@@ -251,33 +252,29 @@ function selectNode(el){
 
 function drawLines(){
   svg.innerHTML = '';
-  const canvasRect = canvas.getBoundingClientRect();
+  const rect = workspace.getBoundingClientRect();
 
   Object.values(nodeMap).forEach(el => {
     const pid = el.dataset.parent;
     if (!pid || !nodeMap[pid]) return;
 
-    const parent = nodeMap[pid];
-    const p = parent.getBoundingClientRect();
+    const p = nodeMap[pid].getBoundingClientRect();
     const c = el.getBoundingClientRect();
 
     const line = document.createElementNS("http://www.w3.org/2000/svg","line");
-    line.setAttribute('x1', p.left + p.width/2 - canvasRect.left);
-    line.setAttribute('y1', p.top + p.height/2 - canvasRect.top);
-    line.setAttribute('x2', c.left + c.width/2 - canvasRect.left);
-    line.setAttribute('y2', c.top + c.height/2 - canvasRect.top);
+    line.setAttribute('x1', p.left + p.width/2 - rect.left);
+    line.setAttribute('y1', p.top + p.height/2 - rect.top);
+    line.setAttribute('x2', c.left + c.width/2 - rect.left);
+    line.setAttribute('y2', c.top + c.height/2 - rect.top);
     line.setAttribute('stroke','rgba(255,255,255,0.4)');
-    line.setAttribute('stroke-width','2');
+    line.setAttribute('stroke-width','1.8');
+    line.setAttribute('stroke-linecap','round');
     svg.appendChild(line);
   });
 }
 
-/* SAVE (SAFE) */
 function saveNode(el){
   if (isDeleting) return;
-
-  const text = el.querySelector('input').value.trim();
-  if (!text) return;
 
   fetch('api/update_mindmap_node.php',{
     method:'POST',
@@ -286,7 +283,7 @@ function saveNode(el){
       id: el.dataset.id,
       x: el.offsetLeft,
       y: el.offsetTop,
-      text: text
+      text: el.querySelector('input').value.trim()
     })
   });
 }
@@ -297,30 +294,37 @@ function addNode(){
   fetch('api/add_mindmap_node.php',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      mindmap_id: mindmapId,
-      parent_id: parentId
-    })
+    body:JSON.stringify({ mindmap_id: mindmapId, parent_id: parentId })
   })
   .then(r=>r.json())
   .then(n=>{
-    createNode(n.id, n.text, n.x, n.y, n.parent_id);
+    let x = n.x;
+    let y = n.y;
+
+    if (parentId && nodeMap[parentId]) {
+      const siblings = Object.values(nodeMap)
+        .filter(el => el.dataset.parent === parentId);
+
+      const parent = nodeMap[parentId];
+      x = parent.offsetLeft + 260;
+      y = parent.offsetTop + (siblings.length * 90);
+    }
+
+    createNode(n.id, n.text, x, y, n.parent_id);
     drawLines();
   });
 }
 
 function deleteSelected(){
   if (!selectedNode) return alert('Select a node first');
-
   if (!confirm('Delete this node and its branches?')) return;
 
   isDeleting = true;
-
   fetch('api/delete_mindmap_node.php',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({ id: selectedNode.dataset.id })
-  }).then(() => location.reload());
+  }).then(()=>location.reload());
 }
 
 document.addEventListener('keydown', e => {
@@ -328,7 +332,7 @@ document.addEventListener('keydown', e => {
 });
 
 function saveToLocal(){
-  html2canvas(canvas,{backgroundColor:'#0f1420'}).then(c=>{
+  html2canvas(workspace,{backgroundColor:'#0f1420'}).then(c=>{
     const link = document.createElement('a');
     link.download = 'mindmap.png';
     link.href = c.toDataURL();

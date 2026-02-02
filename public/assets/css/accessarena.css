@@ -3524,3 +3524,64 @@ footer {
   margin-top: 80px;
 }
 
+
+
+/* ==========================================
+   AccessArena Header – FINAL CLEAN VERSION
+   ========================================== */
+
+.accessarena-header {
+    text-align: center;
+    margin-bottom: 26px;
+    position: relative;
+    z-index: 5;
+
+    /* reduced height */
+    padding: 20px 28px;
+    border-radius: 20px;
+
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    box-shadow:
+        0 14px 40px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255,255,255,0.7);
+}
+
+/* TITLE */
+.accessarena-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.7rem;   /* ⬇ reduced */
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    margin-bottom: 6px;
+
+    color: #0f172a;
+
+    text-shadow:
+        0 2px 0 rgba(255,255,255,0.9),
+        0 6px 18px rgba(15,23,42,0.25);
+}
+
+/* SUBTITLE */
+.accessarena-subtitle {
+    font-size: 1rem;    /* ⬇ reduced */
+    font-weight: 500;
+    color: #334155;
+    line-height: 1.4;
+    margin: 0;
+
+    text-shadow:
+        0 1px 0 rgba(255,255,255,0.85),
+        0 3px 10px rgba(0,0,0,0.12);
+}
+
+/* SINGLE underline ONLY */
+.accessarena-header::after {
+    content: '';
+    display: block;
+    width: 46px;       /* ⬇ shorter */
+    height: 3px;
+    margin: 10px auto 0;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #7c4dff, #47d7d3);
+}

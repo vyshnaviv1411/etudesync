@@ -815,9 +815,6 @@ $page_title = 'MindPlay - Well-Being & Productivity';
                             <button id="journal-submit-btn" class="btn primary" onclick="MindPlay.submitJournal()">
                                 Submit Entry
                             </button>
-                            <button class="btn secondary" onclick="MindPlay.autoSaveJournal()">
-                                Auto-Save
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -1061,7 +1058,11 @@ setSubFeatureBg() {
                 );
             }
         } else {
-    const today = new Date().toISOString().split('T')[0];
+ const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+  .toISOString()
+  .split('T')[0];
+
+
 
     textarea.value = '';
 
@@ -1157,18 +1158,7 @@ setSubFeatureBg() {
                 }
             },
 
-            startJournalAutoSave() {
-                // Auto-save every 30 seconds
-                if (this.journalAutoSaveInterval) {
-                    clearInterval(this.journalAutoSaveInterval);
-                }
-                this.journalAutoSaveInterval = setInterval(() => {
-                    const textarea = document.getElementById('journal-content');
-                    if (!textarea.disabled && textarea.value.trim()) {
-                        this.autoSaveJournal();
-                    }
-                }, 30000);
-            },
+     
 
             // =====================================================
             // GAMES
@@ -1235,8 +1225,8 @@ setSubFeatureBg() {
                             <div class="value">${reports.mood_insights.total_entries}</div>
                         </div>
                         <div class="stat-box">
-                            <div class="label">Journal Streak</div>
-                            <div class="value">${reports.journal_insights.current_streak} days</div>
+                            <div class="label">Journal Days Written</div>
+                            <div class="value">${reports.journal_insights.days_written} days</div>
                         </div>
                         <div class="stat-box">
                             <div class="label">Games Played</div>
