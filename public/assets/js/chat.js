@@ -1,4 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
+    async function checkAccess() {
+    const res = await fetch(`api/check_room_access.php?room_id=${ROOM_ID}`);
+    const data = await res.json();
+
+    if (!data.allowed) {
+      alert('You were removed from the room.');
+      window.location.href = 'collabsphere.php';
+      return false;
+    }
+    return true;
+  }
+
   const chatList = document.getElementById('chatList');
   const chatInput = document.getElementById('chatInput');
   const sendBtn = document.getElementById('chatSendBtn');
@@ -30,7 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
     lastMessageId = Math.max(lastMessageId, Number(m.message_id));
   }
 
+
   async function loadMessages() {
+      if (!(await checkAccess())) return;
+
     try {
       const res = await fetch(
         `api/fetch_messages.php?room_id=${ROOM_ID}&after_id=${lastMessageId}`
@@ -45,6 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function sendMessage() {
+        if (!(await checkAccess())) return;
+
     const text = chatInput.value.trim();
     if (!text) return;
 

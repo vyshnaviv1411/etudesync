@@ -6,34 +6,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!audio || !toggleBtn || !icon) return;
 
-  const tracks = [
-    'assets/music/calm1.mpeg',
-    'assets/music/calm2.mpeg',
-    'assets/music/calm3.mpeg',
-    'assets/music/calm4.mpeg'
-  ];
+  const tracks = window.TRACKS_FROM_ADMIN || [];
+  if (!tracks.length) {
+    console.warn('No background music tracks found');
+    return;
+  }
 
   let trackIndex = parseInt(localStorage.getItem('musicTrack')) || 0;
   let shouldPlay = localStorage.getItem('musicPlaying') === 'true';
   let savedTime = parseFloat(localStorage.getItem('musicTime')) || 0;
 
+  trackIndex = trackIndex % tracks.length;
+
   audio.src = tracks[trackIndex];
   audio.volume = 0.4;
   audio.currentTime = savedTime;
 
-  // ❌ NO AUTOPLAY
-  if (shouldPlay) {
-    audio.play().catch(() => {});
-    setPauseIcon();
-  } else {
-    setPlayIcon();
-  }
-
   toggleBtn.addEventListener('click', () => {
     if (audio.paused) {
-      audio.play();
-      localStorage.setItem('musicPlaying', 'true');
-      setPauseIcon();
+      audio.play().then(() => {
+        localStorage.setItem('musicPlaying', 'true');
+        setPauseIcon();
+      }).catch(err => {
+        console.warn('Audio play blocked:', err);
+      });
     } else {
       audio.pause();
       localStorage.setItem('musicPlaying', 'false');
@@ -52,6 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
     audio.currentTime = 0;
     audio.play();
   });
+
+  if (shouldPlay) {
+    audio.play().catch(() => {});
+    setPauseIcon();
+  } else {
+    setPlayIcon();
+  }
 
   function setPlayIcon() {
     icon.innerHTML =

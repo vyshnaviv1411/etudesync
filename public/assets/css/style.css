@@ -3893,3 +3893,18 @@ body span {
   border-color: #7c9cff;
   box-shadow: 0 0 0 3px rgba(124,156,255,0.25);
 }
+
+/* =========================
+   ADMIN BACKGROUND
+   ========================= */
+body.admin-page {
+  background: url("../images/admin.jpg") center center / cover no-repeat fixed;
+}
+
+body.admin-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: -1;
+}

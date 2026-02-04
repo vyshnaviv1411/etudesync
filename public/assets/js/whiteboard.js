@@ -1,4 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
+    async function checkAccess() {
+    const res = await fetch(`api/check_room_access.php?room_id=${ROOM_ID}`);
+    const data = await res.json();
+
+    if (!data.allowed) {
+      alert('You were removed from the room.');
+      window.location.href = 'collabsphere.php';
+      return false;
+    }
+    return true;
+  }
+
   const canvas = document.getElementById('wbCanvas');
   if (!canvas) return;
 
@@ -46,7 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+
   function startDraw(e) {
+        if (!checkAccess()) return;
+
     drawing = true;
     const pos = getPos(e);
     lastX = pos.x;
@@ -120,6 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function fetchRemoteBoard() {
+      if (!(await checkAccess())) return;
+
   if (drawing) return;
 
   try {

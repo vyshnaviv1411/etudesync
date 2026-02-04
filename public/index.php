@@ -12,7 +12,7 @@ require_once __DIR__ . '/../includes/header_public.php';
     <img src="assets/images/logo.jpg" alt="ÉtudeSync" class="logo-center" />
     <h1>ÉtudeSync</h1>
     <p>Study • Connect • Grow — All in one space.</p>
-    <a class="btn primary" href="login.php">Get Started</a>
+    <a class="btn primary" href="get_started.php">Get Started</a>
   </div>
 </section>
 

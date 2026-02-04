@@ -6,6 +6,12 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 require_once __DIR__ . '/premium_check.php';
 
+require_once __DIR__ . '/db.php';
+
+$musicTracks = $pdo
+  ->query("SELECT file_path FROM background_music WHERE is_active = 1 ORDER BY created_at ASC")
+  ->fetchAll(PDO::FETCH_COLUMN);
+
 $isPremium = false;
 if (!empty($_SESSION['user_id'])) {
     $isPremium = isPremiumUser($_SESSION['user_id']);
@@ -123,8 +129,18 @@ $body_class = $body_class ?? 'page-wrapper';
 
     </div>
   </div>
+<audio id="bgMusic" preload="none"></audio>
 
-  <audio id="bgMusic" preload="none"></audio>
+<script>
+  // Inject admin-managed music into JS (ABSOLUTE PATHS)
+  window.TRACKS_FROM_ADMIN = <?= json_encode(
+    array_map(
+      fn($p) => $webBase . '/' . ltrim($p, '/'),
+      $musicTracks
+    )
+  ) ?>;
+</script>
+
 
 </header>
 

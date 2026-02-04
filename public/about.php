@@ -126,7 +126,7 @@ require_once __DIR__ . '/../includes/header_public.php';
           <div class="join-sub">students & teachers & professionals on ÉtudeSync</div>
         </div>
         <div class="join-right">
-          <a href="login.php" class="btn primary large"> Start Your Journey</a>
+          <a href="get_started.php" class="btn primary large"> Start Your Journey</a>
         </div>
       </div>
     </div>

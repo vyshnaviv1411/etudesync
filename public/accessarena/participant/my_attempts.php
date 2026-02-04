@@ -44,7 +44,8 @@ require_once __DIR__ . '/../../../includes/header_dashboard.php';
   <div class="collab-hero">
 
     <!-- SINGLE MAIN CARD -->
-   <div class="collab-card accessarena-card quiz-history-scope quiz-history-solid">
+   
+    <div class="collab-card accessarena-card quiz-history-scope quiz-history-solid">
 
 
       <!-- HEADER -->

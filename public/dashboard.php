@@ -28,6 +28,16 @@ $isPremium = isPremiumUser($_SESSION['user_id']);
 
 
 require_once __DIR__ . '/../includes/header_dashboard.php';
+
+$dashboardQuotes = $pdo
+  ->query("SELECT quote_text FROM dashboard_quotes WHERE is_active = 1 ORDER BY created_at ASC")
+  ->fetchAll(PDO::FETCH_COLUMN);
+
+// fallback (safety)
+if (empty($dashboardQuotes)) {
+    $dashboardQuotes = ['Welcome back 🌱'];
+}
+
 ?>
 
 <!-- mark body so header/global slider can be hidden by CSS -->
@@ -58,6 +68,11 @@ document.addEventListener('DOMContentLoaded', function(){
     <p id="dash-quote" class="dash-tagline">
       A neat study desk in your browser — focus without distractions.
     </p>
+   <script>
+  window.DASHBOARD_QUOTES = <?= json_encode($dashboardQuotes, JSON_UNESCAPED_UNICODE) ?>;
+</script>
+
+
 
     <!-- =========================
          FREE MODULES
@@ -112,40 +127,35 @@ document.addEventListener('DOMContentLoaded', function(){
 </div>
 
 <script>
-(function(){
+document.addEventListener('DOMContentLoaded', () => {
 
- const quotes = [
-  "Take a breath 🌿 You’re exactly where you need to be.",
-  "A quiet space 🕯️ a clear mind, one task at a time.",
-  "Small focus sessions ⏳ build powerful progress.",
-  "Ideas grow faster when you learn together 🤝",
-  "Save knowledge today 📚 thank yourself tomorrow.",
-  "Even a short study session today is a win 🌱",
-  "Consistency beats intensity, always 🔁",
-  "This space is for effort, not perfection 💙",
-  "Turn distractions into clarity ✨ one step at a time.",
-  "You showed up — that already counts 🌸",
-  "Learning feels lighter when it’s organized 🗂️",
-  "Your future self is quietly cheering you on 🌟",
-  "One concept, one moment, one win 🎯",
-  "Focus now, relax later 🌙 balance matters.",
-  "Progress doesn’t rush — it flows 🌊"
-];
+  /* =========================
+     DASHBOARD QUOTES ROTATION
+  ========================== */
+  if (Array.isArray(window.DASHBOARD_QUOTES) && window.DASHBOARD_QUOTES.length) {
+    const quotes = window.DASHBOARD_QUOTES;
+    let qIdx = 0;
+    const qEl = document.getElementById('dash-quote');
 
-  let qIdx = 0;
-  const qEl = document.getElementById('dash-quote');
+    if (qEl) {
+      qEl.style.opacity = 1;
+      qEl.textContent = quotes[qIdx];
 
-  if (qEl) {
-    setInterval(() => {
-      qIdx = (qIdx + 1) % quotes.length;
-      qEl.style.opacity = 0;
-      setTimeout(() => {
-        qEl.textContent = quotes[qIdx];
-        qEl.style.opacity = 1;
-      }, 300);
-    }, 6000);
+      setInterval(() => {
+        qIdx = (qIdx + 1) % quotes.length;
+        qEl.style.opacity = 0;
+
+        setTimeout(() => {
+          qEl.textContent = quotes[qIdx];
+          qEl.style.opacity = 1;
+        }, 300);
+      }, 6000);
+    }
   }
 
+  /* =========================
+     PREMIUM LOCK HANDLING
+  ========================== */
   document.querySelectorAll('.module-card.locked').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -154,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function(){
       t.className = 'upgrade-toast';
       t.textContent = 'This feature is premium. Redirecting to upgrade...';
       document.body.appendChild(t);
+
       setTimeout(() => t.classList.add('visible'), 20);
 
       setTimeout(() => {
@@ -162,7 +173,8 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-})();
+});
 </script>
+
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

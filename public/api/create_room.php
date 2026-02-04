@@ -29,25 +29,6 @@ if ($title === '') {
     exit;
 }
 
-if (!empty($_POST['scheduled_time'])) {
-    $raw = str_replace('T', ' ', $_POST['scheduled_time']);
-    if (!preg_match('/:\d{2}$/', $raw)) {
-        $raw .= ':00';
-    }
-
-    $scheduledTime = new DateTime($raw);
-    $now = new DateTime();
-
-    if ($scheduledTime < $now) {
-        echo json_encode([
-            'success' => false,
-            'error' => 'Scheduled time cannot be in the past'
-        ]);
-        exit;
-    }
-
-    $scheduled = $raw;
-}
 
 /* ---------- ROOM CODE ---------- */
 function generateRoomCode($len = 6) {
@@ -69,14 +50,13 @@ try {
 
     // ✅ Insert room ONLY
     $stmt = $pdo->prepare("
-        INSERT INTO rooms (title, topic, room_code, scheduled_time, host_user_id)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO rooms (title, topic, room_code, host_user_id)
+        VALUES (?, ?, ?, ?)
     ");
     $stmt->execute([
         $title,
         $topic !== '' ? $topic : null,
         $room_code,
-        $scheduled,
         $user_id
     ]);
 
@@ -90,7 +70,8 @@ try {
         'success'   => true,
         'room_id'   => $room_id,
         'room_code' => $room_code,
-        'redirect'  => 'room.php?room_id=' . $room_id . '&code=' . $room_code
+        'redirect' => 'room.php?code=' . $room_code
+
     ]);
     exit;
 
@@ -98,7 +79,8 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error'   => 'Failed to create room'
+        'error'   => $e->getMessage()
     ]);
     exit;
 }
+

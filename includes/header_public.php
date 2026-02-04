@@ -42,7 +42,7 @@ if (!isset($is_index_page)) {
     <nav class="main-nav">
       <a href="about.php">About</a>
       <a href="services.php">Services</a>
-      <a href="login.php">Login</a>
+      <a href="get_started.php">Login</a>
     </nav>
 
   </div>

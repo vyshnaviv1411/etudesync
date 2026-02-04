@@ -45,6 +45,9 @@ if (!$room) {
     exit;
 }
 
+$isHost = ((int)$room['host_user_id'] === $uid);
+
+
 $room_id = (int)$room['room_id'];
 
 
@@ -55,45 +58,58 @@ if ($room_code !== '' && strcasecmp($room_code, $room['room_code']) !== 0) {
     exit;
 }
 
-// mark participant presence (update or insert)
-// mark participant presence
-try {
-    $stmt = $pdo->prepare(
-        "SELECT id FROM room_participants WHERE room_id = :room AND user_id = :user"
-    );
-    $stmt->execute([':room' => $room_id, ':user' => $uid]);
-if (!$stmt->fetchColumn()) {
-    // first time join
-    $ins = $pdo->prepare(
-        "INSERT INTO room_participants (room_id, user_id, last_active)
-         VALUES (:room, :user, NOW())"
-    );
-    $ins->execute([':room' => $room_id, ':user' => $uid]);
-} else {
-    // already joined → update activity
-    $upd = $pdo->prepare(
-        "UPDATE room_participants
-         SET last_active = NOW()
-         WHERE room_id = :room AND user_id = :user"
-    );
-    $upd->execute([':room' => $room_id, ':user' => $uid]);
+// 🔒 ACCESS CHECK — HOST ALWAYS ALLOWED
+if (!$isHost) {
+    $stmt = $pdo->prepare("
+        SELECT 1
+        FROM room_participants
+        WHERE room_id = :room
+          AND user_id = :user
+        LIMIT 1
+    ");
+    $stmt->execute([
+        ':room' => $room_id,
+        ':user' => $uid
+    ]);
+
+    if (!$stmt->fetchColumn()) {
+        echo '<script>
+            alert("You were removed from the room.");
+            window.location.href = "collabsphere.php";
+        </script>';
+        exit;
+    }
 }
 
-} catch (Exception $e) {
-    // ignore for now
+
+// mark participant presence (update or insert)
+// mark participant presence
+$stmt = $pdo->prepare(
+    "SELECT id FROM room_participants
+     WHERE room_id = :room AND user_id = :user"
+);
+$stmt->execute([
+    ':room' => $room_id,
+    ':user' => $uid
+]);
+
+if (!$stmt->fetchColumn()) {
+   $ins = $pdo->prepare("
+    INSERT IGNORE INTO room_participants (room_id, user_id)
+    VALUES (:room, :user)
+");
+$ins->execute([
+    ':room' => $room_id,
+    ':user' => $uid
+]);
+
 }
 
 
 
 // determine manage permission (simple check)
-$me = $uid;
-$canManage = false;
-try {
-    $stmt = $pdo->prepare("SELECT role FROM room_participants WHERE room_id = :r AND user_id = :u LIMIT 1");
-    $stmt->execute([':r'=>$room_id, ':u'=>$me]);
-    $myRole = $stmt->fetchColumn();
-    $canManage = in_array($myRole, ['host','moderator']);
-} catch (Exception $e) { /* ignore */ }
+$canManage = ((int)$room['host_user_id'] === $uid);
+
 
 // thumbnail: prefer room-specific uploaded thumbnail, else fallback to uploaded file or project placeholder
 $room_thumbnail = 'assets/images/collab-bg.jpg';
@@ -110,6 +126,25 @@ if (!empty($room['thumbnail'])) {
         $room_thumbnail = 'assets/images/placeholder-room.png';
     }
 }
+// --------------------------------------------------
+// FETCH PARTICIPANTS FOR THIS ROOM
+// --------------------------------------------------
+$participants = [];
+
+try {
+    $stmt = $pdo->prepare("
+        SELECT u.id AS user_id, u.username
+        FROM room_participants rp
+        JOIN users u ON u.id = rp.user_id
+        WHERE rp.room_id = :room
+        ORDER BY rp.joined_at ASC
+    ");
+    $stmt->execute([':room' => $room_id]);
+    $participants = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $participants = [];
+}
+
 
 // escape helper
 function e($s) {
@@ -250,14 +285,53 @@ body.dashboard-page .collab-hero {
   </div> 
 <aside class="room-sidebar">
 
-  <!-- PARTICIPANTS -->
-  <div class="participants-box glass-card" style="padding:12px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-      <div style="font-weight:800">Participants</div>
-      <div id="participantCount" class="small-muted">–</div>
-    </div>
-    <div id="participantsListBox" style="max-height:360px;overflow:auto;"></div>
+ <!-- PARTICIPANTS -->
+<div class="participants-box glass-card" style="padding:12px;">
+  
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+    <div style="font-weight:800">Participants</div>
+    <div class="small-muted" id="participantCount">
+  Loading…
+</div>
+
   </div>
+
+  <div id="participantsListBox" style="max-height:360px;overflow:auto;">
+
+    <?php if (empty($participants)): ?>
+      <div class="small-muted" style="text-align:center;padding:12px;">
+        No participants yet
+      </div>
+    <?php endif; ?>
+
+    <?php foreach ($participants as $p): ?>
+      <div class="participant-row"
+           style="display:flex;justify-content:space-between;align-items:center;
+                  padding:8px 4px;border-bottom:1px solid rgba(255,255,255,0.05);">
+
+        <span>
+          <?= e($p['username']) ?>
+          <?php if ($p['user_id'] == $room['host_user_id']): ?>
+            <span class="small-muted">(Host)</span>
+          <?php endif; ?>
+        </span>
+
+        <?php if ($room['host_user_id'] == $uid && $p['user_id'] != $uid): ?>
+          <!-- REMOVE BUTTON SAYING EXACTLY WHAT IT DOES -->
+          <button
+            class="btn small danger"
+            title="Remove participant from room"
+            onclick="removeParticipant(<?= (int)$p['user_id'] ?>)">
+            Remove
+          </button>
+        <?php endif; ?>
+
+      </div>
+    <?php endforeach; ?>
+
+  </div>
+</div>
+
 
   <div style="height:14px"></div>
 
@@ -445,6 +519,7 @@ body.dashboard-page .collab-hero {
 
 <script>
 const ROOM_ID = <?= (int)$room_id ?>;
+const HOST_ID = <?= (int)$room['host_user_id'] ?>;
 const ROOM_CODE = <?= json_encode($room['room_code']) ?>;
 const USER_ID = <?= (int)$uid ?>;
 const CAN_MANAGE = <?= $canManage ? 'true' : 'false' ?>;
@@ -517,11 +592,34 @@ document.getElementById('aaJoinQuizBtn')?.addEventListener('click', () => {
     return;
   }
 
-  window.location.href =
 window.location.href =
   'accessarena/participant/join_quiz.php?code=' + encodeURIComponent(code);
 
+
 });
+</script>
+
+<script>
+function removeParticipant(userId) {
+  if (!confirm('Remove this participant from the room?')) return;
+
+  fetch('api/remove_participant.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      room_id: ROOM_ID,
+      user_id: userId
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      location.reload();
+    } else {
+      alert(data.message || 'Action not allowed');
+    }
+  });
+}
 </script>
 
 
