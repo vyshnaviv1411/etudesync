@@ -36,25 +36,29 @@ CREATE TABLE IF NOT EXISTS user_subscriptions (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Dummy Payment Orders
-CREATE TABLE IF NOT EXISTS payment_orders (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  subscription_id INT,
-  amount DECIMAL(10,2) NOT NULL,
-  currency VARCHAR(3) DEFAULT 'USD',
-  order_id VARCHAR(50) UNIQUE NOT NULL,
-  payment_id VARCHAR(50) UNIQUE NOT NULL,
-  status ENUM('pending', 'success', 'failed') DEFAULT 'pending',
-  payment_method VARCHAR(50) DEFAULT 'dummy_card',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  completed_at TIMESTAMP NULL,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (subscription_id) REFERENCES user_subscriptions(id),
-  INDEX idx_user (user_id),
-  INDEX idx_order_id (order_id),
-  INDEX idx_payment_id (payment_id),
-  INDEX idx_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE `payment_orders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `subscription_id` int(11) DEFAULT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `currency` varchar(3) DEFAULT 'USD',
+  `order_id` varchar(50) NOT NULL,
+  `payment_id` varchar(50) NOT NULL,
+  `status` enum('pending','success','failed') DEFAULT 'pending',
+  `payment_method` varchar(50) DEFAULT 'dummy_card',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `completed_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `order_id` (`order_id`),
+  UNIQUE KEY `payment_id` (`payment_id`),
+  KEY `subscription_id` (`subscription_id`),
+  KEY `idx_user` (`user_id`),
+  KEY `idx_order_id` (`order_id`),
+  KEY `idx_payment_id` (`payment_id`),
+  KEY `idx_status` (`status`),
+  CONSTRAINT `payment_orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `payment_orders_ibfk_2` FOREIGN KEY (`subscription_id`) REFERENCES `user_subscriptions` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
 
 -- Seed Default Plan (Updated to INR pricing)
 INSERT IGNORE INTO subscription_plans (name, description, price, billing_cycle, features, is_active)
