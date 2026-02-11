@@ -19,10 +19,56 @@ if (empty($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 try {
+
+    // ============================
+    // STRICT PAYMENT VALIDATION
+    // ============================
+
+    $method = $_POST['payment_method'] ?? 'card';
+
+    if ($method === 'card') {
+
+        $cardNumber = preg_replace('/\s+/', '', $_POST['cardNumber'] ?? '');
+        $cardName   = trim($_POST['cardName'] ?? '');
+        $cardExpiry = trim($_POST['cardExpiry'] ?? '');
+        $cardCVV    = trim($_POST['cardCVV'] ?? '');
+
+        if (!preg_match('/^\d{16}$/', $cardNumber)) {
+            throw new Exception('Invalid card number');
+        }
+
+        if (strlen($cardName) < 3) {
+            throw new Exception('Invalid cardholder name');
+        }
+
+        if (!preg_match('/^\d{2}\/\d{2}$/', $cardExpiry)) {
+            throw new Exception('Invalid expiry format');
+        }
+
+        if (!preg_match('/^\d{3}$/', $cardCVV)) {
+            throw new Exception('Invalid CVV');
+        }
+    }
+
+    if ($method === 'upi') {
+
+        $upi = trim($_POST['upiId'] ?? '');
+
+        if (!preg_match('/^[a-zA-Z0-9._-]{2,256}@[a-zA-Z]{2,64}$/', $upi)) {
+            throw new Exception('Invalid UPI ID');
+        }
+    }
+
+    // ============================
+    // EXISTING PREMIUM CHECK
+    // ============================
+
     if (isPremiumUser($user_id)) {
         echo json_encode(['success' => false, 'error' => 'Already premium']);
         exit;
     }
+
+    // Continue with plan fetching...
 
     // Get Pro Plan
     $stmt = $pdo->prepare("SELECT id, price FROM subscription_plans WHERE name = 'Pro Plan' LIMIT 1");

@@ -13,7 +13,7 @@ require_once __DIR__ . '/../includes/header_public.php';
 
     <div class="glass-auth-card">
 
-      <img src="assets/images/logo.jpg" alt="ÉtudeSync" class="logo-center" loading="lazy" />
+      <h2>Login Account</h2>
 
       <?php
       if (!empty($_SESSION['error'])) {
@@ -28,7 +28,7 @@ require_once __DIR__ . '/../includes/header_public.php';
       <form action="authenticate.php" method="POST" class="auth-form" novalidate>
         <div class="input-group">
           <label for="email">Email</label>
-          <input id="email" type="email" name="email" required placeholder="you@example.com" />
+          <input id="email" type="email" name="email" required placeholder="you@gmail.com" />
         </div>
 
       <div class="input-group">

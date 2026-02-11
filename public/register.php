@@ -5,9 +5,13 @@ if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 $disable_dashboard_bg = false;
+$body_class = "register-page";
+
+$success = $_SESSION['success'] ?? '';
+unset($_SESSION['success']);
 
 $errors = [];
-$success = '';
+
 $old = ['username' => '', 'email' => ''];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -21,9 +25,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($username === '' || $email === '' || $password === '') {
         $errors[] = "All fields are required.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Invalid email.";
-    } elseif ($password !== $pw2) {
+   } elseif (!preg_match('/^[A-Za-z0-9._%+-]+@gmail\.com$/i', $email)) {
+    $errors[] = "Only Gmail addresses (@gmail.com) are allowed.";
+}
+
+
+
+
+elseif ($password !== $pw2) {
         $errors[] = "Passwords do not match.";
     } else {
         $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
@@ -35,8 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pwHash = password_hash($password, PASSWORD_DEFAULT);
             $ins = $pdo->prepare("INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)");
             $ins->execute([$username, $email, $pwHash]);
-            $success = "Account created. Please login.";
-            $old = ['username' => '', 'email' => ''];
+          $_SESSION['success'] = "Account created successfully. You can now log in.";
+header("Location: register.php");
+exit;
+
         }
     }
 }
@@ -45,25 +56,28 @@ require_once __DIR__ . '/../includes/header_public.php';
 ?>
 
 <div class="auth-page">
-  <div class="auth-wrap container">
+  <div class="auth-wrap ">
+   
 
-    <div class="glass-auth-card">
-      <img src="assets/images/logo.jpg" alt="ÉtudeSync" class="logo-center" loading="lazy" />
+<div class="glass-auth-card">
 
-      <h2>Create Account</h2>
+  <h2>Create Account</h2>
 
-      <?php if ($errors): ?>
-        <div class="form-error flash-message"><ul>
-        <?php foreach ($errors as $e): ?>
-            <li><?= htmlspecialchars($e) ?></li>
-        <?php endforeach; ?>
-        </ul></div>
-      <?php endif; ?>
+  <?php if (!empty($errors)): ?>
+      <div class="form-error flash-message">
+          <?php foreach ($errors as $e): ?>
+              <div><?= htmlspecialchars($e) ?></div>
+          <?php endforeach; ?>
+      </div>
+  <?php endif; ?>
 
-      <?php if ($success): ?>
-        <div class="form-ok flash-message"><?= htmlspecialchars($success) ?></div>
-      <?php endif; ?>
+  <?php if ($success): ?>
+      <div class="form-ok flash-message">
+          <?= htmlspecialchars($success) ?>
+      </div>
+  <?php endif; ?>
 
+  
       <form method="post" class="auth-form">
 
         <div class="input-group">
@@ -89,10 +103,9 @@ require_once __DIR__ . '/../includes/header_public.php';
           <label>Confirm</label>
   <div class="password-box">
       <input type="password" name="password_confirm" required />
-    <span class="toggle-eye" onclick="togglePassword('password')">👁️</span>
+    <span class="toggle-eye" onclick="togglePassword('password_confirm')">👁️</span>
   </div>
 </div>
-
 
         <button type="submit" class="btn-login">Create account</button>
 

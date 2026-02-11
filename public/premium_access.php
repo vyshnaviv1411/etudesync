@@ -577,7 +577,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 </div>
             </div>
 
-            <form id="payment-form" onsubmit="handlePayment(event)">
+<form id="payment-form" onsubmit="handlePayment(event)">
                 <!-- Payment Method Selection -->
                 <div class="payment-methods">
                     <div class="payment-method">
@@ -587,7 +587,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         </label>
                     </div>
                     <div class="payment-method">
-                        <input type="radio" id="upi-method" name="payment_method" value="upi">
+                        <input type="radio" id="upi-method" name="payment_method" value="upi" >
                         <label for="upi-method">
                             📱 UPI
                         </label>
@@ -649,9 +649,10 @@ document.addEventListener('DOMContentLoaded', function(){
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" class="submit-button">
-                    Pay ₹399 & Unlock Premium
-                </button>
+               <button type="submit" class="submit-button" id="pay-btn" >
+    Pay ₹399 & Unlock Premium
+</button>
+
 
                 <div class="back-link">
                     <a href="dashboard.php">← Back to Dashboard</a>
@@ -706,54 +707,115 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     // Handle Payment Submission (Dummy - Always Fails)
-    function handlePayment(event) {
+function handlePayment(event) {
     event.preventDefault();
 
-    const btn = document.querySelector('.submit-button');
-    btn.disabled = true;
-    btn.textContent = 'Processing...';
+    const method = document.querySelector('input[name="payment_method"]:checked').value;
 
-    // Collect card inputs (dummy only)
+    const number = document.getElementById('card-number').value.replace(/\s/g, '');
+    const name   = document.getElementById('card-name').value.trim();
+    const expiry = document.getElementById('card-expiry').value.trim();
+    const cvv    = document.getElementById('card-cvv').value.trim();
+    const upi    = document.getElementById('upi-id').value.trim();
+
+    // ======================
+    // CARD VALIDATION
+    // ======================
+    if (method === "card") {
+
+        if (!number || !name || !expiry || !cvv) {
+            alert("Please enter all card details before clicking Pay.");
+            return;
+        }
+
+        let errors = [];
+
+        if (!/^\d{16}$/.test(number)) {
+            errors.push("Card number must be exactly 16 digits");
+        }
+
+        if (name.length < 3) {
+            errors.push("Cardholder name must be at least 3 characters");
+        }
+
+        if (!/^\d{2}\/\d{2}$/.test(expiry)) {
+            errors.push("Expiry format must be MM/YY");
+        } else {
+            const [month] = expiry.split("/");
+            const monthNum = parseInt(month);
+            if (monthNum < 1 || monthNum > 12) {
+                errors.push("Expiry month must be between 01 and 12");
+            }
+        }
+
+        if (!/^\d{3}$/.test(cvv)) {
+            errors.push("CVV must be exactly 3 digits");
+        }
+
+        if (errors.length > 0) {
+            alert(errors.join("\n"));
+            return;
+        }
+    }
+
+    // ======================
+    // UPI VALIDATION
+    // ======================
+    if (method === "upi") {
+
+        if (!upi) {
+            alert("Please enter your UPI ID before clicking Pay.");
+            return;
+        }
+
+        const upiRegex = /^[a-zA-Z0-9._-]{2,256}@[a-zA-Z]{2,64}$/;
+
+        if (!upiRegex.test(upi)) {
+            alert("Invalid UPI ID (example: name@upi)");
+            return;
+        }
+    }
+
+    // ======================
+    // SEND DATA TO SERVER
+    // ======================
     const formData = new FormData();
-    formData.append('cardName', document.getElementById('card-name').value);
-    formData.append('cardNumber', document.getElementById('card-number').value);
-    formData.append('cardExpiry', document.getElementById('card-expiry').value);
-    formData.append('cardCVV', document.getElementById('card-cvv').value);
+    formData.append("payment_method", method);
 
-    fetch('/etudesync/public/api/premium/process_upgrade.php', {
+    if (method === "card") {
+        formData.append("cardNumber", number);
+        formData.append("cardName", name);
+        formData.append("cardExpiry", expiry);
+        formData.append("cardCVV", cvv);
+    } else {
+        formData.append("upiId", upi);
+    }
 
+    fetch('api/premium/process_upgrade.php', {
         method: 'POST',
         body: formData
     })
     .then(res => res.json())
     .then(data => {
-        btn.disabled = false;
-        btn.textContent = 'Pay ₹399 & Unlock Premium';
-
         if (data.success) {
-            alert('🎉 Premium Activated Successfully!');
-            window.location.href = 'dashboard.php';
+            alert("🎉 Premium Activated Successfully!");
+            window.location.href = "dashboard.php";
         } else {
-            showErrorToast(data.error || 'Payment failed');
+            alert(data.error || "Payment failed");
         }
     })
     .catch(() => {
-        btn.disabled = false;
-        btn.textContent = 'Pay ₹399 & Unlock Premium';
-        showErrorToast('Server error. Try again.');
+        alert("Server error. Try again.");
     });
 }
 
-    // Show Error Toast
-    function showErrorToast(message) {
-        const toast = document.getElementById('error-toast');
-        toast.textContent = message;
-        toast.classList.add('show');
 
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 5000);
-    }
+
+
+
+
+
+
 </script>
 
 <?php
