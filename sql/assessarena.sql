@@ -1,3 +1,7 @@
+-- ===============================
+-- ACCESS ARENA QUIZZES
+-- ===============================
+
 CREATE TABLE accessarena_quizzes (
   id INT AUTO_INCREMENT PRIMARY KEY,
   creator_id INT NOT NULL,
@@ -16,6 +20,11 @@ CREATE TABLE accessarena_quizzes (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
+
+-- ===============================
+-- QUESTIONS
+-- ===============================
+
 CREATE TABLE accessarena_questions (
   id INT AUTO_INCREMENT PRIMARY KEY,
   quiz_id INT NOT NULL,
@@ -30,6 +39,12 @@ CREATE TABLE accessarena_questions (
     FOREIGN KEY (quiz_id) REFERENCES accessarena_quizzes(id)
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+-- ===============================
+-- PARTICIPANTS
+-- ===============================
 
 CREATE TABLE accessarena_participants (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -51,18 +66,37 @@ CREATE TABLE accessarena_participants (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
-CREATE TABLE `accessarena_answers` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `participant_id` int(11) NOT NULL,
-  `question_id` int(11) NOT NULL,
-  `selected_option` enum('A','B','C','D') DEFAULT NULL,
-  `is_correct` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_answer_participant` (`participant_id`),
-  KEY `fk_answer_question` (`question_id`),
-  CONSTRAINT `fk_answer_participant` FOREIGN KEY (`participant_id`) REFERENCES `accessarena_participants` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_answer_question` FOREIGN KEY (`question_id`) REFERENCES `accessarena_questions` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+
+-- ===============================
+-- ANSWERS
+-- ===============================
+
+CREATE TABLE accessarena_answers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  participant_id INT NOT NULL,
+  question_id INT NOT NULL,
+  selected_option ENUM('A','B','C','D') DEFAULT NULL,
+  is_correct TINYINT(1) DEFAULT NULL,
+
+  KEY fk_answer_participant (participant_id),
+  KEY fk_answer_question (question_id),
+
+  CONSTRAINT fk_answer_participant
+    FOREIGN KEY (participant_id)
+    REFERENCES accessarena_participants(id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_answer_question
+    FOREIGN KEY (question_id)
+    REFERENCES accessarena_questions(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+-- ===============================
+-- ATTEMPTS SUMMARY
+-- ===============================
 
 CREATE TABLE accessarena_attempts_summary (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -79,24 +113,34 @@ CREATE TABLE accessarena_attempts_summary (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `attempts` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `attempt_id` varchar(36) NOT NULL,
-  `quiz_id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `score` int(11) NOT NULL,
-  `total_questions` int(11) NOT NULL,
-  `duration_seconds` int(11) NOT NULL,
-  `started_at` datetime NOT NULL,
-  `submitted_at` datetime NOT NULL,
-  `answers` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`answers`)),
-  `is_valid` tinyint(1) DEFAULT 1,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `attempt_id` (`attempt_id`),
-  KEY `idx_quiz` (`quiz_id`),
-  KEY `idx_user` (`user_id`),
-  KEY `idx_score` (`quiz_id`,`score`,`duration_seconds`),
-  KEY `idx_attempt_id` (`attempt_id`),
-  CONSTRAINT `attempts_ibfk_1` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+
+
+-- ===============================
+-- ATTEMPTS (FIXED FOREIGN KEY)
+-- ===============================
+
+CREATE TABLE attempts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  attempt_id VARCHAR(36) NOT NULL,
+  quiz_id INT NOT NULL,
+  user_id INT DEFAULT NULL,
+  score INT NOT NULL,
+  total_questions INT NOT NULL,
+  duration_seconds INT NOT NULL,
+  started_at DATETIME NOT NULL,
+  submitted_at DATETIME NOT NULL,
+  answers LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  is_valid TINYINT(1) DEFAULT 1,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  UNIQUE KEY attempt_id (attempt_id),
+  KEY idx_quiz (quiz_id),
+  KEY idx_user (user_id),
+  KEY idx_score (quiz_id, score, duration_seconds),
+  KEY idx_attempt_id (attempt_id),
+
+  CONSTRAINT fk_attempt_quiz
+    FOREIGN KEY (quiz_id)
+    REFERENCES accessarena_quizzes(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -1,24 +1,41 @@
-CREATE TABLE `flashcards` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `set_id` int(11) NOT NULL,
-  `question` text NOT NULL,
-  `answer` text NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `set_id` (`set_id`),
-  CONSTRAINT `flashcards_ibfk_1` FOREIGN KEY (`set_id`) REFERENCES `flashcard_sets` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+-- ===============================
+-- FLASHCARD SETS (CREATE FIRST)
+-- ===============================
 
-CREATE TABLE `flashcard_sets` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `title` varchar(200) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+CREATE TABLE flashcard_sets (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  user_id INT(11) NOT NULL,
+  title VARCHAR(200) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
---infovalut_files 
+
+-- ===============================
+-- FLASHCARDS
+-- ===============================
+
+CREATE TABLE flashcards (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  set_id INT(11) NOT NULL,
+  question TEXT NOT NULL,
+  answer TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (id),
+  KEY set_id (set_id),
+  CONSTRAINT flashcards_ibfk_1
+    FOREIGN KEY (set_id)
+    REFERENCES flashcard_sets(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+-- ===============================
+-- INFOVAULT FILES
+-- ===============================
+
 CREATE TABLE infovault_files (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
@@ -27,30 +44,54 @@ CREATE TABLE infovault_files (
   mime_type VARCHAR(100),
   size_bytes BIGINT,
   uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+  CONSTRAINT fk_infovault_user
+    FOREIGN KEY (user_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `mindmaps` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `fk_mindmaps_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
 
-CREATE TABLE `mindmap_nodes` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `mindmap_id` int(11) NOT NULL,
-  `parent_id` int(11) DEFAULT NULL,
-  `text` varchar(255) NOT NULL,
-  `x` int(11) NOT NULL DEFAULT 0,
-  `y` int(11) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `mindmap_id` (`mindmap_id`),
-  KEY `parent_id` (`parent_id`),
-  CONSTRAINT `fk_nodes_mindmap` FOREIGN KEY (`mindmap_id`) REFERENCES `mindmaps` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_nodes_parent` FOREIGN KEY (`parent_id`) REFERENCES `mindmap_nodes` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=481 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+
+-- ===============================
+-- MINDMAPS
+-- ===============================
+
+CREATE TABLE mindmaps (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  user_id INT(11) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (id),
+  KEY user_id (user_id),
+  CONSTRAINT fk_mindmaps_user
+    FOREIGN KEY (user_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+-- ===============================
+-- MINDMAP NODES
+-- ===============================
+
+CREATE TABLE mindmap_nodes (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  mindmap_id INT(11) NOT NULL,
+  parent_id INT(11) DEFAULT NULL,
+  text VARCHAR(255) NOT NULL,
+  x INT(11) NOT NULL DEFAULT 0,
+  y INT(11) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (id),
+  KEY mindmap_id (mindmap_id),
+  KEY parent_id (parent_id),
+  CONSTRAINT fk_nodes_mindmap
+    FOREIGN KEY (mindmap_id)
+    REFERENCES mindmaps(id)
+    ON DELETE CASCADE,
+  CONSTRAINT fk_nodes_parent
+    FOREIGN KEY (parent_id)
+    REFERENCES mindmap_nodes(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
