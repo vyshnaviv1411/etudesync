@@ -75,7 +75,11 @@ require_once __DIR__ . '/../../../includes/header_dashboard.php';
         </a>
 
       </div>
-
+       <div style="margin-top:16px">
+        <a href="../accessarena_home.php" class="btn small">
+          ← Back to Dashboard
+        </a>
+        </div>
     </div>
   </div>
 </div>

@@ -49,8 +49,8 @@ require_once __DIR__ . '/../../../includes/header_dashboard.php';
       </div>
 
       <!-- Mentor Menu -->
-      <div class="accessarena-actions">
-
+      
+       <div class="accessarena-actions">
         <a href="create_quiz.php" class="action-card">
           <div class="action-icon">📝</div>
           <div class="action-title">Create Quiz</div>
@@ -86,8 +86,15 @@ require_once __DIR__ . '/../../../includes/header_dashboard.php';
           <div class="action-title">Leaderboard</div>
           <div class="action-sub">Top performers</div>
         </a>
-
+        
+       
+      
       </div>
+       <div style="margin-top:16px">
+        <a href="../accessarena_home.php" class="btn small">
+          ← Back to Dashboard
+        </a>
+        </div>
 
     </div>
   </div>
