@@ -891,7 +891,9 @@ $page_title = 'MindPlay - Well-Being & Productivity';
             currentModule: 'hub',
             currentGame: null,
             selectedMood: null,
-            currentJournalDate: new Date().toISOString().split('T')[0],
+            currentJournalDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+    .toISOString()
+    .split('T')[0],
             journalAutoSaveInterval: null,
 
             // Initialize
@@ -1085,8 +1087,9 @@ setSubFeatureBg() {
 
 
         // Disable "Next" if today
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('journal-next-btn').disabled =
+const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+  .toISOString()
+  .split('T')[0];        document.getElementById('journal-next-btn').disabled =
             this.currentJournalDate >= today;
 
     } catch (error) {
