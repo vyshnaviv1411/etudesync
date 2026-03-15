@@ -644,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         <input type="text"
                                id="upi-id"
                                class="form-input"
-                               placeholder="yourname@upi">
+                               placeholder="yourUPIusername@upi">
                     </div>
                 </div>
 

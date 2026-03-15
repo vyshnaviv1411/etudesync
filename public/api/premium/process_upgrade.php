@@ -50,15 +50,14 @@ try {
         }
     }
 
-    if ($method === 'upi') {
+ if ($method === 'upi') {
 
-        $upi = trim($_POST['upiId'] ?? '');
+    $upi = trim($_POST['upiId'] ?? '');
 
-        if (!preg_match('/^[a-zA-Z0-9._-]{2,256}@[a-zA-Z]{2,64}$/', $upi)) {
-            throw new Exception('Invalid UPI ID');
-        }
+    if (!preg_match('/^[a-zA-Z0-9._-]{3,30}@upi$/', $upi)) {
+        throw new Exception('UPI ID must be in format: username@upi');
     }
-
+}
     // ============================
     // EXISTING PREMIUM CHECK
     // ============================

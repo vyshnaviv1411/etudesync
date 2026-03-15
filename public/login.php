@@ -50,6 +50,9 @@ require_once __DIR__ . '/../includes/header_public.php';
       <div class="meta">
         Don't have an account? <a href="register.php">Create account</a>
       </div>
+      <div class="meta">
+          🔐 While creating an account, please remember your email and password.
+      </div>
 
     </div>
   </div>

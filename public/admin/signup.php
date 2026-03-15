@@ -14,8 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($name === '' || $email === '' || $password === '' || $confirm === '') {
         $errors[] = 'All fields are required.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = 'Invalid email address.';
-    } elseif ($password !== $confirm) {
+    $errors[] = 'Invalid email address.';
+} elseif (!preg_match('/^[a-zA-Z0-9._%+-]+@etudesync\.com$/', $email)) {
+    $errors[] = 'Admin must register using an official ÉtudeSync email.';
+} elseif ($password !== $confirm) {
         $errors[] = 'Passwords do not match.';
     } else {
         // Check if admin already exists

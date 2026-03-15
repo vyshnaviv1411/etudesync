@@ -226,6 +226,12 @@ $questions = $qStmt->fetchAll(PDO::FETCH_ASSOC);
   🚀 Publish Quiz
 </a>
 
+ <div style="text-align:center;margin-top:30px">
+        <a href="mentor_home.php" class="btn small">
+          ← Back to Dashboard
+        </a>
+      </div>
+
 
 </div>
 
