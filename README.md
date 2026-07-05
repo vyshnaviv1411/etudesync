@@ -166,20 +166,6 @@ http://localhost/EtudeSync
 
 ---
 
-# 📸 Screenshots
-
-Add screenshots of:
-
-- Landing Page
-- Dashboard
-- Study Room
-- Whiteboard
-- Chat
-- Profile
-- Knowledge Hub
-- MindPlay
-
----
 
 # 🎯 Project Objectives
 
